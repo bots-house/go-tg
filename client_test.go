@@ -23,10 +23,10 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("WithOptions", func(t *testing.T) {
 		doer := &http.Client{}
-		client := NewClient(token, WithDoer(doer))
+		client := NewClient(toke_n, WithDoer(doer))
 
 		if assert.NotNil(t, client) {
-			assert.Equal(t, token, client.token)
+			assert.Equal(t, toke_n, client.token)
 			assert.Equal(t, doer, client.doer)
 		}
 	})

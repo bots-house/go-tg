@@ -9,24 +9,24 @@ import (
 
 func TestNewClient(t *testing.T) {
 	const (
-		toke_n = "12345:secret"
+		token = "12345:secret"
 	)
 
 	t.Run("WithoutOptions", func(t *testing.T) {
-		client := NewClient(toke_n)
+		client := NewClient(token)
 
 		if assert.NotNil(t, client) {
-			assert.Equal(t, toke_n, client.token)
+			assert.Equal(t, token, client.token)
 			assert.Equal(t, http.DefaultClient, client.doer)
 		}
 	})
 
 	t.Run("WithOptions", func(t *testing.T) {
 		doer := &http.Client{}
-		client := NewClient(toke_n, WithDoer(doer))
+		client := NewClient(token, WithDoer(doer))
 
 		if assert.NotNil(t, client) {
-			assert.Equal(t, toke_n, client.token)
+			assert.Equal(t, token, client.token)
 			assert.Equal(t, doer, client.doer)
 		}
 	})

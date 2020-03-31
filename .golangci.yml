@@ -23,6 +23,7 @@ linters:
     - nakedret
     - gosimple
     - prealloc
+    - goimports
 
 linters-settings:
   govet:

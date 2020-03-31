@@ -1,0 +1,13 @@
+on: [pull_request]
+
+jobs:
+  linters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run
+        uses: actions-contrib/golangci-lint@v1
+        with:
+          golangci_lint_version: v1.13

@@ -7,7 +7,7 @@ type Request struct {
 	method string
 
 	args          map[string]string
-	files         map[string]InputFile
+	files         map[string]*InputFile
 	attachmentIdx int
 }
 
@@ -15,6 +15,8 @@ type Request struct {
 func NewRequest(method string) *Request {
 	return &Request{
 		method: method,
+		args: map[string]string{},
+		files: map[string]*InputFile{},
 	}
 }
 
@@ -31,4 +33,16 @@ func (r *Request) Method() string {
 // SetToken sets request token.
 func (r *Request) SetToken(token string) {
 	r.token = token
+}
+
+// SetString sets request string argument.
+func (r *Request) SetString(k string, v string) {
+	r.args[k] = v
+}
+
+// SetOptString sets request string argument, if value is not zero.
+func (r *Request) SetOptString(k string, v string) {
+	if v != "" {
+		r.args[k] = v
+	}
 }

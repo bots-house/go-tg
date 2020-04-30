@@ -16,6 +16,7 @@ type InputFile struct {
 	Body io.Reader
 }
 
+
 // NewInputFile creates the InputFile from provided name and body reader.
 func NewInputFile(name string, body io.Reader) *InputFile {
 	return &InputFile{

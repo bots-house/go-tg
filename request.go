@@ -1,5 +1,12 @@
 package tg
 
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/pkg/errors"
+)
+
 // Request represents RPC request to Telegram Bot API.
 // It contains following info: method, token, parameters, files.
 type Request struct {
@@ -45,4 +52,28 @@ func (r *Request) SetOptString(k string, v string) {
 	if v != "" {
 		r.args[k] = v
 	}
+}
+
+// hasInputFiles returns true if request contains files for upload.
+func (r *Request) hasInputFiles() bool {
+	return len(r.files) > 0
+}
+
+// SetInputFile add file to request
+func (r *Request) SetInputFile(k string, file *InputFile) {
+	name := fmt.Sprintf("attachment_%d", r.attachmentIdx)
+	r.SetString(k, "attach://"+name)
+	r.files[name] = file
+	r.attachmentIdx++
+}
+
+func (r *Request) SetJSON(k string, v interface{}) error {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return errors.Wrap(err, "marshal v")
+	}
+
+	r.args[k] = string(data)
+
+	return nil
 }

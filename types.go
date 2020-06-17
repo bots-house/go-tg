@@ -1,7 +1,9 @@
 package tg
 
 import (
+	"context"
 	"encoding/json"
+	"strconv"
 )
 
 // FileID it's ID of uploaded file.
@@ -9,6 +11,22 @@ type FileID string
 
 // UserID it's unique user ID in Telegram.
 type UserID int
+
+// Peer implements Peer interface.
+func (id UserID) Peer() string {
+	return strconv.Itoa(int(id))
+}
+
+// Username it's Telegram username.
+type Username string
+
+func (un Username) Peer() string {
+	return un.String()
+}
+
+func (un Username) String() string {
+	return "@" + string(un)
+}
 
 // User represents Telegram user.
 type User struct {
@@ -25,7 +43,7 @@ type User struct {
 	LastName string `json:"last_name,omitempty"`
 
 	// Optional. User's or bot's username
-	Username string `json:"username,omitempty"`
+	Username Username `json:"username,omitempty"`
 
 	// Optional. IETF language tag of the user's language
 	LanguageCode string `json:"language_code,omitempty"`
@@ -59,7 +77,7 @@ func (userBot *UserBot) UnmarshalJSON(data []byte) error {
 	var bot struct {
 		CanJoinGroups           bool `json:"can_join_groups"`
 		CanReadAllGroupMessages bool `json:"can_read_all_group_messages"`
-		SupportsInlineQueries    bool `json:"supports_inline_queries"`
+		SupportsInlineQueries   bool `json:"supports_inline_queries"`
 	}
 
 	if err := json.Unmarshal(data, &bot); err != nil {
@@ -131,16 +149,45 @@ type Update struct {
 	// Optional. A user changed their answer in a non-anonymous poll.
 	// Bots receive new votes only in polls that were sent by the bot itself.
 	PollAnswer *PollAnswer `json:"poll_answer,omitempty"`
+
+	// Client contains client who received this update.
+	// Use BindClient to propagate binding to child fields.
+	Client *Client `json:"-"`
+}
+
+// BindClient set Update and child struct client.
+func (update *Update) BindClient(client *Client) {
+	update.Client = client
+
+	if update.Message != nil {
+		update.Message.client = client
+	}
+
+	if update.EditedMessage != nil {
+		update.EditedMessage.client = client
+	}
+
+	if update.ChannelPost != nil {
+		update.ChannelPost.client = client
+	}
+
+	if update.EditedChannelPost != nil {
+		update.EditedChannelPost.client = client
+	}
 }
 
 // UnixTime represents Unix timestamp.
 type UnixTime int64
 
-// Duration 
+// Duration
 type Duration int
 
 // ChatID represents ID of Telegram chat.
 type ChatID int64
+
+func (id ChatID) Peer() string {
+	return strconv.FormatInt(int64(id), 10)
+}
 
 // ChatPhoto object represents a chat photo.
 type ChatPhoto struct {
@@ -193,7 +240,7 @@ type ChatPermissions struct {
 	// Optional. True, if the user is allowed to send polls, implies can_send_messages
 	CanSendPolls bool `json:"can_send_polls,omitempty"`
 
-	// Optional. True, if the user is allowed to send animations, games, stickers and use inline bots, 
+	// Optional. True, if the user is allowed to send animations, games, stickers and use inline bots,
 	// implies can_send_media_messages
 	CanSendOtherMessages bool `json:"can_send_other_messages,omitempty"`
 
@@ -224,7 +271,7 @@ type Chat struct {
 	Title string `json:"title,omitempty"`
 
 	// Optional. Username, for private chats, supergroups and channels if available
-	Username string `json:"username,omitempty"`
+	Username Username `json:"username,omitempty"`
 
 	// Optional. First name of the other party in a private chat
 	FirstName string `json:"first_name,omitempty"`
@@ -238,10 +285,10 @@ type Chat struct {
 	// Optional. Description, for groups, supergroups and channel chats. Returned only in getChat.
 	Description string `json:"description,omitempty"`
 
-	// Optional. Chat invite link, for groups, supergroups and channel chats. 
-	// Each administrator in a chat generates their own invite links, 
+	// Optional. Chat invite link, for groups, supergroups and channel chats.
+	// Each administrator in a chat generates their own invite links,
 	// so the bot must first generate the link using exportChatInviteLink.
-	// 
+	//
 	// Returned only in getChat.
 	InviteLink string `json:"invite_link,omitempty"`
 
@@ -444,6 +491,82 @@ type Message struct {
 	// Optional. Optional. Inline keyboard attached to the message.
 	// login_url buttons are represented as ordinary url buttons.
 	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+
+	client *Client
+}
+
+func (msg *Message) ensureClientBind() {
+	if msg.client == nil {
+		panic("client does not bind to message")
+	}
+}
+
+// AnswerText send text answer to this message.
+func (msg *Message) AnswerText(ctx context.Context, text string, opts *TextOpts) (*Message, error) {
+	msg.ensureClientBind()
+	return msg.client.SendText(ctx, msg.Chat.ID, text, opts)
+}
+
+// ReplyText send text reply to this message. This message was quoted.
+func (msg *Message) ReplyText(ctx context.Context, text string, opts *TextOpts) (*Message, error) {
+	if opts == nil {
+		opts = &TextOpts{}
+	}
+
+	opts.ReplyToMessageID = msg.ID
+
+	return msg.AnswerText(ctx, text, opts)
+}
+
+// AnswerPhoto send photo answer to this message.
+func (msg *Message) AnswerPhoto(ctx context.Context, photo *InputFile, opts *PhotoOpts) (*Message, error) {
+	msg.ensureClientBind()
+	return msg.client.SendPhoto(ctx, msg.Chat.ID, photo, opts)
+}
+
+// ReplyText send photo reply to this message. This message was quoted.
+func (msg *Message) ReplyPhoto(ctx context.Context, photo *InputFile, opts *PhotoOpts) (*Message, error) {
+	if opts == nil {
+		opts = &PhotoOpts{}
+	}
+
+	opts.ReplyToMessageID = msg.ID
+
+	return msg.AnswerPhoto(ctx, photo, opts)
+}
+
+// AnswerLocation send location answer to this message.
+func (msg *Message) AnswerLocation(ctx context.Context, location Location, opts *LocationOpts) (*Message, error) {
+	msg.ensureClientBind()
+	return msg.client.SendLocation(ctx, msg.Chat.ID, location, opts)
+}
+
+// EditLiveLocation this method edit live location messages sent by the bot or via the bot (for inline bots).
+// A location can be edited until its live_period expires or
+// editing is explicitly disabled by a call to stopMessageLiveLocation.
+//
+// From options, only ReplyMarkup is usable
+func (msg *Message) EditLiveLocation(ctx context.Context, location Location, opts *LocationOpts) (*Message, error) {
+	msg.ensureClientBind()
+
+	return msg.client.EditLiveLocation(
+		ctx,
+		msg.Chat.ID,
+		msg.ID,
+		location,
+		opts,
+	)
+}
+
+// ReplyLocation send photo reply to this message. This message was quoted.
+func (msg *Message) ReplyLocation(ctx context.Context, location Location, opts *LocationOpts) (*Message, error) {
+	if opts == nil {
+		opts = &LocationOpts{}
+	}
+
+	opts.ReplyToMessageID = msg.ID
+
+	return msg.AnswerLocation(ctx, location, opts)
 }
 
 // Audio object represents an audio file to be treated as music by the Telegram clients.
@@ -546,7 +669,7 @@ type Game struct {
 
 	// Optional. Special entities that appear in text, such as usernames, URLs, bot commands, etc.
 	TextEntities []MessageEntity `json:"text_entities,omitempty"`
-	
+
 	// Optional. Animation that will be displayed in the game message in chats. Upload via BotFather.
 	Animation *Animation `json:"animation,omitempty"`
 }
@@ -792,7 +915,7 @@ type Poll struct {
 // One dice at a time!
 type Dice struct {
 	// Emoji on which the dice throw animation is based
-	Emoji string  `json:"emoji"`
+	Emoji string `json:"emoji"`
 
 	// Value of the dice, 1-6 for currently supported base emoji
 	Value int `json:"value"`
@@ -878,7 +1001,11 @@ type ReplyKeyboardRemove struct {
 
 // InlineKeyboardMarkup object represents an inline keyboard that appears right next to the message it belongs to.
 type InlineKeyboardMarkup struct {
+	// Array of button rows, each represented by an Array of InlineKeyboardButton objects
+	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }
+
+func (markup InlineKeyboardMarkup) isReplyMarkup() {}
 
 // LoginURL object represents a parameter of the inline keyboard button
 // used to automatically authorize a user.
@@ -901,7 +1028,7 @@ type LoginURL struct {
 
 	// Optional. Username of a bot, which will be used for user authorization. See Setting up a bot for more details. If not specified, the current bot's username will be assumed.
 	// The url's domain must be the same as the domain linked with the bot.
-	BotUsername string `json:"bot_username,omitempty"`
+	BotUsername Username `json:"bot_username,omitempty"`
 
 	// Optional. Pass True to request the permission for your bot to send messages to the user.
 	RequestWriteAccess bool `json:"request_write_access,omitempty"`
@@ -914,7 +1041,7 @@ type InlineKeyboardButton struct {
 	Text string `json:"text"`
 
 	// Optional. HTTP or tg:// url to be opened when button is pressed
-	URL string
+	URL string `json:"url"`
 
 	// Optional. An HTTP URL used to automatically authorize the user.
 	// Can be used as a replacement for the Telegram Login Widget.
@@ -926,7 +1053,7 @@ type InlineKeyboardButton struct {
 	// Optional. If set, pressing the button will prompt the user to select one of their chats,
 	// open that chat and insert the bot‘s username and the specified inline query in the input field.
 	// Can be empty, in which case just the bot’s username will be inserted.
-
+	//
 	// Note: This offers an easy way for users to start using your bot
 	// in inline mode when they are currently in a private chat with it.
 	// Especially useful when combined with switch_pm… actions – in this case
@@ -952,7 +1079,7 @@ type InlineKeyboardButton struct {
 }
 
 // Optional. Description of the game that will be launched when the user presses the button.
-type CallbackGame struct {}
+type CallbackGame struct{}
 
 // CallbackQueryID unique ID.
 type CallbackQueryID string
@@ -976,7 +1103,7 @@ type CallbackQuery struct {
 	Message *Message `json:"message,omitempty"`
 
 	// Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
-	InlineMessageID string  `json:"inline_message_id,omitempty"`
+	InlineMessageID string `json:"inline_message_id,omitempty"`
 
 	// Global identifier, uniquely corresponding to the chat
 	// to which the message with the callback button was sent.
@@ -989,4 +1116,30 @@ type CallbackQuery struct {
 
 	// Optional. Short name of a Game to be returned, serves as the unique identifier for the game
 	GameShortName string `json:"game_short_name,omitempty"`
+}
+
+// Contains information about the current status of a webhook.
+type WebhookInfo struct {
+	// Webhook URL, may be empty if webhook is not set up
+	URL string `json:"url"`
+
+	// True, if a custom certificate was provided for webhook certificate checks
+	HasCustomCertificate bool `json:"has_custom_certificate"`
+
+	// Number of updates awaiting delivery
+	PendingUpdateCount int `json:"pending_update_count"`
+
+	// Optional. Unix time for the most recent error that happened when trying to deliver an update via webhook
+	LastErrorDate UnixTime `json:"last_error_date,omitempty"`
+
+	// Optional. Error message in human-readable format
+	// for the most recent error that happened
+	// when trying to deliver an update via webhook
+	LastErrorMessage string `json:"last_error_message,omitempty"`
+
+	// Optional. Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery.
+	MaxConnections int `json:"max_connections,omitempty"`
+
+	// Optional. A list of update types the bot is subscribed to. Defaults to all update types.
+	AllowedUpdates []string `json:"allowed_updates,omitempty"`
 }

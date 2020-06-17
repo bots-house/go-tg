@@ -3,6 +3,8 @@ package tg
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -22,8 +24,8 @@ type Request struct {
 func NewRequest(method string) *Request {
 	return &Request{
 		method: method,
-		args: map[string]string{},
-		files: map[string]*InputFile{},
+		args:   map[string]string{},
+		files:  map[string]*InputFile{},
 	}
 }
 
@@ -60,13 +62,18 @@ func (r *Request) hasInputFiles() bool {
 }
 
 // SetInputFile add file to request
-func (r *Request) SetInputFile(k string, file *InputFile) {
+func (r *Request) SetInputFile(k string, file *InputFile) (addr string) {
 	name := fmt.Sprintf("attachment_%d", r.attachmentIdx)
-	r.SetString(k, "attach://"+name)
+	addr = "attach://" + name
+	if k != "" {
+		r.SetString(k, addr)
+	}
 	r.files[name] = file
 	r.attachmentIdx++
+	return addr
 }
 
+// SetJSON value k.
 func (r *Request) SetJSON(k string, v interface{}) error {
 	data, err := json.Marshal(v)
 	if err != nil {
@@ -76,4 +83,45 @@ func (r *Request) SetJSON(k string, v interface{}) error {
 	r.args[k] = string(data)
 
 	return nil
+}
+
+// SetOptJSON value k.
+func (r *Request) SetOptJSON(k string, v interface{}) error {
+	if v != nil {
+		return r.SetJSON(k, v)
+	}
+	return nil
+}
+
+// SetInt sets request int argument k to value v.
+func (r *Request) SetInt(k string, v int) {
+	r.args[k] = strconv.Itoa(v)
+}
+
+// SetFloat sets request float argument k to value v.
+func (r *Request) SetFloat64(k string, v float64) {
+	r.args[k] = strconv.FormatFloat(v, 'f', -1, 64)
+}
+
+// SetOptInt sets request int argument k to value v, if v is not zero.
+func (r *Request) SetOptInt(k string, v int) {
+	if v != 0 {
+		r.args[k] = strconv.Itoa(v)
+	}
+}
+
+func (r *Request) SetOptDuration(k string, v time.Duration) {
+	if v != 0 {
+		r.args[k] = strconv.Itoa(int(v.Seconds()))
+	}
+}
+
+func (r *Request) SetPeer(k string, v Peer) {
+	r.args[k] = v.Peer()
+}
+
+func (r *Request) SetOptBool(k string, v bool) {
+	if v {
+		r.args[k] = "true"
+	}
 }

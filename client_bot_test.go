@@ -2,22 +2,36 @@ package tg
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testToken = os.Getenv("GO_TG_BOT_TOKEN")
-	testClient = NewClient(testToken)
+	testToken     = os.Getenv("GO_TG_BOT_TOKEN")
+	testChannelID ChatID
+	testClient    = NewClient(testToken)
 )
+
+func init() {
+	testChannelIDString := os.Getenv("GO_TG_TEST_CHANNEL_ID")
+	if testChannelIDString != "" {
+		parsed, err := strconv.ParseInt(testChannelIDString, 10, 64)
+		if err != nil {
+			panic(fmt.Sprintf("test channel id is provided but not number (%s)", testChannelIDString))
+		}
+		testChannelID = ChatID(parsed)
+	}
+}
 
 func skipIfNeed(t *testing.T) {
 	noToken := testToken == ""
 	isShort := testing.Short()
-	if  isShort || noToken {
-		t.Skipf("skip test becouse isShort:%v, noToken:%v", isShort, noToken)
+	if isShort || noToken {
+		t.Skipf("skip test because isShort:%v, noToken:%v", isShort, noToken)
 	}
 }
 
@@ -56,6 +70,5 @@ func TestClient_SetAndGetMyCommands(t *testing.T) {
 			assert.Equal(t, commands, actual)
 		}
 	}
-
 
 }

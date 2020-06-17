@@ -2,6 +2,7 @@ package tg
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,8 +15,17 @@ type InputFile struct {
 
 	// Body of file
 	Body io.Reader
+
+	addr string
 }
 
+func (file *InputFile) setAddr(addr string) {
+	file.addr = addr
+}
+
+func (file *InputFile) MarshalJSON() ([]byte, error) {
+	return json.Marshal(file.addr)
+}
 
 // NewInputFile creates the InputFile from provided name and body reader.
 func NewInputFile(name string, body io.Reader) *InputFile {

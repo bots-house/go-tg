@@ -14,7 +14,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-
 // Doer define interface for mock client calls.
 type Doer interface {
 	// Do HTTP request.
@@ -36,7 +35,6 @@ type Client struct {
 	token string
 	doer  Doer
 }
-
 
 // NewClient creates new Telegram Bot API client with provided token.
 // Additional options can be specified using ClientOption.
@@ -65,7 +63,6 @@ func (client *Client) Do(ctx context.Context, r *Request) (*Response, error) {
 
 	return client.doURLEncoded(ctx, r)
 }
-
 
 func (client *Client) getCallURL(r *Request) string {
 	return fmt.Sprintf("https://api.telegram.org/bot%s/%s", r.token, r.method)
@@ -207,7 +204,12 @@ func (client *Client) Invoke(ctx context.Context, r *Request, dst interface{}) e
 		return errors.Wrap(err, "do request")
 	}
 
-	// TODO: handle error here
+	if !res.OK {
+		return &Error{
+			Code:        res.ErrorCode,
+			Description: res.Description,
+		}
+	}
 
 	if dst != nil {
 		if err := res.UnmarshalResult(dst); err != nil {

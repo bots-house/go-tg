@@ -25,15 +25,15 @@ func TestUserBot_MarshalJSON(t *testing.T) {
 	if assert.NoError(t, err) {
 		assert.Equal(t, UserBot{
 			User: User{
-				ID:           12345,
-				IsBot:        true,
-				FirstName:    "Test Bot",
-				LastName:     "",
-				Username:     "test_bot",
+				ID:        12345,
+				IsBot:     true,
+				FirstName: "Test Bot",
+				LastName:  "",
+				Username:  "test_bot",
 			},
-			CanJoinGroups: true,
+			CanJoinGroups:           true,
 			CanReadAllGroupMessages: true,
-			SupportsInlineQueries: true,
+			SupportsInlineQueries:   true,
 		}, botUser)
 	}
 }

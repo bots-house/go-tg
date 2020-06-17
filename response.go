@@ -1,6 +1,19 @@
 package tg
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// Error represents Telegram Bot API
+type Error struct {
+	Code        int
+	Description string
+}
+
+func (err *Error) Error() string {
+	return fmt.Sprintf("%d: %s", err.Code, err.Description)
+}
 
 // ResponseParameters contains information about why a request was unsuccessful.
 type ResponseParameters struct {

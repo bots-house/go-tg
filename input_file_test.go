@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func TestNewInputFile(t *testing.T) {
 	file := NewInputFile("test.txt", strings.NewReader("test"))
 	if assert.NotNil(t, file) {

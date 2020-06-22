@@ -22,6 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/authz"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 )
 
 // NewBirzzhaAPI creates a new Birzzha instance
@@ -50,6 +51,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
+		}),
+		CatalogGetTopicsHandler: catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
 		}),
 		AuthGetUserHandler: auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
@@ -119,6 +123,8 @@ type BirzzhaAPI struct {
 	AuthCreateTokenHandler auth.CreateTokenHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
 	BotGetBotInfoHandler bot.GetBotInfoHandler
+	// CatalogGetTopicsHandler sets the operation handler for the get topics operation
+	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
 	AuthGetUserHandler auth.GetUserHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
@@ -203,6 +209,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.BotGetBotInfoHandler == nil {
 		unregistered = append(unregistered, "bot.GetBotInfoHandler")
+	}
+	if o.CatalogGetTopicsHandler == nil {
+		unregistered = append(unregistered, "catalog.GetTopicsHandler")
 	}
 	if o.AuthGetUserHandler == nil {
 		unregistered = append(unregistered, "auth.GetUserHandler")
@@ -326,6 +335,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/bot"] = bot.NewGetBotInfo(o.context, o.BotGetBotInfoHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/topics"] = catalog.NewGetTopics(o.context, o.CatalogGetTopicsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

@@ -171,6 +171,31 @@ func init() {
         }
       }
     },
+    "/topics": {
+      "get": {
+        "security": [],
+        "description": "Получить список категорий.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Topics",
+        "operationId": "getTopics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Topic"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/user": {
       "get": {
         "description": "Возвращает информацию о текущем пользователе.",
@@ -342,6 +367,38 @@ func init() {
         }
       }
     },
+    "Topic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "createdAt"
+      ],
+      "properties": {
+        "createdAt": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 3
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный)",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
     "User": {
       "description": "Объект пользователя",
       "type": "object",
@@ -444,6 +501,11 @@ func init() {
       "name": "auth"
     },
     {
+      "description": "🗄В данном разделе собранны методы для работы с каталогом со стороны пользователя.\n\nСуществуют следующие сущности:\n - категория объявления (` + "`" + `topic` + "`" + `)\n - объявление (` + "`" + `lot` + "`" + `)\n",
+      "name": "catalog"
+    },
+    {
+      "description": "Содержит методы для работы с ботом.\n",
       "name": "bot"
     }
   ]
@@ -607,6 +669,31 @@ func init() {
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/topics": {
+      "get": {
+        "security": [],
+        "description": "Получить список категорий.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Topics",
+        "operationId": "getTopics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Topic"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -789,6 +876,38 @@ func init() {
         }
       }
     },
+    "Topic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "createdAt"
+      ],
+      "properties": {
+        "createdAt": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 3
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный)",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
     "User": {
       "description": "Объект пользователя",
       "type": "object",
@@ -912,6 +1031,11 @@ func init() {
       "name": "auth"
     },
     {
+      "description": "🗄В данном разделе собранны методы для работы с каталогом со стороны пользователя.\n\nСуществуют следующие сущности:\n - категория объявления (` + "`" + `topic` + "`" + `)\n - объявление (` + "`" + `lot` + "`" + `)\n",
+      "name": "catalog"
+    },
+    {
+      "description": "Содержит методы для работы с ботом.\n",
       "name": "bot"
     }
   ]

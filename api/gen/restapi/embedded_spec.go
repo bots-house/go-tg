@@ -36,6 +36,23 @@ func init() {
   "basePath": "/v1",
   "paths": {
     "/bot": {
+      "get": {
+        "security": [],
+        "description": "Получение информации о боте\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Get Bot Info",
+        "operationId": "getBotInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BotInfo"
+            }
+          }
+        }
+      },
       "post": {
         "security": [],
         "description": "Обработка события от Telegram. S2S метод.\n",
@@ -56,7 +73,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Created"
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -147,6 +164,31 @@ func init() {
     }
   },
   "definitions": {
+    "BotInfo": {
+      "description": "Информация о боте",
+      "required": [
+        "name",
+        "username",
+        "auth_deep_link"
+      ],
+      "properties": {
+        "auth_deep_link": {
+          "description": "Значение параметра ` + "`" + `?start=` + "`" + ` который нужно передать при формировании URL для авторизации через ` + "`" + `LoginUrl` + "`" + `.",
+          "type": "string",
+          "x-order": 2
+        },
+        "name": {
+          "description": "Имя бота",
+          "type": "string",
+          "x-order": 0
+        },
+        "username": {
+          "description": "Юзернейм бота",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "Error": {
       "type": "object",
       "required": [
@@ -381,6 +423,23 @@ func init() {
   "basePath": "/v1",
   "paths": {
     "/bot": {
+      "get": {
+        "security": [],
+        "description": "Получение информации о боте\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Get Bot Info",
+        "operationId": "getBotInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BotInfo"
+            }
+          }
+        }
+      },
       "post": {
         "security": [],
         "description": "Обработка события от Telegram. S2S метод.\n",
@@ -401,7 +460,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Created"
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -500,6 +559,31 @@ func init() {
     }
   },
   "definitions": {
+    "BotInfo": {
+      "description": "Информация о боте",
+      "required": [
+        "name",
+        "username",
+        "auth_deep_link"
+      ],
+      "properties": {
+        "auth_deep_link": {
+          "description": "Значение параметра ` + "`" + `?start=` + "`" + ` который нужно передать при формировании URL для авторизации через ` + "`" + `LoginUrl` + "`" + `.",
+          "type": "string",
+          "x-order": 2
+        },
+        "name": {
+          "description": "Имя бота",
+          "type": "string",
+          "x-order": 0
+        },
+        "username": {
+          "description": "Юзернейм бота",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "Error": {
       "type": "object",
       "required": [

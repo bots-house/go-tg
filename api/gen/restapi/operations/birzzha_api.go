@@ -48,6 +48,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AuthCreateTokenHandler: auth.CreateTokenHandlerFunc(func(params auth.CreateTokenParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.CreateToken has not yet been implemented")
 		}),
+		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
+			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
+		}),
 		AuthGetUserHandler: auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
 		}),
@@ -111,6 +114,8 @@ type BirzzhaAPI struct {
 
 	// AuthCreateTokenHandler sets the operation handler for the create token operation
 	AuthCreateTokenHandler auth.CreateTokenHandler
+	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
+	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
 	AuthGetUserHandler auth.GetUserHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
@@ -190,6 +195,9 @@ func (o *BirzzhaAPI) Validate() error {
 
 	if o.AuthCreateTokenHandler == nil {
 		unregistered = append(unregistered, "auth.CreateTokenHandler")
+	}
+	if o.BotGetBotInfoHandler == nil {
+		unregistered = append(unregistered, "bot.GetBotInfoHandler")
 	}
 	if o.AuthGetUserHandler == nil {
 		unregistered = append(unregistered, "auth.GetUserHandler")
@@ -306,6 +314,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/token"] = auth.NewCreateToken(o.context, o.AuthCreateTokenHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/bot"] = bot.NewGetBotInfo(o.context, o.BotGetBotInfoHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

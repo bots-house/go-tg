@@ -14,7 +14,7 @@ import (
 // HandleUpdateOKCode is the HTTP code returned for type HandleUpdateOK
 const HandleUpdateOKCode int = 200
 
-/*HandleUpdateOK Created
+/*HandleUpdateOK OK
 
 swagger:response handleUpdateOK
 */

@@ -105,6 +105,19 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   /bot:
+    get:
+      summary: Get Bot Info
+      operationId: getBotInfo
+      description: |
+        Получение информации о боте
+      tags: [bot]
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/BotInfo"
+
     post:
       summary: Handle Update
       operationId: handleUpdate
@@ -120,7 +133,7 @@ paths:
             $ref: "#/definitions/TelegramUpdate"
       responses:
         200:
-          description: Created
+          description: OK
         401:
           description: Unauthorized
         500:
@@ -245,3 +258,20 @@ definitions:
         description: JWT-токен для доступа к API.
       user:
         $ref: "#/definitions/User"
+
+  BotInfo:
+    description: Информация о боте
+    required:
+      - name
+      - username
+      - auth_deep_link
+    properties:
+      name:
+        type: string
+        description: Имя бота
+      username:
+        type: string
+        description: Юзернейм бота
+      auth_deep_link:
+        type: string
+        description: Значение параметра `?start=` который нужно передать при формировании URL для авторизации через `LoginUrl`.

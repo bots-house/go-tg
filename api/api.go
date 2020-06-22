@@ -49,6 +49,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AuthGetUserHandler = authops.GetUserHandlerFunc(h.getUser)
 
 	api.BotHandleUpdateHandler = botops.HandleUpdateHandlerFunc(h.handleBotUpdate)
+	api.BotGetBotInfoHandler = botops.GetBotInfoHandlerFunc(h.getBotInfo)
 }
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {

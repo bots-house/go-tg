@@ -32,6 +32,10 @@ func New(client *tgbotapi.BotAPI, authSrv *auth.Service) *Bot {
 	return bot
 }
 
+func (bot *Bot) Client() *tgbotapi.BotAPI {
+	return bot.client
+}
+
 func (bot *Bot) SetWebhookIfNeed(ctx context.Context, domain string, path string) error {
 	webhook, err := bot.client.GetWebhookInfo()
 	if err != nil {

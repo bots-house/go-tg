@@ -1,0 +1,243 @@
+swagger: "2.0"
+
+info:
+  version: v1
+  title: Birzzha
+
+host: localhost:8000
+basePath: /v1
+schemes:
+  - http
+
+tags:
+  - name: auth
+    description: |
+      Авторизация пользователя.
+      Токен может быть передан через заголовок (`X-Token`) или query параметр (`token`).
+      Если токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.
+      Токены живут в течении 24 часов.
+      Время на передачу данных с виджета 1 минута.
+  - name: bot
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+securityDefinitions:
+  TokenHeader:
+    type: apiKey
+    in: header
+    name: X-Token
+  TokenQuery:
+    type: apiKey
+    in: query
+    name: token
+
+security:
+  - TokenHeader: []
+  - TokenQuery: []
+
+parameters:
+  RequestID:
+    in: header
+    name: X-Request-Id
+    type: string
+    format: uuid
+    required: false
+    description: Уникальный ID запроса. Используется для трейсинга.
+
+paths:
+  /user:
+    get:
+      summary: Get Current User
+      operationId: getUser
+      tags: [auth]
+      parameters:
+        - $ref: "#/parameters/RequestID"
+      description: Возвращает информацию о текущем пользователе.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /token:
+    post:
+      summary: Create Token
+      operationId: createToken
+      tags: [auth]
+      parameters:
+        - $ref: "#/parameters/RequestID"
+        - in: body
+          name: payload
+          schema:
+            $ref: "#/definitions/InputAuth"
+      description: |
+        Получение JWT-токена на основе данных авторизации от Telegram,
+        полученных c [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).
+        Токен действителен в течении 24 часов, с момента создания.
+
+        Возможные ошибки:
+          - `telegram_widget_info_expired` - если с момента получение данных с виджета прошло более 1 минуты;
+          - `telegram_widget_info_invalid` - если подпись данных (`hash`) невалидна;
+      security: []
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/Token"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  /bot:
+    post:
+      summary: Bot Webhook
+      operationId: handleBotUpdate
+      security: []
+      parameters:
+        - in: body
+          name: payload
+          required: true
+          schema:
+            $ref: "#/definitions/TelegramUpdate"
+      responses:
+        200:
+          description: Created
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+definitions:
+  User:
+    type: object
+    description: Объект пользователя
+    required:
+      - id
+      - telegram
+      - first_name
+      - last_name
+      - avatar
+      - is_admin
+      - joined_at
+    properties:
+      id:
+        type: integer
+        description: Уникальный ID пользователя в Birzzha.
+      telegram:
+        type: object
+        description: Информация о пользователе из Telegram
+        required:
+          - id
+          - username
+        properties:
+          id:
+            type: integer
+            description: ID пользователя в Telegram
+          username:
+            type: string
+            description: Username пользователя в Telegram
+      first_name:
+        type: string
+        description: Имя пользователя в Telegram
+      last_name:
+        type: string
+        description: Фамилия пользователя в Telegram (может быть `null`)
+      avatar:
+        type: string
+        description: Path to avatar
+      is_admin:
+        type: boolean
+        description: True, если пользователь админ Birzzha.
+      joined_at:
+        type: integer
+        description: Дата и время регистрации на бирже, в Unix-time.
+
+  Error:
+    type: object
+    required:
+      - code
+      - description
+    properties:
+      code:
+        type: string
+        enum: [test]
+        description: Код ошибки
+      description:
+        type: string
+        description: Описание ошибки
+
+  Identity:
+    x-go-type:
+      import:
+        package: "github.com/bots-house/birzzha/api/authz"
+        alias: authz
+      type: Identity
+
+  TelegramUpdate:
+    x-go-type:
+      import:
+        package: "github.com/go-telegram-bot-api/telegram-bot-api"
+        alias: tgbotapi
+      type: Update
+
+  InputAuth:
+    description: Данный полученные с [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).
+    required:
+      - id
+      - first_name
+      - auth_date
+      - hash
+    properties:
+      id:
+        type: integer
+        description: ID пользователя в Telegram
+        example: 492933123
+      first_name:
+        type: string
+        description: Имя пользователя в Telegram
+        example: Sasha
+      last_name:
+        type: string
+        description: Фамилия пользователя в Telegram
+        example: Savchuk
+      username:
+        type: string
+        description: Username пользователя в Telegram
+      photo_url:
+        type: string
+        format: url
+        description: Ссылка на авартку пользователя.
+      auth_date:
+        type: integer
+        format: int64
+        description: Дата авторизации пользователя (UNIX)
+      hash:
+        type: string
+        description: Подписи к данным.
+
+  Token:
+    description: Токен для доступа к API.
+    required:
+      - token
+      - user
+    properties:
+      token:
+        type: string
+        description: JWT-токен для доступа к API.
+      user:
+        $ref: "#/definitions/User"

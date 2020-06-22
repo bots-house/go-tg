@@ -1,0 +1,19 @@
+version: "3.0"
+
+volumes:
+  postgres:
+
+services:
+  postgres:
+    image: postgres:12
+
+    ports:
+      - "5432:5432"
+
+    environment:
+      POSTGRES_USER: brz
+      POSTGRES_PASSWORD: brz
+      POSTGRES_DB: brz
+
+    volumes:
+      - postgres:/var/lib/postgresql/data

@@ -15,6 +15,7 @@ generate-dal: .bin/sqlboiler .bin/sqlboiler-psql
 	.bin/sqlboiler .bin/sqlboiler-psql
 
 generate-api: .bin/swagger
+	rm -r api/gen && mkdir api/gen
 	cd api && mkdir -p gen && swagger generate server --quiet --spec swagger.yml --exclude-main --keep-spec-order --target=gen --principal=authz.Identity
 
 .bin/sqlboiler .bin/sqlboiler-psql:

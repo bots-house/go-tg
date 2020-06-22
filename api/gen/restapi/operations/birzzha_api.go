@@ -21,6 +21,7 @@ import (
 
 	"github.com/bots-house/birzzha/api/authz"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 )
 
 // NewBirzzhaAPI creates a new Birzzha instance
@@ -50,8 +51,8 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AuthGetUserHandler: auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
 		}),
-		HandleBotUpdateHandler: HandleBotUpdateHandlerFunc(func(params HandleBotUpdateParams) middleware.Responder {
-			return middleware.NotImplemented("operation HandleBotUpdate has not yet been implemented")
+		BotHandleUpdateHandler: bot.HandleUpdateHandlerFunc(func(params bot.HandleUpdateParams) middleware.Responder {
+			return middleware.NotImplemented("operation bot.HandleUpdate has not yet been implemented")
 		}),
 
 		// Applies when the "X-Token" header is set
@@ -112,8 +113,8 @@ type BirzzhaAPI struct {
 	AuthCreateTokenHandler auth.CreateTokenHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
 	AuthGetUserHandler auth.GetUserHandler
-	// HandleBotUpdateHandler sets the operation handler for the handle bot update operation
-	HandleBotUpdateHandler HandleBotUpdateHandler
+	// BotHandleUpdateHandler sets the operation handler for the handle update operation
+	BotHandleUpdateHandler bot.HandleUpdateHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -193,8 +194,8 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AuthGetUserHandler == nil {
 		unregistered = append(unregistered, "auth.GetUserHandler")
 	}
-	if o.HandleBotUpdateHandler == nil {
-		unregistered = append(unregistered, "HandleBotUpdateHandler")
+	if o.BotHandleUpdateHandler == nil {
+		unregistered = append(unregistered, "bot.HandleUpdateHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -312,7 +313,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/bot"] = NewHandleBotUpdate(o.context, o.HandleBotUpdateHandler)
+	o.handlers["POST"]["/bot"] = bot.NewHandleUpdate(o.context, o.BotHandleUpdateHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

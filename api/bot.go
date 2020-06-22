@@ -1,18 +1,19 @@
 package api
 
 import (
-	"github.com/bots-house/birzzha/api/gen/restapi/operations"
+	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/tomasen/realip"
 )
 
-func (h *Handler) handleBotUpdate(params operations.HandleBotUpdateParams) middleware.Responder {
+func (h *Handler) handleBotUpdate(params botops.HandleUpdateParams) middleware.Responder {
 	ip := realip.FromRequest(params.HTTPRequest)
 
 	if !tg.IsAllowedIP(ip) {
-		return operations.NewHandleBotUpdateUnauthorized()
+		return botops.NewHandleUpdateUnauthorized()
 	}
 
 	ctx := params.HTTPRequest.Context()
@@ -21,8 +22,8 @@ func (h *Handler) handleBotUpdate(params operations.HandleBotUpdateParams) middl
 
 	if err := h.Bot.HandleUpdate(ctx, update); err != nil {
 		log.Error(ctx, "handle update failed", "update_id", update.UpdateID, "err", err)
-		return operations.NewHandleBotUpdateInternalServerError()
+		return botops.NewHandleUpdateInternalServerError()
 	}
 
-	return operations.NewHandleBotUpdateOK()
+	return botops.NewHandleUpdateOK()
 }

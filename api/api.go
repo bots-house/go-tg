@@ -6,15 +6,17 @@ import (
 	"github.com/bots-house/birzzha/api/authz"
 	"github.com/bots-house/birzzha/api/gen/restapi"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
-	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
+	authops "github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
+	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+
 	"github.com/bots-house/birzzha/bot"
-	authsrv "github.com/bots-house/birzzha/service/auth"
+	"github.com/bots-house/birzzha/service/auth"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
 )
 
 type Handler struct {
-	Auth *authsrv.Service
+	Auth *auth.Service
 	Bot  *bot.Bot
 }
 
@@ -43,10 +45,10 @@ func (h Handler) setupAuth(api *operations.BirzzhaAPI) {
 }
 
 func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
-	api.AuthCreateTokenHandler = auth.CreateTokenHandlerFunc(h.createToken)
-	api.AuthGetUserHandler = auth.GetUserHandlerFunc(h.getUser)
+	api.AuthCreateTokenHandler = authops.CreateTokenHandlerFunc(h.createToken)
+	api.AuthGetUserHandler = authops.GetUserHandlerFunc(h.getUser)
 
-	api.HandleBotUpdateHandler = operations.HandleBotUpdateHandlerFunc(h.handleBotUpdate)
+	api.BotHandleUpdateHandler = botops.HandleUpdateHandlerFunc(h.handleBotUpdate)
 }
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {

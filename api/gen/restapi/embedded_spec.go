@@ -38,8 +38,12 @@ func init() {
     "/bot": {
       "post": {
         "security": [],
-        "summary": "Bot Webhook",
-        "operationId": "handleBotUpdate",
+        "description": "Обработка события от Telegram. S2S метод.\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Handle Update",
+        "operationId": "handleUpdate",
         "parameters": [
           {
             "name": "payload",
@@ -379,8 +383,12 @@ func init() {
     "/bot": {
       "post": {
         "security": [],
-        "summary": "Bot Webhook",
-        "operationId": "handleBotUpdate",
+        "description": "Обработка события от Telegram. S2S метод.\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Handle Update",
+        "operationId": "handleUpdate",
         "parameters": [
           {
             "name": "payload",

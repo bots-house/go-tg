@@ -13,9 +13,10 @@ import (
 	"github.com/bots-house/birzzha/api/authz"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml861842504 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml460701685 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -61,6 +62,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AuthGetUserHandler == nil {
 		api.AuthGetUserHandler = auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
+		})
+	}
+	if api.BotHandleUpdateHandler == nil {
+		api.BotHandleUpdateHandler = bot.HandleUpdateHandlerFunc(func(params bot.HandleUpdateParams) middleware.Responder {
+			return middleware.NotImplemented("operation bot.HandleUpdate has not yet been implemented")
 		})
 	}
 

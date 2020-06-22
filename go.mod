@@ -21,6 +21,7 @@ require (
 	github.com/go-openapi/validate v0.19.10
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
+	github.com/gosimple/slug v1.9.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.7.0

@@ -14,6 +14,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/service/auth"
+	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/bots-house/birzzha/store/postgres"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/kelseyhightower/envconfig"
@@ -91,6 +92,10 @@ func run(ctx context.Context) error {
 		Bot:     tgClient,
 	}
 
+	catalogSrv := &catalog.Service{
+		Topic: pg.Topic,
+	}
+
 	bot := bot.New(tgClient, authSrv)
 
 	if err := bot.SetWebhookIfNeed(ctx, cfg.BotWebhookDomain, cfg.BotWebhookPath); err != nil {
@@ -98,8 +103,9 @@ func run(ctx context.Context) error {
 	}
 
 	handler := api.Handler{
-		Auth: authSrv,
-		Bot:  bot,
+		Auth:    authSrv,
+		Bot:     bot,
+		Catalog: catalogSrv,
 	}
 
 	server := newServer(cfg, handler.Make())

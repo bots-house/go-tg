@@ -36,7 +36,17 @@ tags:
       | Staging | dev.birzzha.me |
       | Production | birzzha.me  |
 
+  - name: catalog
+    description: |
+      🗄В данном разделе собранны методы для работы с каталогом со стороны пользователя.
+
+      Существуют следующие сущности:
+       - категория объявления (`topic`)
+       - объявление (`lot`)
+
   - name: bot
+    description: |
+      Содержит методы для работы с ботом.
 
 consumes:
   - application/json
@@ -188,7 +198,46 @@ paths:
         500:
           description: Internal Server Error
 
+  /topics:
+    get:
+      summary: Get Topics
+      operationId: getTopics
+      description: Получить список категорий.
+      tags: [catalog]
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Topic"
+        500:
+          description: Internal Server Error
+
 definitions:
+  Topic:
+    type: object
+    description: Категория лота
+    required:
+      - id
+      - name
+      - slug
+      - created_at
+    properties:
+      id:
+        type: integer
+        description: Уникальный ID категории.
+      name:
+        type: string
+        description: Название категории на русском.
+      slug:
+        type: string
+        description: Slug (уникальный)
+      created_at:
+        type: integer
+        description: Дата создания
+
   User:
     type: object
     description: Объект пользователя

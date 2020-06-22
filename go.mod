@@ -1,3 +1,4 @@
+// +heroku goVersion go1.14.2
 module github.com/bots-house/birzzha
 
 go 1.14

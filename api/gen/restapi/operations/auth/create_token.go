@@ -29,7 +29,7 @@ func NewCreateToken(ctx *middleware.Context, handler CreateTokenHandler) *Create
 	return &CreateToken{Context: ctx, Handler: handler}
 }
 
-/*CreateToken swagger:route POST /token auth createToken
+/*CreateToken swagger:route POST /auth auth createToken
 
 Create Token
 

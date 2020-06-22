@@ -8,11 +8,13 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
 	authops "github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+	"github.com/go-http-utils/etag"
 
 	"github.com/bots-house/birzzha/bot"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
 )
 
 type Handler struct {
@@ -47,9 +49,18 @@ func (h Handler) setupAuth(api *operations.BirzzhaAPI) {
 func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AuthCreateTokenHandler = authops.CreateTokenHandlerFunc(h.createToken)
 	api.AuthGetUserHandler = authops.GetUserHandlerFunc(h.getUser)
+	api.AuthLoginViaBotHandler = authops.LoginViaBotHandlerFunc(h.loginViaBot)
 
 	api.BotHandleUpdateHandler = botops.HandleUpdateHandlerFunc(h.handleBotUpdate)
 	api.BotGetBotInfoHandler = botops.GetBotInfoHandlerFunc(h.getBotInfo)
+}
+
+func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
+	etagMiddleware := middleware.Builder(func(handler http.Handler) http.Handler {
+		return etag.Handler(handler, false)
+	})
+
+	api.AddMiddlewareFor(http.MethodGet, "/bot", etagMiddleware)
 }
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {
@@ -64,6 +75,7 @@ func (h Handler) Make() http.Handler {
 
 	h.setupProducersAndConsumers(api)
 	h.setupHandlers(api)
+	h.setupMiddleware(api)
 	h.setupAuth(api)
 
 	return h.wrapMiddleware(api.Serve(nil))

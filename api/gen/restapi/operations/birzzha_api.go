@@ -57,6 +57,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		BotHandleUpdateHandler: bot.HandleUpdateHandlerFunc(func(params bot.HandleUpdateParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.HandleUpdate has not yet been implemented")
 		}),
+		AuthLoginViaBotHandler: auth.LoginViaBotHandlerFunc(func(params auth.LoginViaBotParams) middleware.Responder {
+			return middleware.NotImplemented("operation auth.LoginViaBot has not yet been implemented")
+		}),
 
 		// Applies when the "X-Token" header is set
 		TokenHeaderAuth: func(token string) (*authz.Identity, error) {
@@ -120,6 +123,8 @@ type BirzzhaAPI struct {
 	AuthGetUserHandler auth.GetUserHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
 	BotHandleUpdateHandler bot.HandleUpdateHandler
+	// AuthLoginViaBotHandler sets the operation handler for the login via bot operation
+	AuthLoginViaBotHandler auth.LoginViaBotHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -204,6 +209,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.BotHandleUpdateHandler == nil {
 		unregistered = append(unregistered, "bot.HandleUpdateHandler")
+	}
+	if o.AuthLoginViaBotHandler == nil {
+		unregistered = append(unregistered, "auth.LoginViaBotHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -313,7 +321,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/token"] = auth.NewCreateToken(o.context, o.AuthCreateTokenHandler)
+	o.handlers["POST"]["/auth"] = auth.NewCreateToken(o.context, o.AuthCreateTokenHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -326,6 +334,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/bot"] = bot.NewHandleUpdate(o.context, o.BotHandleUpdateHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/auth/bot"] = auth.NewLoginViaBot(o.context, o.AuthLoginViaBotHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

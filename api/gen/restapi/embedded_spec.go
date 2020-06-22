@@ -35,56 +35,7 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
-    "/bot": {
-      "get": {
-        "security": [],
-        "description": "Получение информации о боте\n",
-        "tags": [
-          "bot"
-        ],
-        "summary": "Get Bot Info",
-        "operationId": "getBotInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/BotInfo"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [],
-        "description": "Обработка события от Telegram. S2S метод.\n",
-        "tags": [
-          "bot"
-        ],
-        "summary": "Handle Update",
-        "operationId": "handleUpdate",
-        "parameters": [
-          {
-            "name": "payload",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/TelegramUpdate"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/token": {
+    "/auth": {
       "post": {
         "security": [],
         "description": "Получение JWT-токена на основе данных авторизации от Telegram,\nполученных c [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).\nТокен действителен в течении 24 часов, с момента создания.\n\nВозможные ошибки:\n  - ` + "`" + `telegram_widget_info_expired` + "`" + ` - если с момента получение данных с виджета прошло более 1 минуты;\n  - ` + "`" + `telegram_widget_info_invalid` + "`" + ` - если подпись данных (` + "`" + `hash` + "`" + `) невалидна;\n",
@@ -123,6 +74,99 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Error"
             }
+          }
+        }
+      }
+    },
+    "/auth/bot": {
+      "get": {
+        "security": [],
+        "description": "При переходе по этой ссылке пользователь будет перенаправлен в Telegram. Telegram бот перенаправит его на ` + "`" + `callback_url` + "`" + ` вместе с данными [LoginUrl](https://core.telegram.org/bots/api/#loginurl).",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login via Bot",
+        "operationId": "loginViaBot",
+        "parameters": [
+          {
+            "$ref": "#/parameters/RequestID"
+          },
+          {
+            "type": "string",
+            "format": "url",
+            "description": "URL для возврата",
+            "name": "callback_url",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Found",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bot": {
+      "get": {
+        "security": [],
+        "description": "Получение информации о боте\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Get Bot Info",
+        "operationId": "getBotInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BotInfo"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [],
+        "description": "Обработка события от Telegram. S2S метод.\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Handle Update",
+        "operationId": "handleUpdate",
+        "parameters": [
+          {
+            "$ref": "#/parameters/RequestID"
+          },
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TelegramUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -275,7 +319,7 @@ func init() {
       "x-go-type": {
         "import": {
           "alias": "tgbotapi",
-          "package": "github.com/go-telegram-bot-api/telegram-bot-api"
+          "package": "github.com/bots-house/telegram-bot-api"
         },
         "type": "Update"
       }
@@ -396,7 +440,7 @@ func init() {
   ],
   "tags": [
     {
-      "description": "Авторизация пользователя.\nТокен может быть передан через заголовок (` + "`" + `X-Token` + "`" + `) или query параметр (` + "`" + `token` + "`" + `).\nЕсли токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.\nТокены живут в течении 24 часов.\nВремя на передачу данных с виджета 1 минута.\n",
+      "description": "Авторизация пользователя.\nТокен может быть передан через заголовок (` + "`" + `X-Token` + "`" + `) или query параметр (` + "`" + `token` + "`" + `).\nЕсли токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.\nТокены живут в течении 24 часов.\nВремя на передачу данных с виджета 1 минута.\n\n### 🔑 Авторизация через Telegram Login Widget\n\nДля авторизации данным способом нужен @username бота, для его получения нужно сделать запрос на ` + "`" + `GET /v1/bot` + "`" + `.\nПолучив данные от Telegram их нужно отправить на ` + "`" + `POST /v1/auth` + "`" + `.\n\n### 🤖 Авторизация через бота\n\n1. Фронтенд перенаправляет пользователя на ` + "`" + `/v1/auth/bot` + "`" + ` указывая ` + "`" + `callback_url` + "`" + `, на который пользователь должен будет вернутся;\n2. API перенаправляет пользователя в бота прокидывая deep-link параметр;\n3. Бот перенаправляет пользователя ` + "`" + `callback_url` + "`" + ` прокидывая параметры Login Widget в query string;\n\nВ качестве хоста в ` + "`" + `callback_url` + "`" + ` может выступать только некоторые домены, связанно ограничение с лимитами Telegram.\n\n| Env | Host |\n|:----|:-----|\n| Staging | dev.birzzha.me |\n| Production | birzzha.me  |\n",
       "name": "auth"
     },
     {
@@ -422,56 +466,7 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
-    "/bot": {
-      "get": {
-        "security": [],
-        "description": "Получение информации о боте\n",
-        "tags": [
-          "bot"
-        ],
-        "summary": "Get Bot Info",
-        "operationId": "getBotInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/BotInfo"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [],
-        "description": "Обработка события от Telegram. S2S метод.\n",
-        "tags": [
-          "bot"
-        ],
-        "summary": "Handle Update",
-        "operationId": "handleUpdate",
-        "parameters": [
-          {
-            "name": "payload",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/TelegramUpdate"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/token": {
+    "/auth": {
       "post": {
         "security": [],
         "description": "Получение JWT-токена на основе данных авторизации от Telegram,\nполученных c [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).\nТокен действителен в течении 24 часов, с момента создания.\n\nВозможные ошибки:\n  - ` + "`" + `telegram_widget_info_expired` + "`" + ` - если с момента получение данных с виджета прошло более 1 минуты;\n  - ` + "`" + `telegram_widget_info_invalid` + "`" + ` - если подпись данных (` + "`" + `hash` + "`" + `) невалидна;\n",
@@ -514,6 +509,107 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Error"
             }
+          }
+        }
+      }
+    },
+    "/auth/bot": {
+      "get": {
+        "security": [],
+        "description": "При переходе по этой ссылке пользователь будет перенаправлен в Telegram. Telegram бот перенаправит его на ` + "`" + `callback_url` + "`" + ` вместе с данными [LoginUrl](https://core.telegram.org/bots/api/#loginurl).",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login via Bot",
+        "operationId": "loginViaBot",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Уникальный ID запроса. Используется для трейсинга.",
+            "name": "X-Request-Id",
+            "in": "header"
+          },
+          {
+            "type": "string",
+            "format": "url",
+            "description": "URL для возврата",
+            "name": "callback_url",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Found",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bot": {
+      "get": {
+        "security": [],
+        "description": "Получение информации о боте\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Get Bot Info",
+        "operationId": "getBotInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BotInfo"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [],
+        "description": "Обработка события от Telegram. S2S метод.\n",
+        "tags": [
+          "bot"
+        ],
+        "summary": "Handle Update",
+        "operationId": "handleUpdate",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Уникальный ID запроса. Используется для трейсинга.",
+            "name": "X-Request-Id",
+            "in": "header"
+          },
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TelegramUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -670,7 +766,7 @@ func init() {
       "x-go-type": {
         "import": {
           "alias": "tgbotapi",
-          "package": "github.com/go-telegram-bot-api/telegram-bot-api"
+          "package": "github.com/bots-house/telegram-bot-api"
         },
         "type": "Update"
       }
@@ -812,7 +908,7 @@ func init() {
   ],
   "tags": [
     {
-      "description": "Авторизация пользователя.\nТокен может быть передан через заголовок (` + "`" + `X-Token` + "`" + `) или query параметр (` + "`" + `token` + "`" + `).\nЕсли токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.\nТокены живут в течении 24 часов.\nВремя на передачу данных с виджета 1 минута.\n",
+      "description": "Авторизация пользователя.\nТокен может быть передан через заголовок (` + "`" + `X-Token` + "`" + `) или query параметр (` + "`" + `token` + "`" + `).\nЕсли токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.\nТокены живут в течении 24 часов.\nВремя на передачу данных с виджета 1 минута.\n\n### 🔑 Авторизация через Telegram Login Widget\n\nДля авторизации данным способом нужен @username бота, для его получения нужно сделать запрос на ` + "`" + `GET /v1/bot` + "`" + `.\nПолучив данные от Telegram их нужно отправить на ` + "`" + `POST /v1/auth` + "`" + `.\n\n### 🤖 Авторизация через бота\n\n1. Фронтенд перенаправляет пользователя на ` + "`" + `/v1/auth/bot` + "`" + ` указывая ` + "`" + `callback_url` + "`" + `, на который пользователь должен будет вернутся;\n2. API перенаправляет пользователя в бота прокидывая deep-link параметр;\n3. Бот перенаправляет пользователя ` + "`" + `callback_url` + "`" + ` прокидывая параметры Login Widget в query string;\n\nВ качестве хоста в ` + "`" + `callback_url` + "`" + ` может выступать только некоторые домены, связанно ограничение с лимитами Telegram.\n\n| Env | Host |\n|:----|:-----|\n| Staging | dev.birzzha.me |\n| Production | birzzha.me  |\n",
       "name": "auth"
     },
     {

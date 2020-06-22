@@ -15,7 +15,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/bots-house/birzzha/store/postgres"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/pkg/errors"
@@ -88,6 +88,7 @@ func run(ctx context.Context) error {
 		},
 		Clock:   clock.New(),
 		Storage: strg,
+		Bot:     tgClient,
 	}
 
 	bot := bot.New(tgClient, authSrv)

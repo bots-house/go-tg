@@ -3,15 +3,19 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/benbjohnson/clock"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/cristalhq/jwt"
 	"github.com/pkg/errors"
+	"github.com/rs/xid"
 	"github.com/volatiletech/null/v8"
 )
 
@@ -24,6 +28,10 @@ type Service struct {
 	Config    Config
 	Clock     clock.Clock
 	Storage   storage.Storage
+	Bot       *tgbotapi.BotAPI
+
+	botLogins     map[string]*LoginViaBotInfo
+	botLoginsLock sync.Mutex
 }
 
 var (
@@ -182,4 +190,54 @@ func (srv *Service) AuthorizeInBot(ctx context.Context, info *TelegramUserInfo) 
 	}
 
 	return user, nil
+}
+
+type LoginViaBotInfo struct {
+	CallbackURL string
+
+	createdAt time.Time
+}
+
+func (srv *Service) saveLoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
+	id := xid.New().String()
+
+	info.createdAt = time.Now()
+
+	srv.botLoginsLock.Lock()
+	if srv.botLogins == nil {
+		srv.botLogins = make(map[string]*LoginViaBotInfo)
+	}
+	srv.botLogins[id] = info
+	srv.botLoginsLock.Unlock()
+
+	return id, nil
+}
+
+func (srv *Service) LoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
+	id, err := srv.saveLoginViaBot(ctx, info)
+	if err != nil {
+		return "", errors.Wrap(err, "save login via bot")
+	}
+	url := fmt.Sprintf("https://t.me/%s?start=login_%s", srv.Bot.Self.UserName, id)
+
+	return url, nil
+}
+
+var ErrBotLoginNotFound = errors.New("bot login not found")
+
+func (srv *Service) PopLoginViaBot(ctx context.Context, id string) (*LoginViaBotInfo, error) {
+	srv.botLoginsLock.Lock()
+	defer srv.botLoginsLock.Unlock()
+
+	v, ok := srv.botLogins[id]
+	if !ok {
+		return nil, ErrBotLoginNotFound
+	}
+
+	if srv.Clock.Since(v.createdAt) > time.Minute*3 {
+		delete(srv.botLogins, id)
+		return nil, ErrBotLoginNotFound
+	}
+
+	return v, nil
 }

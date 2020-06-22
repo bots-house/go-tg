@@ -8,8 +8,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/auth"
-	"github.com/davecgh/go-spew/spew"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
 
 	"github.com/pkg/errors"
 )
@@ -73,7 +72,13 @@ func (bot *Bot) initHandler() {
 }
 
 func (bot *Bot) onUpdate(ctx context.Context, update *tgbotapi.Update) error {
-	spew.Dump(update)
+
+	if msg := update.Message; msg != nil {
+		switch msg.Command() {
+		case "start":
+			return bot.onStart(ctx, msg)
+		}
+	}
 
 	return nil
 }

@@ -38,3 +38,16 @@ func (h *Handler) createToken(params authops.CreateTokenParams) middleware.Respo
 func (h *Handler) getUser(params authops.GetUserParams, identity *authz.Identity) middleware.Responder {
 	return authops.NewGetUserOK().WithPayload(models.NewUser(identity.User))
 }
+
+func (h *Handler) loginViaBot(params authops.LoginViaBotParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	url, err := h.Auth.LoginViaBot(ctx, &auth.LoginViaBotInfo{
+		CallbackURL: params.CallbackURL,
+	})
+	if err != nil {
+		return authops.NewLoginViaBotInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return authops.NewLoginViaBotFound().WithLocation(url)
+}

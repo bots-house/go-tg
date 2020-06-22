@@ -17,6 +17,25 @@ tags:
       Если токен невалидный API вернет ответ  **403 Forbidden** или **401 Unauthorized**.
       Токены живут в течении 24 часов.
       Время на передачу данных с виджета 1 минута.
+
+      ### 🔑 Авторизация через Telegram Login Widget
+
+      Для авторизации данным способом нужен @username бота, для его получения нужно сделать запрос на `GET /v1/bot`.
+      Получив данные от Telegram их нужно отправить на `POST /v1/auth`.
+
+      ### 🤖 Авторизация через бота
+
+      1. Фронтенд перенаправляет пользователя на `/v1/auth/bot` указывая `callback_url`, на который пользователь должен будет вернутся;
+      2. API перенаправляет пользователя в бота прокидывая deep-link параметр;
+      3. Бот перенаправляет пользователя `callback_url` прокидывая параметры Login Widget в query string;
+
+      В качестве хоста в `callback_url` может выступать только некоторые домены, связанно ограничение с лимитами Telegram.
+
+      | Env | Host |
+      |:----|:-----|
+      | Staging | dev.birzzha.me |
+      | Production | birzzha.me  |
+
   - name: bot
 
 consumes:
@@ -71,7 +90,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /token:
+  /auth:
     post:
       summary: Create Token
       operationId: createToken
@@ -104,6 +123,35 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+
+  /auth/bot:
+    get:
+      summary: Login via Bot
+      tags: [auth]
+      operationId: loginViaBot
+      security: []
+      description:
+        При переходе по этой ссылке пользователь будет перенаправлен в Telegram.
+        Telegram бот перенаправит его на `callback_url` вместе с данными [LoginUrl](https://core.telegram.org/bots/api/#loginurl).
+      parameters:
+        - $ref: "#/parameters/RequestID"
+        - in: query
+          name: callback_url
+          type: string
+          required: true
+          format: url
+          description: URL для возврата
+      responses:
+        302:
+          description: Found
+          headers:
+            Location:
+              type: string
+              format: url
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
   /bot:
     get:
       summary: Get Bot Info
@@ -126,6 +174,7 @@ paths:
       tags: [bot]
       security: []
       parameters:
+        - $ref: "#/parameters/RequestID"
         - in: body
           name: payload
           required: true
@@ -208,7 +257,7 @@ definitions:
   TelegramUpdate:
     x-go-type:
       import:
-        package: "github.com/go-telegram-bot-api/telegram-bot-api"
+        package: "github.com/bots-house/telegram-bot-api"
         alias: tgbotapi
       type: Update
 

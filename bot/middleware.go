@@ -5,10 +5,11 @@ import (
 
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 
+	"github.com/pkg/errors"
+
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/auth"
-	"github.com/pkg/errors"
 )
 
 func newAuthMiddleware(srv *auth.Service) tg.Middleware {

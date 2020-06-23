@@ -11,7 +11,6 @@ import (
 	"github.com/lithammer/dedent"
 )
 
-
 type Notification interface {
 	NotificationTemplate() string
 }
@@ -22,7 +21,7 @@ type Notifications struct {
 	channelID int64
 
 	pending chan Notification
-	wg sync.WaitGroup
+	wg      sync.WaitGroup
 }
 
 func NewNotifications(
@@ -41,7 +40,6 @@ func NewNotifications(
 	return ns
 }
 
-
 func (ns *Notifications) run() {
 	for notify := range ns.pending {
 		notify := notify
@@ -53,7 +51,7 @@ func (ns *Notifications) run() {
 			t := dedent.Dedent(notify.NotificationTemplate())
 			t = strings.TrimSpace(t)
 
-			tmpl, err := template.New("notification").Parse(t);
+			tmpl, err := template.New("notification").Parse(t)
 			if err != nil {
 				log.Printf("parse notification template failed: %v", err)
 				return

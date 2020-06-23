@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -13,16 +14,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
+	"github.com/kelseyhightower/envconfig"
+
 	"github.com/bots-house/birzzha/api"
 	"github.com/bots-house/birzzha/bot"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/bots-house/birzzha/store/postgres"
-	tgbotapi "github.com/bots-house/telegram-bot-api"
-	"github.com/kelseyhightower/envconfig"
 
 	"github.com/pkg/errors"
 )
@@ -98,6 +101,11 @@ func run(ctx context.Context) error {
 		return errors.Wrap(err, "new bot api client")
 	}
 
+	tgFileProxy, err := tg.NewFileProxy(cfg.FileProxyCachePath, tgClient)
+	if err != nil {
+		return errors.Wrap(err, "init file proxy cache")
+	}
+
 	var notifications *admin.Notifications
 
 	if cfg.AdminNotificationsChannelID != 0 {
@@ -114,18 +122,26 @@ func run(ctx context.Context) error {
 			TokenSecret:   cfg.TokenSecret,
 			TokenLifeTime: cfg.TokenLifeTime,
 		},
-		Clock:   clock.New(),
-		Storage: strg,
-		Bot:     tgClient,
+		Clock:         clock.New(),
+		Storage:       strg,
+		Bot:           tgClient,
 		Notifications: notifications,
 	}
 
+	resolver := &tg.BotResolver{
+		Client: tgClient,
+		PublicURL: func(id string) string {
+			return fmt.Sprintf("%s://%s/file/tg/%s", cfg.DomainProto, cfg.Domain, id)
+		},
+	}
+
 	catalogSrv := &catalog.Service{
-		Topic: pg.Topic,
+		Topic:    pg.Topic,
+		Resolver: tg.NewResolverCache(resolver, time.Minute*30),
 	}
 
 	bot := bot.New(bot.Config{
-		Site: cfg.Site,
+		Site:            cfg.Site,
 		PathSellChannel: cfg.SitePathSellChannel,
 		PathListChannel: cfg.SitePathListChannel,
 	}, tgClient, authSrv)
@@ -135,10 +151,11 @@ func run(ctx context.Context) error {
 	}
 
 	handler := api.Handler{
-		Auth:    authSrv,
-		Bot:     bot,
-		Catalog: catalogSrv,
-		Storage: strg,
+		Auth:         authSrv,
+		Bot:          bot,
+		BotFileProxy: tgFileProxy,
+		Catalog:      catalogSrv,
+		Storage:      strg,
 	}
 
 	server := newServer(cfg, handler.Make())

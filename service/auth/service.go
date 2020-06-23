@@ -26,11 +26,11 @@ const (
 )
 
 type Service struct {
-	UserStore core.UserStore
-	Config    Config
-	Clock     clock.Clock
-	Storage   storage.Storage
-	Bot       *tgbotapi.BotAPI
+	UserStore     core.UserStore
+	Config        Config
+	Clock         clock.Clock
+	Storage       storage.Storage
+	Bot           *tgbotapi.BotAPI
 	Notifications *admin.Notifications
 
 	botLogins     map[string]*LoginViaBotInfo

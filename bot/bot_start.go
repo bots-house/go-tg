@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	textStart = "Привет! Я бот канала @birzzha. Что тебя интересует?"
+	textStart         = "Привет! Я бот канала @birzzha. Что тебя интересует?"
 	textStartLogin    = "Привет! Для авторизации на сайте нажми на кнопку ниже"
 	textStartNotFound = "Кажется, ссылка устарела..."
 	loginPrefix       = "login_"

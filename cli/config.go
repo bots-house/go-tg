@@ -3,6 +3,9 @@ package cli
 import "time"
 
 type Config struct {
+	Domain      string `default:"localhost:8000"`
+	DomainProto string `default:"http" split_words:"true"`
+
 	Database             string `default:"postgres://birzzha:birzzha@localhost/birzzha?sslmode=disable"`
 	DatabaseMaxOpenConns int    `default:"10" split_words:"true"`
 	DatabaseMaxIdleConns int    `default:"0" split_words:"true"`
@@ -23,9 +26,11 @@ type Config struct {
 	BotWebhookPath        string        `default:"/" split_words:"true"`
 	BotWidgetAuthLifeTime time.Duration `default:"1m" split_words:"true"`
 
-	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
+	Site                string `default:"https://dev.birzzha.me/" split_words:"true"`
 	SitePathSellChannel string `default:"/channels/sell" split_words:"true"`
 	SitePathListChannel string `default:"/channels" split_words:"true"`
+
+	FileProxyCachePath string `default:".cache" split_words:"true"`
 
 	AdminNotificationsChannelID int64 `required:"true" split_words:"true"`
 

@@ -64,6 +64,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AuthLoginViaBotHandler: auth.LoginViaBotHandlerFunc(func(params auth.LoginViaBotParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.LoginViaBot has not yet been implemented")
 		}),
+		CatalogResolveTelegramHandler: catalog.ResolveTelegramHandlerFunc(func(params catalog.ResolveTelegramParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.ResolveTelegram has not yet been implemented")
+		}),
 
 		// Applies when the "X-Token" header is set
 		TokenHeaderAuth: func(token string) (*authz.Identity, error) {
@@ -131,6 +134,8 @@ type BirzzhaAPI struct {
 	BotHandleUpdateHandler bot.HandleUpdateHandler
 	// AuthLoginViaBotHandler sets the operation handler for the login via bot operation
 	AuthLoginViaBotHandler auth.LoginViaBotHandler
+	// CatalogResolveTelegramHandler sets the operation handler for the resolve telegram operation
+	CatalogResolveTelegramHandler catalog.ResolveTelegramHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -221,6 +226,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AuthLoginViaBotHandler == nil {
 		unregistered = append(unregistered, "auth.LoginViaBotHandler")
+	}
+	if o.CatalogResolveTelegramHandler == nil {
+		unregistered = append(unregistered, "catalog.ResolveTelegramHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -351,6 +359,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/auth/bot"] = auth.NewLoginViaBot(o.context, o.AuthLoginViaBotHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/tg/resolve"] = catalog.NewResolveTelegram(o.context, o.CatalogResolveTelegramHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

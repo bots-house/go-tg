@@ -215,7 +215,106 @@ paths:
         500:
           description: Internal Server Error
 
+  /tg/resolve:
+    get:
+      summary: Resolve Telegram Identity
+      operationId: resolveTelegram
+      tags: [catalog]
+      description: |
+        Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).
+        Написание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).
+      security: []
+      parameters:
+        - $ref: "#/parameters/RequestID"
+        - in: query
+          name: q
+          type: string
+          required: true
+          description: запрос пользователя
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TelegramResolveResult'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
+
+  TelegramResolveResult:
+    type: object
+    description: Сущность соотвествующая запросу.
+    properties:
+      channel:
+        type: object
+        description: Канал
+        required:
+          - id
+          - name
+          - avatar
+          - members_count
+          - username
+          - daily_average
+          - description
+        properties:
+          id:
+            type: integer
+            description: Уникальный ID канала в Telegrama
+          name:
+            type: string
+            description: Название канала
+          avatar:
+            type: string
+            description: URL аватарки канала (может быть null)
+          description:
+            type: string
+            description: Описание
+          members_count:
+            type: integer
+            description: Кол-во участников в канале
+          username:
+            type: string
+            description: username канала (может быть null)
+          daily_average:
+            type: integer
+            description: Среднее кол-во просмотров в день
+      group:
+        type: object
+        description: Групповой чат
+        required:
+          - id
+          - name
+          - avatar
+          - members_count
+          - username
+          - daily_average
+          - description
+        properties:
+          id:
+            type: integer
+            description: Уникальный ID чата в Telegrama
+          name:
+            type: string
+            description: Название чата
+          description:
+            type: string
+            description: Описание
+          avatar:
+            type: string
+            description: URL аватарки чата (может быть null)
+          members_count:
+            type: integer
+            description: Кол-во участников в чате
+          username:
+            type: string
+            description: username чата (может быть null)
+
   Topic:
     type: object
     description: Категория лота

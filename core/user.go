@@ -71,8 +71,6 @@ func (user *User) TelegramLink() string {
 	return "tg://user?id=" + strconv.Itoa(user.Telegram.ID)
 }
 
-
-
 // UserTelegram contains Telegram user identities.
 type UserTelegram struct {
 	// ID of user in Telegram

@@ -19,5 +19,3 @@ func (n NewUserNotification) NotificationTemplate() string {
 		#user{{ .User.ID }}
 	`
 }
-
-

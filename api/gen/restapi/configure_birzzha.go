@@ -17,7 +17,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml539455979 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml195361600 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -83,6 +83,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AuthLoginViaBotHandler == nil {
 		api.AuthLoginViaBotHandler = auth.LoginViaBotHandlerFunc(func(params auth.LoginViaBotParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.LoginViaBot has not yet been implemented")
+		})
+	}
+	if api.CatalogResolveTelegramHandler == nil {
+		api.CatalogResolveTelegramHandler = catalog.ResolveTelegramHandlerFunc(func(params catalog.ResolveTelegramParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.ResolveTelegram has not yet been implemented")
 		})
 	}
 

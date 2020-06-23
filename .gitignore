@@ -25,4 +25,5 @@
 .env.local
 .bin
 birzzha
-/storage
+/.idea
+/.cache

@@ -9,6 +9,7 @@ import (
 	authops "github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/pkg/tg"
 
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/go-http-utils/etag"
@@ -22,10 +23,11 @@ import (
 )
 
 type Handler struct {
-	Auth    *auth.Service
-	Catalog *catalog.Service
-	Bot     *bot.Bot
-	Storage storage.Storage
+	Auth         *auth.Service
+	Catalog      *catalog.Service
+	Bot          *bot.Bot
+	BotFileProxy *tg.FileProxy
+	Storage      storage.Storage
 }
 
 func (h Handler) newAPI() *operations.BirzzhaAPI {
@@ -61,9 +63,11 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	// bot
 	api.BotHandleUpdateHandler = botops.HandleUpdateHandlerFunc(h.handleBotUpdate)
 	api.BotGetBotInfoHandler = botops.GetBotInfoHandlerFunc(h.getBotInfo)
+	//api.BotGetFileHandler = botops.GetFileHandlerFunc(h.getBotFile)
 
 	// catalog
 	api.CatalogGetTopicsHandler = catalogops.GetTopicsHandlerFunc(h.getTopics)
+	api.CatalogResolveTelegramHandler = catalogops.ResolveTelegramHandlerFunc(h.resolveTelegram)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
@@ -77,6 +81,10 @@ func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {
 	// handler = common.WrapMiddlewareRecovery(handler)
 	// handler = common.WrapMiddlewareFS(handler, h.Service.Config.MediaStoragePath)
+
+	fileProxyWrapper := newFileProxyWrapper(h.BotFileProxy)
+
+	handler = fileProxyWrapper(handler)
 
 	return handler
 }

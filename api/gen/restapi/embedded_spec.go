@@ -171,6 +171,49 @@ func init() {
         }
       }
     },
+    "/tg/resolve": {
+      "get": {
+        "security": [],
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Resolve Telegram Identity",
+        "operationId": "resolveTelegram",
+        "parameters": [
+          {
+            "$ref": "#/parameters/RequestID"
+          },
+          {
+            "type": "string",
+            "description": "запрос пользователя",
+            "name": "q",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TelegramResolveResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/topics": {
       "get": {
         "security": [],
@@ -337,6 +380,109 @@ func init() {
           "description": "Username пользователя в Telegram",
           "type": "string",
           "x-order": 3
+        }
+      }
+    },
+    "TelegramResolveResult": {
+      "description": "Сущность соотвествующая запросу.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "Канал",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "avatar",
+            "members_count",
+            "username",
+            "daily_average",
+            "description"
+          ],
+          "properties": {
+            "avatar": {
+              "description": "URL аватарки канала (может быть null)",
+              "type": "string",
+              "x-order": 2
+            },
+            "daily_average": {
+              "description": "Среднее кол-во просмотров в день",
+              "type": "integer",
+              "x-order": 6
+            },
+            "description": {
+              "description": "Описание",
+              "type": "string",
+              "x-order": 3
+            },
+            "id": {
+              "description": "Уникальный ID канала в Telegrama",
+              "type": "integer",
+              "x-order": 0
+            },
+            "members_count": {
+              "description": "Кол-во участников в канале",
+              "type": "integer",
+              "x-order": 4
+            },
+            "name": {
+              "description": "Название канала",
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "description": "username канала (может быть null)",
+              "type": "string",
+              "x-order": 5
+            }
+          },
+          "x-order": 0
+        },
+        "group": {
+          "description": "Групповой чат",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "avatar",
+            "members_count",
+            "username",
+            "daily_average",
+            "description"
+          ],
+          "properties": {
+            "avatar": {
+              "description": "URL аватарки чата (может быть null)",
+              "type": "string",
+              "x-order": 3
+            },
+            "description": {
+              "description": "Описание",
+              "type": "string",
+              "x-order": 2
+            },
+            "id": {
+              "description": "Уникальный ID чата в Telegrama",
+              "type": "integer",
+              "x-order": 0
+            },
+            "members_count": {
+              "description": "Кол-во участников в чате",
+              "type": "integer",
+              "x-order": 4
+            },
+            "name": {
+              "description": "Название чата",
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "description": "username чата (может быть null)",
+              "type": "string",
+              "x-order": 5
+            }
+          },
+          "x-order": 1
         }
       }
     },
@@ -676,6 +822,53 @@ func init() {
         }
       }
     },
+    "/tg/resolve": {
+      "get": {
+        "security": [],
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Resolve Telegram Identity",
+        "operationId": "resolveTelegram",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Уникальный ID запроса. Используется для трейсинга.",
+            "name": "X-Request-Id",
+            "in": "header"
+          },
+          {
+            "type": "string",
+            "description": "запрос пользователя",
+            "name": "q",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TelegramResolveResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/topics": {
       "get": {
         "security": [],
@@ -848,6 +1041,206 @@ func init() {
           "x-order": 3
         }
       }
+    },
+    "TelegramResolveResult": {
+      "description": "Сущность соотвествующая запросу.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "Канал",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "avatar",
+            "members_count",
+            "username",
+            "daily_average",
+            "description"
+          ],
+          "properties": {
+            "avatar": {
+              "description": "URL аватарки канала (может быть null)",
+              "type": "string",
+              "x-order": 2
+            },
+            "daily_average": {
+              "description": "Среднее кол-во просмотров в день",
+              "type": "integer",
+              "x-order": 6
+            },
+            "description": {
+              "description": "Описание",
+              "type": "string",
+              "x-order": 3
+            },
+            "id": {
+              "description": "Уникальный ID канала в Telegrama",
+              "type": "integer",
+              "x-order": 0
+            },
+            "members_count": {
+              "description": "Кол-во участников в канале",
+              "type": "integer",
+              "x-order": 4
+            },
+            "name": {
+              "description": "Название канала",
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "description": "username канала (может быть null)",
+              "type": "string",
+              "x-order": 5
+            }
+          },
+          "x-order": 0
+        },
+        "group": {
+          "description": "Групповой чат",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "avatar",
+            "members_count",
+            "username",
+            "daily_average",
+            "description"
+          ],
+          "properties": {
+            "avatar": {
+              "description": "URL аватарки чата (может быть null)",
+              "type": "string",
+              "x-order": 3
+            },
+            "description": {
+              "description": "Описание",
+              "type": "string",
+              "x-order": 2
+            },
+            "id": {
+              "description": "Уникальный ID чата в Telegrama",
+              "type": "integer",
+              "x-order": 0
+            },
+            "members_count": {
+              "description": "Кол-во участников в чате",
+              "type": "integer",
+              "x-order": 4
+            },
+            "name": {
+              "description": "Название чата",
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "description": "username чата (может быть null)",
+              "type": "string",
+              "x-order": 5
+            }
+          },
+          "x-order": 1
+        }
+      }
+    },
+    "TelegramResolveResultChannel": {
+      "description": "Канал",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "members_count",
+        "username",
+        "daily_average",
+        "description"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "URL аватарки канала (может быть null)",
+          "type": "string",
+          "x-order": 2
+        },
+        "daily_average": {
+          "description": "Среднее кол-во просмотров в день",
+          "type": "integer",
+          "x-order": 6
+        },
+        "description": {
+          "description": "Описание",
+          "type": "string",
+          "x-order": 3
+        },
+        "id": {
+          "description": "Уникальный ID канала в Telegrama",
+          "type": "integer",
+          "x-order": 0
+        },
+        "members_count": {
+          "description": "Кол-во участников в канале",
+          "type": "integer",
+          "x-order": 4
+        },
+        "name": {
+          "description": "Название канала",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "username канала (может быть null)",
+          "type": "string",
+          "x-order": 5
+        }
+      },
+      "x-order": 0
+    },
+    "TelegramResolveResultGroup": {
+      "description": "Групповой чат",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "members_count",
+        "username",
+        "daily_average",
+        "description"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "URL аватарки чата (может быть null)",
+          "type": "string",
+          "x-order": 3
+        },
+        "description": {
+          "description": "Описание",
+          "type": "string",
+          "x-order": 2
+        },
+        "id": {
+          "description": "Уникальный ID чата в Telegrama",
+          "type": "integer",
+          "x-order": 0
+        },
+        "members_count": {
+          "description": "Кол-во участников в чате",
+          "type": "integer",
+          "x-order": 4
+        },
+        "name": {
+          "description": "Название чата",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "username чата (может быть null)",
+          "type": "string",
+          "x-order": 5
+        }
+      },
+      "x-order": 1
     },
     "TelegramUpdate": {
       "x-go-type": {

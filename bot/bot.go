@@ -14,17 +14,15 @@ import (
 )
 
 type Config struct {
-	Site string
+	Site            string
 	PathSellChannel string
 	PathListChannel string
 }
 
-
-
 type Bot struct {
 	client *tgbotapi.BotAPI
 
-	cfg Config
+	cfg     Config
 	authSrv *auth.Service
 	handler tg.Handler
 }
@@ -33,7 +31,7 @@ func New(cfg Config, client *tgbotapi.BotAPI, authSrv *auth.Service) *Bot {
 	bot := &Bot{
 		client:  client,
 		authSrv: authSrv,
-		cfg: cfg,
+		cfg:     cfg,
 	}
 
 	bot.initHandler()

@@ -23,6 +23,10 @@ type Config struct {
 	BotWebhookPath        string        `default:"/" split_words:"true"`
 	BotWidgetAuthLifeTime time.Duration `default:"1m" split_words:"true"`
 
+	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
+	SitePathSellChannel string `default:"/channels/sell" split_words:"true"`
+	SitePathListChannel string `default:"/channels" split_words:"true"`
+
 	AdminNotificationsChannelID int64 `required:"true" split_words:"true"`
 
 	Addr string `default:":8000"`

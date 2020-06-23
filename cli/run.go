@@ -124,7 +124,11 @@ func run(ctx context.Context) error {
 		Topic: pg.Topic,
 	}
 
-	bot := bot.New(tgClient, authSrv)
+	bot := bot.New(bot.Config{
+		Site: cfg.Site,
+		PathSellChannel: cfg.SitePathSellChannel,
+		PathListChannel: cfg.SitePathListChannel,
+	}, tgClient, authSrv)
 
 	if err := bot.SetWebhookIfNeed(ctx, cfg.BotWebhookDomain, cfg.BotWebhookPath); err != nil {
 		return errors.Wrap(err, "set bot webhook")

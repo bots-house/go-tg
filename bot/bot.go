@@ -13,17 +13,27 @@ import (
 	"github.com/pkg/errors"
 )
 
+type Config struct {
+	Site string
+	PathSellChannel string
+	PathListChannel string
+}
+
+
+
 type Bot struct {
 	client *tgbotapi.BotAPI
 
+	cfg Config
 	authSrv *auth.Service
 	handler tg.Handler
 }
 
-func New(client *tgbotapi.BotAPI, authSrv *auth.Service) *Bot {
+func New(cfg Config, client *tgbotapi.BotAPI, authSrv *auth.Service) *Bot {
 	bot := &Bot{
 		client:  client,
 		authSrv: authSrv,
+		cfg: cfg,
 	}
 
 	bot.initHandler()

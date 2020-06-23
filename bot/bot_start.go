@@ -2,27 +2,62 @@ package bot
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
 
-	"github.com/bots-house/birzzha/service/auth"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
+
+	"github.com/bots-house/birzzha/service/auth"
 )
 
 const (
-	textStart         = "Привет! Я бот @birzzha."
+	textStart = "Привет! Я бот канала @birzzha. Что тебя интересует?"
+	textStartLogin    = "Привет! Для авторизации на сайте нажми на кнопку ниже"
 	textStartNotFound = "Кажется, ссылка устарела..."
 	loginPrefix       = "login_"
 )
+
+func joinSitePath(site, path string) string {
+	path = strings.TrimPrefix(path, "/")
+
+	return site + "/" + path
+}
 
 func (bot *Bot) onStart(ctx context.Context, msg *tgbotapi.Message) error {
 	if strings.HasPrefix(msg.CommandArguments(), loginPrefix) {
 		return bot.onStartLogin(ctx, msg)
 	}
 
-	return nil
+	answ := bot.newAnswerMsg(ctx, msg, textStart)
+	answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.InlineKeyboardButton{
+				Text: "💳 Купить канал",
+				LoginURL: &tgbotapi.LoginURL{
+					URL: joinSitePath(bot.cfg.Site, bot.cfg.PathListChannel),
+				},
+			},
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.InlineKeyboardButton{
+				Text: "🤑 Продать канал",
+				LoginURL: &tgbotapi.LoginURL{
+					URL: joinSitePath(bot.cfg.Site, bot.cfg.PathSellChannel),
+				},
+			},
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.InlineKeyboardButton{
+				Text: "🚀 О нас",
+				LoginURL: &tgbotapi.LoginURL{
+					URL: bot.cfg.Site,
+				},
+			},
+		),
+	)
+
+	return bot.send(ctx, answ)
 }
 
 func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
@@ -35,13 +70,11 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 		return errors.Wrap(err, "pop login via bot")
 	}
 
-	fmt.Println(info.CallbackURL)
-
-	answ := bot.newAnswerMsg(ctx, msg, "Для авторизации нажмите на кнопку 👇")
+	answ := bot.newAnswerMsg(ctx, msg, textStartLogin)
 	answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.InlineKeyboardButton{
-				Text: "Авторизоватся",
+				Text: "🔓 Авторизоватся",
 				LoginURL: &tgbotapi.LoginURL{
 					URL: info.CallbackURL,
 				},

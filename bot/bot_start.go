@@ -20,6 +20,7 @@ const (
 
 func joinSitePath(site, path string) string {
 	path = strings.TrimPrefix(path, "/")
+	site = strings.TrimSuffix(site, "/")
 
 	return site + "/" + path
 }

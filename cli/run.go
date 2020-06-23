@@ -17,6 +17,7 @@ import (
 	"github.com/bots-house/birzzha/bot"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/bots-house/birzzha/store/postgres"
@@ -97,6 +98,13 @@ func run(ctx context.Context) error {
 		return errors.Wrap(err, "new bot api client")
 	}
 
+	var notifications *admin.Notifications
+
+	if cfg.AdminNotificationsChannelID != 0 {
+		notifications = admin.NewNotifications(tgClient, cfg.AdminNotificationsChannelID)
+		defer notifications.Close()
+	}
+
 	authSrv := &auth.Service{
 		UserStore: pg.User,
 		Config: auth.Config{
@@ -109,6 +117,7 @@ func run(ctx context.Context) error {
 		Clock:   clock.New(),
 		Storage: strg,
 		Bot:     tgClient,
+		Notifications: notifications,
 	}
 
 	catalogSrv := &catalog.Service{

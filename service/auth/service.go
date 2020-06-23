@@ -12,6 +12,8 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/service/admin"
+
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/cristalhq/jwt"
 	"github.com/pkg/errors"
@@ -29,6 +31,7 @@ type Service struct {
 	Clock     clock.Clock
 	Storage   storage.Storage
 	Bot       *tgbotapi.BotAPI
+	Notifications *admin.Notifications
 
 	botLogins     map[string]*LoginViaBotInfo
 	botLoginsLock sync.Mutex
@@ -70,6 +73,10 @@ func (srv *Service) newUserFromTelegramWidgetInfo(ctx context.Context, info *Tel
 	if err := srv.UserStore.Add(ctx, user); err != nil {
 		return nil, errors.Wrap(err, "add user to store")
 	}
+
+	srv.Notifications.Send(NewUserNotification{
+		User: user,
+	})
 
 	return user, nil
 }
@@ -158,7 +165,7 @@ func (srv *Service) Authorize(ctx context.Context, token *jwt.Token) (*core.User
 	return user, nil
 }
 
-func (srv *Service) newUserFromtelegramUserInfo(ctx context.Context, info *TelegramUserInfo) (*core.User, error) {
+func (srv *Service) newUserFromTelegramUserInfo(ctx context.Context, info *TelegramUserInfo) (*core.User, error) {
 	user := &core.User{
 		Telegram: core.UserTelegram{
 			ID:       info.ID,
@@ -175,13 +182,17 @@ func (srv *Service) newUserFromtelegramUserInfo(ctx context.Context, info *Teleg
 		return nil, errors.Wrap(err, "add user to store")
 	}
 
+	srv.Notifications.Send(NewUserNotification{
+		User: user,
+	})
+
 	return user, nil
 }
 
 func (srv *Service) AuthorizeInBot(ctx context.Context, info *TelegramUserInfo) (*core.User, error) {
 	user, err := srv.UserStore.Query().TelegramID(info.ID).One(ctx)
 	if err == core.ErrUserNotFound {
-		user, err = srv.newUserFromtelegramUserInfo(ctx, info)
+		user, err = srv.newUserFromTelegramUserInfo(ctx, info)
 		if err != nil {
 			return nil, errors.Wrap(err, "new user from telegram")
 		}

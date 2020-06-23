@@ -23,5 +23,7 @@ type Config struct {
 	BotWebhookPath        string        `default:"/" split_words:"true"`
 	BotWidgetAuthLifeTime time.Duration `default:"1m" split_words:"true"`
 
+	AdminNotificationsChannelID int64 `required:"true" split_words:"true"`
+
 	Addr string `default:":8000"`
 }

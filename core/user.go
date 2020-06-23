@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/volatiletech/null/v8"
@@ -14,6 +15,10 @@ const (
 	JoinedFromSite = JoinedFrom("site")
 	JoinedFromBot  = JoinedFrom("bot")
 )
+
+func (jf JoinedFrom) String() string {
+	return string(jf)
+}
 
 // Unique User ID in Birzzha.
 type UserID int
@@ -50,6 +55,23 @@ type User struct {
 	// Updated at
 	UpdatedAt null.Time
 }
+
+// Name returns user full name.
+func (user *User) Name() string {
+	name := user.FirstName
+
+	if user.LastName.Valid {
+		name += " " + user.LastName.String
+	}
+
+	return name
+}
+
+func (user *User) TelegramLink() string {
+	return "tg://user?id=" + strconv.Itoa(user.Telegram.ID)
+}
+
+
 
 // UserTelegram contains Telegram user identities.
 type UserTelegram struct {

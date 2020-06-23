@@ -12,7 +12,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/tg"
 )
 
-const filesPrefix = "/file/tg/"
+const filesPrefix = "/v1/tg/file/"
 
 func newFileProxyWrapper(fp *tg.FileProxy) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

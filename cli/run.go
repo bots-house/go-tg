@@ -131,7 +131,7 @@ func run(ctx context.Context) error {
 	resolver := &tg.BotResolver{
 		Client: tgClient,
 		PublicURL: func(id string) string {
-			return fmt.Sprintf("%s://%s/file/tg/%s", cfg.DomainProto, cfg.Domain, id)
+			return fmt.Sprintf("%s://%s/v1/tg/file/%s", cfg.DomainProto, cfg.Domain, id)
 		},
 	}
 

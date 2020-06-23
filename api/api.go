@@ -8,6 +8,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
 	authops "github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/pkg/storage"
 
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/go-http-utils/etag"
@@ -24,6 +25,7 @@ type Handler struct {
 	Auth    *auth.Service
 	Catalog *catalog.Service
 	Bot     *bot.Bot
+	Storage storage.Storage
 }
 
 func (h Handler) newAPI() *operations.BirzzhaAPI {

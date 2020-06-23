@@ -18,5 +18,5 @@ type Storage interface {
 	// Delete(ctx context.Context, path string) error
 
 	// Returns full path to file
-	// Resolve(ctx context.Context, path string) string
+	PublicURL(path string) string
 }

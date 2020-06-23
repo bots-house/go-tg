@@ -8,6 +8,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
 	"github.com/bots-house/birzzha/api"
 	"github.com/bots-house/birzzha/bot"
@@ -32,6 +36,23 @@ func Run(ctx context.Context) {
 	if err := run(ctx); err != nil {
 		log.Error(ctx, "fatal error", "err", err)
 		os.Exit(1)
+	}
+}
+
+func newStorage(cfg Config) *storage.Space {
+	s3Config := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(cfg.S3AccessKey, cfg.S3SecretKey, ""),
+		Endpoint:    aws.String(cfg.S3Endpoint),
+		Region:      aws.String("us-east-1"),
+	}
+
+	newSession := session.New(s3Config)
+	s3Client := s3.New(newSession)
+
+	return &storage.Space{
+		Client:       s3Client,
+		Bucket:       cfg.S3Bucket,
+		PublicPrefix: cfg.S3PublicPrefix,
 	}
 }
 
@@ -69,9 +90,7 @@ func run(ctx context.Context) error {
 		return errors.Wrap(err, "migrate db")
 	}
 
-	strg := &storage.FS{
-		Path: "storage/",
-	}
+	strg := newStorage(cfg)
 
 	tgClient, err := tgbotapi.NewBotAPI(cfg.BotToken)
 	if err != nil {
@@ -106,6 +125,7 @@ func run(ctx context.Context) error {
 		Auth:    authSrv,
 		Bot:     bot,
 		Catalog: catalogSrv,
+		Storage: strg,
 	}
 
 	server := newServer(cfg, handler.Make())

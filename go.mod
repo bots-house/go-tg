@@ -4,6 +4,7 @@ module github.com/bots-house/birzzha
 go 1.14
 
 require (
+	github.com/aws/aws-sdk-go v1.32.7
 	github.com/benbjohnson/clock v1.0.3
 	github.com/bots-house/telegram-bot-api v1.0.1-0.20200622142737-6721de82af68
 	github.com/cristalhq/jwt v1.2.0
@@ -19,6 +20,7 @@ require (
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.10
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gosimple/slug v1.9.0

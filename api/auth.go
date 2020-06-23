@@ -32,11 +32,11 @@ func (h *Handler) createToken(params authops.CreateTokenParams) middleware.Respo
 		return authops.NewCreateTokenInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 
-	return authops.NewCreateTokenCreated().WithPayload(models.NewToken(token))
+	return authops.NewCreateTokenCreated().WithPayload(models.NewToken(h.Storage, token))
 }
 
 func (h *Handler) getUser(params authops.GetUserParams, identity *authz.Identity) middleware.Responder {
-	return authops.NewGetUserOK().WithPayload(models.NewUser(identity.User))
+	return authops.NewGetUserOK().WithPayload(models.NewUser(h.Storage, identity.User))
 }
 
 func (h *Handler) loginViaBot(params authops.LoginViaBotParams) middleware.Responder {

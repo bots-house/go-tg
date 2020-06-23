@@ -3,6 +3,7 @@ package tg
 import (
 	"context"
 	"math/rand"
+	"strings"
 
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/pkg/errors"
@@ -15,9 +16,15 @@ type BotResolver struct {
 	PublicURL func(id string) string
 }
 
-var ErrJoinLinkIsNotSupported = core.NewError(
-	"join_link_is_not_supported",
-	"private links is not supported (while under development)",
+var (
+	ErrJoinLinkIsNotSupported = core.NewError(
+		"tg_join_link_is_not_supported",
+		"private links is not supported (while under development)",
+	)
+	ErrEntityNotFound = core.NewError(
+		"tg_entity_not_found",
+		"entity not found in Telegram",
+	)
 )
 
 func (r *BotResolver) Resolve(ctx context.Context, query string) (*ResolveResult, error) {
@@ -37,6 +44,9 @@ func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*Re
 		SuperGroupUsername: "@" + username,
 	})
 	if err != nil {
+		if err2, ok := err.(*tgbotapi.Error); ok && strings.Contains(err2.Message, "Bad Request: chat not found"){
+			return nil, ErrEntityNotFound
+		}
 		return nil, errors.Wrap(err, "get chat")
 	}
 

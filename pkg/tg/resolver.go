@@ -58,7 +58,7 @@ type ResolveResult struct {
 
 var (
 	ErrInvalidQuery = core.NewError(
-		"invalid_query",
+		"tg_invalid_query",
 		"query is invalid format",
 	)
 )

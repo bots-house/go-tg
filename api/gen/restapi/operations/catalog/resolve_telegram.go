@@ -36,6 +36,21 @@ Resolve Telegram Identity
 Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).
 Написание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).
 
+### Пример запросов
+
+  - https://t.me/channely_updates
+  - t.me/crosser_live
+  - crosser_chat
+  - @zzapusk
+
+### Возможные ошибки
+
+| Статус | Code | Описание |
+|:---------|:--------------|:-----------------|
+| 400 | `tg_invalid_query` | Недопустимый формат ввода |
+| 400 | `tg_entity_not_found` | Сущность не найдена |
+| 500 | `internal_error` | Внутреняя ошибка сервера |
+
 
 */
 type ResolveTelegram struct {

@@ -51,6 +51,7 @@ func NewOwnedLot(s storage.Storage, in *catalog.OwnedLot) *models.OwnedLot {
 		ExternalID:  swag.Int64(in.ExternalID),
 		Name:        swag.String(in.Name),
 		Avatar:      swag.String(avatar),
+		Username:    nullStringToString(in.Username),
 		Link:        swag.String(in.Link()),
 		Bio:         nullStringToString(in.Bio),
 		Price:       newLotPrice(in.Price),

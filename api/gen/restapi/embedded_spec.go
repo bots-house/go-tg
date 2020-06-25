@@ -586,6 +586,7 @@ func init() {
         "external_id",
         "name",
         "avatar",
+        "username",
         "link",
         "bio",
         "price",
@@ -602,7 +603,7 @@ func init() {
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -613,17 +614,17 @@ func init() {
         "bio": {
           "description": "Описаник канала с Telegram",
           "type": "string",
-          "x-order": 5
+          "x-order": 6
         },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
-          "x-order": 7
+          "x-order": 8
         },
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 9
+          "x-order": 10
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -635,7 +636,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 13
+          "x-order": 14
         },
         "id": {
           "description": "ID лота",
@@ -646,10 +647,10 @@ func init() {
           "description": "Ссылка для вступления (как приватная так и публичная)",
           "type": "string",
           "format": "url",
-          "x-order": 4
+          "x-order": 5
         },
         "metrics": {
-          "x-order": 8,
+          "x-order": 9,
           "$ref": "#/definitions/LotMetrics"
         },
         "name": {
@@ -660,23 +661,28 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 10
+          "x-order": 11
         },
         "price": {
-          "x-order": 6,
+          "x-order": 7,
           "$ref": "#/definitions/LotPrice"
         },
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 14
+          "x-order": 15
         },
         "topics": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Topic"
           },
-          "x-order": 12
+          "x-order": 13
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 4
         }
       }
     },
@@ -1542,6 +1548,7 @@ func init() {
         "external_id",
         "name",
         "avatar",
+        "username",
         "link",
         "bio",
         "price",
@@ -1558,7 +1565,7 @@ func init() {
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -1569,17 +1576,17 @@ func init() {
         "bio": {
           "description": "Описаник канала с Telegram",
           "type": "string",
-          "x-order": 5
+          "x-order": 6
         },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
-          "x-order": 7
+          "x-order": 8
         },
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 9
+          "x-order": 10
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -1591,7 +1598,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 13
+          "x-order": 14
         },
         "id": {
           "description": "ID лота",
@@ -1602,10 +1609,10 @@ func init() {
           "description": "Ссылка для вступления (как приватная так и публичная)",
           "type": "string",
           "format": "url",
-          "x-order": 4
+          "x-order": 5
         },
         "metrics": {
-          "x-order": 8,
+          "x-order": 9,
           "$ref": "#/definitions/LotMetrics"
         },
         "name": {
@@ -1616,23 +1623,28 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 10
+          "x-order": 11
         },
         "price": {
-          "x-order": 6,
+          "x-order": 7,
           "$ref": "#/definitions/LotPrice"
         },
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 14
+          "x-order": 15
         },
         "topics": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Topic"
           },
-          "x-order": 12
+          "x-order": 13
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 4
         }
       }
     },

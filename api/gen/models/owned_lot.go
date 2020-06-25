@@ -35,6 +35,10 @@ type OwnedLot struct {
 	// Required: true
 	Avatar *string `json:"avatar"`
 
+	// @username канала (может быть null)
+	// Required: true
+	Username *string `json:"username"`
+
 	// Ссылка для вступления (как приватная так и публичная)
 	// Required: true
 	Link *string `json:"link"`
@@ -97,6 +101,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateAvatar(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUsername(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -180,6 +188,15 @@ func (m *OwnedLot) validateName(formats strfmt.Registry) error {
 func (m *OwnedLot) validateAvatar(formats strfmt.Registry) error {
 
 	if err := validate.Required("avatar", "body", m.Avatar); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLot) validateUsername(formats strfmt.Registry) error {
+
+	if err := validate.Required("username", "body", m.Username); err != nil {
 		return err
 	}
 

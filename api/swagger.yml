@@ -306,6 +306,7 @@ definitions:
       - external_id
       - name
       - avatar
+      - username
       - link
       - bio
       - price
@@ -331,6 +332,9 @@ definitions:
         type: string
         format: url
         description: Аватарка лота
+      username:
+        type: string
+        description: '@username канала (может быть null)'
       link:
         type: string
         description: Ссылка для вступления (как приватная так и публичная)

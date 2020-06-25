@@ -17,8 +17,32 @@ func nullStringToString(v null.String) *string {
 	return nil
 }
 
-func timeToUnix(v time.Time) int64 {
-	return v.Unix()
+func nullIntToInt64(v null.Int) *int64 {
+	if v.Valid {
+		x := int64(v.Int)
+		return &x
+	}
+	return nil
+}
+
+func nullFloat64ToFloat64(v null.Float64) *float64 {
+	if v.Valid {
+		return &v.Float64
+	}
+	return nil
+}
+
+func timeToUnix(v time.Time) *int64 {
+	x := v.Unix()
+	return &x
+}
+
+func nullTimeToUnix(v null.Time) *int64 {
+	if v.Valid {
+		x := v.Time.Unix()
+		return &x
+	}
+	return nil
 }
 
 func NewUser(s storage.Storage, user *core.User) *models.User {
@@ -31,7 +55,7 @@ func NewUser(s storage.Storage, user *core.User) *models.User {
 		FirstName: swag.String(user.FirstName),
 		LastName:  nullStringToString(user.LastName),
 		IsAdmin:   swag.Bool(user.IsAdmin),
-		JoinedAt:  swag.Int64(timeToUnix(user.JoinedAt)),
+		JoinedAt:  timeToUnix(user.JoinedAt),
 	}
 
 	if user.Avatar.Valid {

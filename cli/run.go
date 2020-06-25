@@ -137,7 +137,11 @@ func run(ctx context.Context) error {
 
 	catalogSrv := &catalog.Service{
 		Topic:    pg.Topic,
+		Lot:      pg.Lot,
+		LotTopic: pg.LotTopic,
 		Resolver: tg.NewResolverCache(resolver, time.Minute*30),
+		Storage:  strg,
+		Txier:    pg.Tx,
 	}
 
 	bot := bot.New(bot.Config{

@@ -16,8 +16,10 @@ type Postgres struct {
 	*sql.DB
 	migrator *migrations.Migrator
 
+	Lot   *LotStore
 	User  *UserStore
 	Topic *TopicStore
+	LotTopic *LotTopicStore
 }
 
 // NewPostgres create postgres based database with all stores.
@@ -25,9 +27,12 @@ func NewPostgres(db *sql.DB) *Postgres {
 	pg := &Postgres{
 		DB:       db,
 		migrator: migrations.New(db),
+		Lot:      &LotStore{ContextExecutor: db},
 		User:     &UserStore{ContextExecutor: db},
 		Topic:    &TopicStore{ContextExecutor: db},
 	}
+
+	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx}
 
 	return pg
 }

@@ -39,17 +39,7 @@ func (r *BotResolver) Resolve(ctx context.Context, query string) (*ResolveResult
 	}
 }
 
-func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*ResolveResult, error) {
-	chat, err := r.Client.GetChat(tgbotapi.ChatConfig{
-		SuperGroupUsername: "@" + username,
-	})
-	if err != nil {
-		if err2, ok := err.(*tgbotapi.Error); ok && strings.Contains(err2.Message, "Bad Request: chat not found"){
-			return nil, ErrEntityNotFound
-		}
-		return nil, errors.Wrap(err, "get chat")
-	}
-
+func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResult, error) {
 	// common fields
 
 	// avatar (for all types)
@@ -58,8 +48,13 @@ func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*Re
 		avatarFileID = chat.Photo.BigFileID
 	}
 
-	// members count for groups and supergroups
-	var membersCount int
+	var (
+		// members count for groups and supergroups
+		membersCount int
+
+		err error
+	)
+
 	if chat.IsChannel() || chat.IsGroup() || chat.IsSuperGroup() {
 		membersCount, err = r.Client.GetChatMembersCount(tgbotapi.ChatConfig{
 			ChatID: chat.ID,
@@ -97,4 +92,39 @@ func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*Re
 	}
 
 	return nil, errors.New("unknown type")
+}
+
+func (r *BotResolver) ResolveByID(ctx context.Context, id int64) (*ResolveResult, error) {
+	chat, err := r.getChat(ctx, tgbotapi.ChatConfig{
+		ChatID: id,
+	})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "get chat")
+	}
+
+	return r.getResolveResultByChat(chat)
+}
+
+func (r *BotResolver) getChat(ctx context.Context, config tgbotapi.ChatConfig) (*tgbotapi.Chat, error) {
+	chat, err := r.Client.GetChat(config)
+	if err != nil {
+		if err2, ok := err.(*tgbotapi.Error); ok && strings.Contains(err2.Message, "Bad Request: chat not found") {
+			return nil, ErrEntityNotFound
+		}
+		return nil, errors.Wrap(err, "get chat")
+	}
+	return &chat, nil
+}
+
+func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*ResolveResult, error) {
+	chat, err := r.getChat(ctx, tgbotapi.ChatConfig{
+		SuperGroupUsername: "@" + username,
+	})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "get chat")
+	}
+
+	return r.getResolveResultByChat(chat)
 }

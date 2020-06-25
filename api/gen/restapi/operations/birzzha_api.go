@@ -46,6 +46,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		CatalogCreateLotHandler: catalog.CreateLotHandlerFunc(func(params catalog.CreateLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.CreateLot has not yet been implemented")
+		}),
 		AuthCreateTokenHandler: auth.CreateTokenHandlerFunc(func(params auth.CreateTokenParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.CreateToken has not yet been implemented")
 		}),
@@ -122,6 +125,8 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// CatalogCreateLotHandler sets the operation handler for the create lot operation
+	CatalogCreateLotHandler catalog.CreateLotHandler
 	// AuthCreateTokenHandler sets the operation handler for the create token operation
 	AuthCreateTokenHandler auth.CreateTokenHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
@@ -209,6 +214,9 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
+	if o.CatalogCreateLotHandler == nil {
+		unregistered = append(unregistered, "catalog.CreateLotHandler")
+	}
 	if o.AuthCreateTokenHandler == nil {
 		unregistered = append(unregistered, "auth.CreateTokenHandler")
 	}
@@ -335,6 +343,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/lot"] = catalog.NewCreateLot(o.context, o.CatalogCreateLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

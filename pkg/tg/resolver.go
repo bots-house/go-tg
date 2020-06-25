@@ -65,4 +65,5 @@ var (
 
 type Resolver interface {
 	Resolve(ctx context.Context, input string) (*ResolveResult, error)
+	ResolveByID(ctx context.Context, id int64) (*ResolveResult, error)
 }

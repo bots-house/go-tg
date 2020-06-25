@@ -45,7 +45,7 @@ Resolve Telegram Identity
 
 ### Возможные ошибки
 
-| Статус | Code | Описание |
+| Status | Code | Description |
 |:---------|:--------------|:-----------------|
 | 400 | `tg_invalid_query` | Недопустимый формат ввода |
 | 400 | `tg_entity_not_found` | Сущность не найдена |

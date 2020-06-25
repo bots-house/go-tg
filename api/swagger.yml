@@ -233,7 +233,7 @@ paths:
 
         ### Возможные ошибки
 
-        | Статус | Code | Описание |
+        | Status | Code | Description |
         |:---------|:--------------|:-----------------|
         | 400 | `tg_invalid_query` | Недопустимый формат ввода |
         | 400 | `tg_entity_not_found` | Сущность не найдена |
@@ -261,7 +261,220 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /lot:
+    post:
+      summary: Create Lot
+      operationId: createLot
+      tags: [catalog]
+      description: |
+        Создание лота.
+        Предварительно нужно получить ID канала через метод `/tg/resolve` и отправить его в запросе как `telegram_id`.
+
+        ### Возможные ошибки
+
+        | Status | Code | Description |
+        |:---------|:--------------|:-----------------|
+        | 400 | `lot_is_not_channel` | лот не является каналом |
+        | 500 | `internal_error` | Внутреняя ошибка сервера |
+
+      parameters:
+        - in: body
+          name: payload
+          required: true
+          schema:
+            $ref: '#/definitions/LotInput'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/OwnedLot'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
+  OwnedLot:
+    type: object
+    description: Данные лота которым владает пользователь
+    required:
+      - id
+      - external_id
+      - name
+      - avatar
+      - link
+      - bio
+      - price
+      - comment
+      - metrics
+      - topics
+      - extra
+      - created_at
+      - paid_at
+      - approved_at
+      - published_at
+    properties:
+      id:
+        type: integer
+        description: ID лота
+      external_id:
+        type: integer
+        description: ID лота в Telegram
+      name:
+        type: string
+        description: Название лота (канала) в Telegram
+      avatar:
+        type: string
+        format: url
+        description: Аватарка лота
+      link:
+        type: string
+        description: Ссылка для вступления (как приватная так и публичная)
+        format: url
+      bio:
+        type: string
+        description: Описаник канала с Telegram
+      price:
+        $ref: '#/definitions/LotPrice'
+      comment:
+        type: string
+        description: Комментарий к лоту
+      metrics:
+        $ref: '#/definitions/LotMetrics'
+      created_at:
+        type: integer
+        description: Дата создания
+      paid_at:
+        type: integer
+        description: Дата оплаты
+      approved_at:
+        type: integer
+        description: Дата проверки
+      topics:
+        type: array
+        items:
+          $ref: '#/definitions/Topic'
+      extra:
+        type: array
+        items:
+          $ref: '#/definitions/LotExtraResource'
+      published_at:
+        type: integer
+        description: Дата публикации в канале
+
+  LotExtraResource:
+    type: object
+    properties:
+      url:
+        type: string
+        format: url
+
+  LotMetrics:
+    type: object
+    required:
+      - members_count
+      - daily_coverage
+      - monthly_income
+      - price_per_member
+      - price_per_view
+      - payback_period
+    properties:
+      members_count:
+        type: integer
+        description: Кол-во участников в канале
+      daily_coverage:
+        type: integer
+        description: Дневной охват
+      monthly_income:
+        type: integer
+        description: Прибыль в месяц
+      price_per_member:
+        type: number
+        description: Цена за подписчика
+      price_per_view:
+        type: number
+        description: Цена за просмотр
+      payback_period:
+        type: number
+        description: Окупаемость
+
+  LotPrice:
+    type: object
+    required:
+      - current
+      - previous
+      - is_bargain
+    properties:
+      current:
+        type: integer
+        description: Цена канала
+      previous:
+        type: integer
+        description: Предыдущая цена канала
+      is_bargain:
+        type: boolean
+        description: Возможен ли торг
+
+  LotInput:
+    type: object
+    description: Данные для создания нового лота
+    required:
+      - query
+      - telegram_id
+      - topic_ids
+      - price
+      - is_bargain
+      - monthly_income
+      - comment
+      - extra
+    properties:
+      query:
+        type: string
+        description: Запрос пользователя, @username или приватная ссылка.
+        example: '@channely_updates'
+      telegram_id:
+        type: integer
+        description: ID канала в Telegram
+        example: -1001072262979
+      topic_ids:
+        type: array
+        description: Список категорий лота
+        example:
+          - 1
+          - 2
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+      price:
+        type: integer
+        description: Цена канала
+        example: 124000
+      is_bargain:
+        type: boolean
+        description: Возможен ли торг?
+      monthly_income:
+        type: integer
+        description: Доход в месяц
+        example: 7000
+      comment:
+        type: string
+        description: Комментарий пользователя
+        example: |
+          Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу продаю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!
+
+      extra:
+        type: array
+        description: Список ссылок на дополнительные ресурсы
+        items:
+          type: string
+        example:
+          - https://t.me/channely_bot
+          - https://t.me/channely_chat
 
   TelegramResolveResult:
     type: object

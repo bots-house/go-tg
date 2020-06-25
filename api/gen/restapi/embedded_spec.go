@@ -171,10 +171,50 @@ func init() {
         }
       }
     },
+    "/lot": {
+      "post": {
+        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Create Lot",
+        "operationId": "createLot",
+        "parameters": [
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LotInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/tg/resolve": {
       "get": {
         "security": [],
-        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Статус | Code | Описание |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
           "catalog"
         ],
@@ -380,6 +420,263 @@ func init() {
           "description": "Username пользователя в Telegram",
           "type": "string",
           "x-order": 3
+        }
+      }
+    },
+    "LotExtraResource": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "url",
+          "x-order": 0
+        }
+      }
+    },
+    "LotInput": {
+      "description": "Данные для создания нового лота",
+      "type": "object",
+      "required": [
+        "query",
+        "telegram_id",
+        "topic_ids",
+        "price",
+        "is_bargain",
+        "monthly_income",
+        "comment",
+        "extra"
+      ],
+      "properties": {
+        "comment": {
+          "description": "Комментарий пользователя",
+          "type": "string",
+          "x-order": 6,
+          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу продаю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
+        },
+        "extra": {
+          "description": "Список ссылок на дополнительные ресурсы",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-order": 7,
+          "example": [
+            "https://t.me/channely_bot",
+            "https://t.me/channely_chat"
+          ]
+        },
+        "is_bargain": {
+          "description": "Возможен ли торг?",
+          "type": "boolean",
+          "x-order": 4
+        },
+        "monthly_income": {
+          "description": "Доход в месяц",
+          "type": "integer",
+          "x-order": 5,
+          "example": 7000
+        },
+        "price": {
+          "description": "Цена канала",
+          "type": "integer",
+          "x-order": 3,
+          "example": 124000
+        },
+        "query": {
+          "description": "Запрос пользователя, @username или приватная ссылка.",
+          "type": "string",
+          "x-order": 0,
+          "example": "@channely_updates"
+        },
+        "telegram_id": {
+          "description": "ID канала в Telegram",
+          "type": "integer",
+          "x-order": 1,
+          "example": -1001072262979
+        },
+        "topic_ids": {
+          "description": "Список категорий лота",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 2,
+          "example": [
+            1,
+            2
+          ]
+        }
+      }
+    },
+    "LotMetrics": {
+      "type": "object",
+      "required": [
+        "members_count",
+        "daily_coverage",
+        "monthly_income",
+        "price_per_member",
+        "price_per_view",
+        "payback_period"
+      ],
+      "properties": {
+        "daily_coverage": {
+          "description": "Дневной охват",
+          "type": "integer",
+          "x-order": 1
+        },
+        "members_count": {
+          "description": "Кол-во участников в канале",
+          "type": "integer",
+          "x-order": 0
+        },
+        "monthly_income": {
+          "description": "Прибыль в месяц",
+          "type": "integer",
+          "x-order": 2
+        },
+        "payback_period": {
+          "description": "Окупаемость",
+          "type": "number",
+          "x-order": 5
+        },
+        "price_per_member": {
+          "description": "Цена за подписчика",
+          "type": "number",
+          "x-order": 3
+        },
+        "price_per_view": {
+          "description": "Цена за просмотр",
+          "type": "number",
+          "x-order": 4
+        }
+      }
+    },
+    "LotPrice": {
+      "type": "object",
+      "required": [
+        "current",
+        "previous",
+        "is_bargain"
+      ],
+      "properties": {
+        "current": {
+          "description": "Цена канала",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_bargain": {
+          "description": "Возможен ли торг",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "previous": {
+          "description": "Предыдущая цена канала",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "OwnedLot": {
+      "description": "Данные лота которым владает пользователь",
+      "type": "object",
+      "required": [
+        "id",
+        "external_id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "price",
+        "comment",
+        "metrics",
+        "topics",
+        "extra",
+        "created_at",
+        "paid_at",
+        "approved_at",
+        "published_at"
+      ],
+      "properties": {
+        "approved_at": {
+          "description": "Дата проверки",
+          "type": "integer",
+          "x-order": 11
+        },
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 3
+        },
+        "bio": {
+          "description": "Описаник канала с Telegram",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 9
+        },
+        "external_id": {
+          "description": "ID лота в Telegram",
+          "type": "integer",
+          "x-order": 1
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 13
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 2
+        },
+        "paid_at": {
+          "description": "Дата оплаты",
+          "type": "integer",
+          "x-order": 10
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации в канале",
+          "type": "integer",
+          "x-order": 14
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 12
         }
       }
     },
@@ -822,10 +1119,50 @@ func init() {
         }
       }
     },
+    "/lot": {
+      "post": {
+        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Create Lot",
+        "operationId": "createLot",
+        "parameters": [
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LotInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/tg/resolve": {
       "get": {
         "security": [],
-        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Статус | Code | Описание |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
           "catalog"
         ],
@@ -1039,6 +1376,263 @@ func init() {
           "description": "Username пользователя в Telegram",
           "type": "string",
           "x-order": 3
+        }
+      }
+    },
+    "LotExtraResource": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "url",
+          "x-order": 0
+        }
+      }
+    },
+    "LotInput": {
+      "description": "Данные для создания нового лота",
+      "type": "object",
+      "required": [
+        "query",
+        "telegram_id",
+        "topic_ids",
+        "price",
+        "is_bargain",
+        "monthly_income",
+        "comment",
+        "extra"
+      ],
+      "properties": {
+        "comment": {
+          "description": "Комментарий пользователя",
+          "type": "string",
+          "x-order": 6,
+          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу продаю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
+        },
+        "extra": {
+          "description": "Список ссылок на дополнительные ресурсы",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-order": 7,
+          "example": [
+            "https://t.me/channely_bot",
+            "https://t.me/channely_chat"
+          ]
+        },
+        "is_bargain": {
+          "description": "Возможен ли торг?",
+          "type": "boolean",
+          "x-order": 4
+        },
+        "monthly_income": {
+          "description": "Доход в месяц",
+          "type": "integer",
+          "x-order": 5,
+          "example": 7000
+        },
+        "price": {
+          "description": "Цена канала",
+          "type": "integer",
+          "x-order": 3,
+          "example": 124000
+        },
+        "query": {
+          "description": "Запрос пользователя, @username или приватная ссылка.",
+          "type": "string",
+          "x-order": 0,
+          "example": "@channely_updates"
+        },
+        "telegram_id": {
+          "description": "ID канала в Telegram",
+          "type": "integer",
+          "x-order": 1,
+          "example": -1001072262979
+        },
+        "topic_ids": {
+          "description": "Список категорий лота",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 2,
+          "example": [
+            1,
+            2
+          ]
+        }
+      }
+    },
+    "LotMetrics": {
+      "type": "object",
+      "required": [
+        "members_count",
+        "daily_coverage",
+        "monthly_income",
+        "price_per_member",
+        "price_per_view",
+        "payback_period"
+      ],
+      "properties": {
+        "daily_coverage": {
+          "description": "Дневной охват",
+          "type": "integer",
+          "x-order": 1
+        },
+        "members_count": {
+          "description": "Кол-во участников в канале",
+          "type": "integer",
+          "x-order": 0
+        },
+        "monthly_income": {
+          "description": "Прибыль в месяц",
+          "type": "integer",
+          "x-order": 2
+        },
+        "payback_period": {
+          "description": "Окупаемость",
+          "type": "number",
+          "x-order": 5
+        },
+        "price_per_member": {
+          "description": "Цена за подписчика",
+          "type": "number",
+          "x-order": 3
+        },
+        "price_per_view": {
+          "description": "Цена за просмотр",
+          "type": "number",
+          "x-order": 4
+        }
+      }
+    },
+    "LotPrice": {
+      "type": "object",
+      "required": [
+        "current",
+        "previous",
+        "is_bargain"
+      ],
+      "properties": {
+        "current": {
+          "description": "Цена канала",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_bargain": {
+          "description": "Возможен ли торг",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "previous": {
+          "description": "Предыдущая цена канала",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "OwnedLot": {
+      "description": "Данные лота которым владает пользователь",
+      "type": "object",
+      "required": [
+        "id",
+        "external_id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "price",
+        "comment",
+        "metrics",
+        "topics",
+        "extra",
+        "created_at",
+        "paid_at",
+        "approved_at",
+        "published_at"
+      ],
+      "properties": {
+        "approved_at": {
+          "description": "Дата проверки",
+          "type": "integer",
+          "x-order": 11
+        },
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 3
+        },
+        "bio": {
+          "description": "Описаник канала с Telegram",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 9
+        },
+        "external_id": {
+          "description": "ID лота в Telegram",
+          "type": "integer",
+          "x-order": 1
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 13
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 2
+        },
+        "paid_at": {
+          "description": "Дата оплаты",
+          "type": "integer",
+          "x-order": 10
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации в канале",
+          "type": "integer",
+          "x-order": 14
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 12
         }
       }
     },

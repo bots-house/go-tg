@@ -68,6 +68,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	// catalog
 	api.CatalogGetTopicsHandler = catalogops.GetTopicsHandlerFunc(h.getTopics)
 	api.CatalogResolveTelegramHandler = catalogops.ResolveTelegramHandlerFunc(h.resolveTelegram)
+	api.CatalogCreateLotHandler = catalogops.CreateLotHandlerFunc(h.createLot)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

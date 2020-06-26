@@ -261,7 +261,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /lot:
+  /lots:
     post:
       summary: Create Lot
       operationId: createLot
@@ -296,8 +296,257 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+    get:
+      summary: Get Lots
+      operationId: getLots
+      tags: [catalog]
+      description: Получение списка доступных лотов.
+      parameters:
+        - in: query
+          name: topics
+          description: Фильтрация по ID категорий
+          type: array
+          items:
+            type: integer
+
+        - in: query
+          name: members_count_from
+          description: От кол-ва пдп
+          type: integer
+
+        - in: query
+          name: members_count_to
+          description: До кол-ва пдп
+          type: integer
+
+        - in: query
+          name: price_from
+          description: Цена от
+          type: integer
+
+        - in: query
+          name: price_to
+          description: Цена до
+          type: integer
+
+        - in: query
+          name: price_per_member_from
+          description: Цена пдп от
+          type: number
+
+        - in: query
+          name: price_per_member_to
+          description: Цена пдп до
+          type: number
+
+        - in: query
+          name: daily_coverage_from
+          description: суточный охват от
+          type: integer
+
+        - in: query
+          name: daily_coverage_to
+          description: суточный охват до
+          type: integer
+
+        - in: query
+          name: price_per_view_from
+          description: Цена просмотра от
+          type: number
+
+        - in: query
+          name: price_per_view_to
+          description: Цена просмотра до
+          type: number
+
+        - in: query
+          name: monthly_income_from
+          description: Месячный доход от
+          type: integer
+
+        - in: query
+          name: monthly_income_to
+          description: Месячный доход до
+          type: integer
+
+        - in: query
+          name: payback_period_from
+          description: Окупаемость в месацах от
+          type: number
+
+        - in: query
+          name: payback_period_to
+          description: Окупаемость в месацах до
+          type: number
+
+        - in: query
+          name: sort_by
+          type: string
+          enum:
+            - members_count
+            - price
+            - price_per_member
+            - price_per_view
+            - daily_coverage
+            - monthly_income
+            - payback_period
+            - created_at
+          default: created_at
+
+        - in: query
+          name: sort_by_type
+          type: string
+          enum:
+            - asc
+            - desc
+          default: desc
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LotListItem'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /lots/filter-boundaries:
+    get:
+      summary: Get Filter Boundaries
+      description: Получить границы фильтрации
+      operationId: getFilterBoundaries
+      security: []
+      parameters:
+        - name: topics
+          in: query
+          type: array
+          description: ID категорий для фильтрации границ
+          items:
+            type: integer
+
+      tags: [catalog]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/LotFilterBoundaries'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
 
 definitions:
+  LotFilterBoundaries:
+    type: object
+    required:
+      - members_count
+      - price
+      - price_per_member
+      - price_per_view
+      - daily_coverage
+      - monthly_income
+      - payback_period
+    properties:
+      members_count:
+        $ref: '#/definitions/IntBoundaries'
+      price:
+        $ref: '#/definitions/IntBoundaries'
+      price_per_member:
+        $ref: '#/definitions/FloatBoundaries'
+      price_per_view:
+        $ref: '#/definitions/FloatBoundaries'
+      daily_coverage:
+        $ref: '#/definitions/IntBoundaries'
+      monthly_income:
+        $ref: '#/definitions/IntBoundaries'
+      payback_period:
+        $ref: '#/definitions/FloatBoundaries'
+
+  FloatBoundaries:
+    type: object
+    required:
+      - from
+      - to
+    properties:
+      from:
+        type: number
+        description: от
+      to:
+        type: number
+        description: to
+
+  IntBoundaries:
+    type: object
+    required:
+      - from
+      - to
+    properties:
+      from:
+        type: integer
+        description: от
+      to:
+        type: integer
+        description: to
+
+  LotListItem:
+    type: object
+    description: Элемент списка лотов
+    required:
+      - id
+      - name
+      - avatar
+      - link
+      - username
+      - price
+      - comment
+      - metrics
+      - in_favorites
+      - created_at
+    properties:
+      id:
+        type: integer
+        description: ID лота
+      name:
+        type: string
+        description: Название лота (канала) в Telegram
+      avatar:
+        type: string
+        format: url
+        description: Аватарка лота
+      username:
+        type: string
+        description: '@username канала (может быть null)'
+      link:
+        type: string
+        description: Ссылка для вступления (как приватная так и публичная)
+        format: url
+      price:
+        $ref: '#/definitions/LotPrice'
+      comment:
+        type: string
+        description: Комментарий к лоту
+      metrics:
+        $ref: '#/definitions/LotMetrics'
+      topics:
+        type: array
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+      in_favorites:
+        type: boolean
+        description: True, если лот в избранном
+      created_at:
+        type: integer
+        description: Дата создания
+
   OwnedLot:
     type: object
     description: Данные лота которым владает пользователь
@@ -361,7 +610,9 @@ definitions:
       topics:
         type: array
         items:
-          $ref: '#/definitions/Topic'
+          type: integer
+          minLength: 1
+          maxLength: 3
       extra:
         type: array
         items:
@@ -429,7 +680,7 @@ definitions:
     required:
       - query
       - telegram_id
-      - topic_ids
+      - topics
       - price
       - is_bargain
       - monthly_income
@@ -444,7 +695,7 @@ definitions:
         type: integer
         description: ID канала в Telegram
         example: -1001072262979
-      topic_ids:
+      topics:
         type: array
         description: Список категорий лота
         example:

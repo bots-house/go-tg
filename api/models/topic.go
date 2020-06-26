@@ -15,6 +15,16 @@ func NewTopic(topic *core.Topic) *models.Topic {
 	}
 }
 
+func NewTopicIDSlice(ids []core.TopicID) []int64 {
+	result := make([]int64, len(ids))
+
+	for i, v := range ids {
+		result[i] = int64(v)
+	}
+
+	return result
+}
+
 func NewTopicSlice(topics core.TopicSlice) []*models.Topic {
 	result := make([]*models.Topic, len(topics))
 

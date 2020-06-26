@@ -29,7 +29,7 @@ type LotInput struct {
 
 	// Список категорий лота
 	// Required: true
-	TopicIds []int64 `json:"topic_ids"`
+	Topics []int64 `json:"topics"`
 
 	// Цена канала
 	// Required: true
@@ -64,7 +64,7 @@ func (m *LotInput) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateTopicIds(formats); err != nil {
+	if err := m.validateTopics(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -112,19 +112,19 @@ func (m *LotInput) validateTelegramID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *LotInput) validateTopicIds(formats strfmt.Registry) error {
+func (m *LotInput) validateTopics(formats strfmt.Registry) error {
 
-	if err := validate.Required("topic_ids", "body", m.TopicIds); err != nil {
+	if err := validate.Required("topics", "body", m.Topics); err != nil {
 		return err
 	}
 
-	for i := 0; i < len(m.TopicIds); i++ {
+	for i := 0; i < len(m.Topics); i++ {
 
-		if err := validate.MinLength("topic_ids"+"."+strconv.Itoa(i), "body", string(m.TopicIds[i]), 1); err != nil {
+		if err := validate.MinLength("topics"+"."+strconv.Itoa(i), "body", string(m.Topics[i]), 1); err != nil {
 			return err
 		}
 
-		if err := validate.MaxLength("topic_ids"+"."+strconv.Itoa(i), "body", string(m.TopicIds[i]), 3); err != nil {
+		if err := validate.MaxLength("topics"+"."+strconv.Itoa(i), "body", string(m.Topics[i]), 3); err != nil {
 			return err
 		}
 

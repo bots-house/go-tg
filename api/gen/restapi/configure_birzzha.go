@@ -17,7 +17,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml433442978 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml204448806 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -68,6 +68,16 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.BotGetBotInfoHandler == nil {
 		api.BotGetBotInfoHandler = bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
+		})
+	}
+	if api.CatalogGetFilterBoundariesHandler == nil {
+		api.CatalogGetFilterBoundariesHandler = catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
+		})
+	}
+	if api.CatalogGetLotsHandler == nil {
+		api.CatalogGetLotsHandler = catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		})
 	}
 	if api.CatalogGetTopicsHandler == nil {

@@ -171,7 +171,160 @@ func init() {
         }
       }
     },
-    "/lot": {
+    "/lots": {
+      "get": {
+        "security": [],
+        "description": "Получение списка доступных лотов.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Lots",
+        "operationId": "getLots",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Фильтрация по ID категорий",
+            "name": "topics",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "От кол-ва пдп",
+            "name": "members_count_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "До кол-ва пдп",
+            "name": "members_count_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Цена от",
+            "name": "price_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Цена до",
+            "name": "price_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена пдп от",
+            "name": "price_per_member_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена пдп до",
+            "name": "price_per_member_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "суточный охват от",
+            "name": "daily_coverage_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "суточный охват до",
+            "name": "daily_coverage_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена просмотра от",
+            "name": "price_per_view_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена просмотра до",
+            "name": "price_per_view_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Месячный доход от",
+            "name": "monthly_income_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Месячный доход до",
+            "name": "monthly_income_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Окупаемость в месацах от",
+            "name": "payback_period_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Окупаемость в месацах до",
+            "name": "payback_period_to",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "members_count",
+              "price",
+              "price_per_member",
+              "price_per_view",
+              "daily_coverage",
+              "monthly_income",
+              "payback_period",
+              "created_at"
+            ],
+            "type": "string",
+            "default": "created_at",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "default": "desc",
+            "name": "sort_by_type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotListItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
@@ -200,6 +353,42 @@ func init() {
             "description": "Bad Request",
             "schema": {
               "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/lots/filter-boundaries": {
+      "get": {
+        "security": [],
+        "description": "Получить границы фильтрации",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Filter Boundaries",
+        "operationId": "getFilterBoundaries",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "ID категорий для фильтрации границ",
+            "name": "topics",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotFilterBoundaries"
             }
           },
           "500": {
@@ -363,6 +552,25 @@ func init() {
         }
       }
     },
+    "FloatBoundaries": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "description": "от",
+          "type": "number",
+          "x-order": 0
+        },
+        "to": {
+          "description": "to",
+          "type": "number",
+          "x-order": 1
+        }
+      }
+    },
     "Identity": {
       "x-go-type": {
         "import": {
@@ -423,6 +631,25 @@ func init() {
         }
       }
     },
+    "IntBoundaries": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "description": "от",
+          "type": "integer",
+          "x-order": 0
+        },
+        "to": {
+          "description": "to",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
     "LotExtraResource": {
       "type": "object",
       "properties": {
@@ -433,13 +660,55 @@ func init() {
         }
       }
     },
+    "LotFilterBoundaries": {
+      "type": "object",
+      "required": [
+        "members_count",
+        "price",
+        "price_per_member",
+        "price_per_view",
+        "daily_coverage",
+        "monthly_income",
+        "payback_period"
+      ],
+      "properties": {
+        "daily_coverage": {
+          "x-order": 4,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "members_count": {
+          "x-order": 0,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "monthly_income": {
+          "x-order": 5,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "payback_period": {
+          "x-order": 6,
+          "$ref": "#/definitions/FloatBoundaries"
+        },
+        "price": {
+          "x-order": 1,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "price_per_member": {
+          "x-order": 2,
+          "$ref": "#/definitions/FloatBoundaries"
+        },
+        "price_per_view": {
+          "x-order": 3,
+          "$ref": "#/definitions/FloatBoundaries"
+        }
+      }
+    },
     "LotInput": {
       "description": "Данные для создания нового лота",
       "type": "object",
       "required": [
         "query",
         "telegram_id",
-        "topic_ids",
+        "topics",
         "price",
         "is_bargain",
         "monthly_income",
@@ -494,7 +763,7 @@ func init() {
           "x-order": 1,
           "example": -1001072262979
         },
-        "topic_ids": {
+        "topics": {
           "description": "Список категорий лота",
           "type": "array",
           "items": {
@@ -507,6 +776,83 @@ func init() {
             1,
             2
           ]
+        }
+      }
+    },
+    "LotListItem": {
+      "description": "Элемент списка лотов",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 6
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 10
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 9
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 7,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "price": {
+          "x-order": 5,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 8
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
         }
       }
     },
@@ -675,7 +1021,9 @@ func init() {
         "topics": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Topic"
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
           },
           "x-order": 13
         },
@@ -1125,7 +1473,160 @@ func init() {
         }
       }
     },
-    "/lot": {
+    "/lots": {
+      "get": {
+        "security": [],
+        "description": "Получение списка доступных лотов.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Lots",
+        "operationId": "getLots",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Фильтрация по ID категорий",
+            "name": "topics",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "От кол-ва пдп",
+            "name": "members_count_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "До кол-ва пдп",
+            "name": "members_count_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Цена от",
+            "name": "price_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Цена до",
+            "name": "price_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена пдп от",
+            "name": "price_per_member_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена пдп до",
+            "name": "price_per_member_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "суточный охват от",
+            "name": "daily_coverage_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "суточный охват до",
+            "name": "daily_coverage_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена просмотра от",
+            "name": "price_per_view_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Цена просмотра до",
+            "name": "price_per_view_to",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Месячный доход от",
+            "name": "monthly_income_from",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Месячный доход до",
+            "name": "monthly_income_to",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Окупаемость в месацах от",
+            "name": "payback_period_from",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Окупаемость в месацах до",
+            "name": "payback_period_to",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "members_count",
+              "price",
+              "price_per_member",
+              "price_per_view",
+              "daily_coverage",
+              "monthly_income",
+              "payback_period",
+              "created_at"
+            ],
+            "type": "string",
+            "default": "created_at",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "default": "desc",
+            "name": "sort_by_type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotListItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
@@ -1154,6 +1655,42 @@ func init() {
             "description": "Bad Request",
             "schema": {
               "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/lots/filter-boundaries": {
+      "get": {
+        "security": [],
+        "description": "Получить границы фильтрации",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Filter Boundaries",
+        "operationId": "getFilterBoundaries",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "ID категорий для фильтрации границ",
+            "name": "topics",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotFilterBoundaries"
             }
           },
           "500": {
@@ -1325,6 +1862,25 @@ func init() {
         }
       }
     },
+    "FloatBoundaries": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "description": "от",
+          "type": "number",
+          "x-order": 0
+        },
+        "to": {
+          "description": "to",
+          "type": "number",
+          "x-order": 1
+        }
+      }
+    },
     "Identity": {
       "x-go-type": {
         "import": {
@@ -1385,6 +1941,25 @@ func init() {
         }
       }
     },
+    "IntBoundaries": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "description": "от",
+          "type": "integer",
+          "x-order": 0
+        },
+        "to": {
+          "description": "to",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
     "LotExtraResource": {
       "type": "object",
       "properties": {
@@ -1395,13 +1970,55 @@ func init() {
         }
       }
     },
+    "LotFilterBoundaries": {
+      "type": "object",
+      "required": [
+        "members_count",
+        "price",
+        "price_per_member",
+        "price_per_view",
+        "daily_coverage",
+        "monthly_income",
+        "payback_period"
+      ],
+      "properties": {
+        "daily_coverage": {
+          "x-order": 4,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "members_count": {
+          "x-order": 0,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "monthly_income": {
+          "x-order": 5,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "payback_period": {
+          "x-order": 6,
+          "$ref": "#/definitions/FloatBoundaries"
+        },
+        "price": {
+          "x-order": 1,
+          "$ref": "#/definitions/IntBoundaries"
+        },
+        "price_per_member": {
+          "x-order": 2,
+          "$ref": "#/definitions/FloatBoundaries"
+        },
+        "price_per_view": {
+          "x-order": 3,
+          "$ref": "#/definitions/FloatBoundaries"
+        }
+      }
+    },
     "LotInput": {
       "description": "Данные для создания нового лота",
       "type": "object",
       "required": [
         "query",
         "telegram_id",
-        "topic_ids",
+        "topics",
         "price",
         "is_bargain",
         "monthly_income",
@@ -1456,7 +2073,7 @@ func init() {
           "x-order": 1,
           "example": -1001072262979
         },
-        "topic_ids": {
+        "topics": {
           "description": "Список категорий лота",
           "type": "array",
           "items": {
@@ -1469,6 +2086,83 @@ func init() {
             1,
             2
           ]
+        }
+      }
+    },
+    "LotListItem": {
+      "description": "Элемент списка лотов",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 6
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 10
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 9
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 7,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "price": {
+          "x-order": 5,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 8
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
         }
       }
     },
@@ -1637,7 +2331,9 @@ func init() {
         "topics": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Topic"
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
           },
           "x-order": 13
         },

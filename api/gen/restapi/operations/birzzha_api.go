@@ -55,6 +55,12 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
 		}),
+		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
+		}),
+		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
+		}),
 		CatalogGetTopicsHandler: catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
 		}),
@@ -131,6 +137,10 @@ type BirzzhaAPI struct {
 	AuthCreateTokenHandler auth.CreateTokenHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
 	BotGetBotInfoHandler bot.GetBotInfoHandler
+	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
+	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
+	// CatalogGetLotsHandler sets the operation handler for the get lots operation
+	CatalogGetLotsHandler catalog.GetLotsHandler
 	// CatalogGetTopicsHandler sets the operation handler for the get topics operation
 	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
@@ -222,6 +232,12 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.BotGetBotInfoHandler == nil {
 		unregistered = append(unregistered, "bot.GetBotInfoHandler")
+	}
+	if o.CatalogGetFilterBoundariesHandler == nil {
+		unregistered = append(unregistered, "catalog.GetFilterBoundariesHandler")
+	}
+	if o.CatalogGetLotsHandler == nil {
+		unregistered = append(unregistered, "catalog.GetLotsHandler")
 	}
 	if o.CatalogGetTopicsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetTopicsHandler")
@@ -346,7 +362,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/lot"] = catalog.NewCreateLot(o.context, o.CatalogCreateLotHandler)
+	o.handlers["POST"]["/lots"] = catalog.NewCreateLot(o.context, o.CatalogCreateLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -355,6 +371,14 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/bot"] = bot.NewGetBotInfo(o.context, o.BotGetBotInfoHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots/filter-boundaries"] = catalog.NewGetFilterBoundaries(o.context, o.CatalogGetFilterBoundariesHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots"] = catalog.NewGetLots(o.context, o.CatalogGetLotsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

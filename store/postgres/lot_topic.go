@@ -36,7 +36,9 @@ func (ls *LotTopicStore) set(ctx context.Context, lot core.LotID, topics []core.
 }
 
 func (ls *LotTopicStore) delete(ctx context.Context, lot core.LotID) error {
-	_, err := ls.db.ExecContext(ctx, `delete from lot_topic where lot_id = $1`, lot)
+	tx := shared.GetTx(ctx)
+
+	_, err := tx.ExecContext(ctx, `delete from lot_topic where lot_id = $1`, lot)
 	if err != nil {
 		return errors.Wrap(err, "exec delete lot topic")
 	}

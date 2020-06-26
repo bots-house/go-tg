@@ -8,6 +8,7 @@ require (
 	github.com/benbjohnson/clock v1.0.3
 	github.com/bots-house/telegram-bot-api v1.0.1-0.20200622142737-6721de82af68
 	github.com/cristalhq/jwt v1.2.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-http-utils/etag v0.0.0-20161124023236-513ea8f21eb1
 	github.com/go-http-utils/fresh v0.0.0-20161124030543-7231e26a4b27 // indirect

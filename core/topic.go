@@ -21,6 +21,14 @@ type Topic struct {
 
 type TopicSlice []*Topic
 
+func (ts TopicSlice) IDs() []TopicID {
+	result := make([]TopicID, len(ts))
+	for i, v := range ts {
+		result[i] = v.ID
+	}
+	return result
+}
+
 func NewTopic(name string) *Topic {
 	return &Topic{
 		Name:      name,

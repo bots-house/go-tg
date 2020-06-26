@@ -14,18 +14,14 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// OwnedLot Данные лота которым владает пользователь
+// LotListItem Элемент списка лотов
 //
-// swagger:model OwnedLot
-type OwnedLot struct {
+// swagger:model LotListItem
+type LotListItem struct {
 
 	// ID лота
 	// Required: true
 	ID *int64 `json:"id"`
-
-	// ID лота в Telegram
-	// Required: true
-	ExternalID *int64 `json:"external_id"`
 
 	// Название лота (канала) в Telegram
 	// Required: true
@@ -43,10 +39,6 @@ type OwnedLot struct {
 	// Required: true
 	Link *string `json:"link"`
 
-	// Описаник канала с Telegram
-	// Required: true
-	Bio *string `json:"bio"`
-
 	// price
 	// Required: true
 	Price *LotPrice `json:"price"`
@@ -59,40 +51,23 @@ type OwnedLot struct {
 	// Required: true
 	Metrics *LotMetrics `json:"metrics"`
 
+	// topics
+	Topics []int64 `json:"topics"`
+
+	// True, если лот в избранном
+	// Required: true
+	InFavorites *bool `json:"in_favorites"`
+
 	// Дата создания
 	// Required: true
 	CreatedAt *int64 `json:"created_at"`
-
-	// Дата оплаты
-	// Required: true
-	PaidAt *int64 `json:"paid_at"`
-
-	// Дата проверки
-	// Required: true
-	ApprovedAt *int64 `json:"approved_at"`
-
-	// topics
-	// Required: true
-	Topics []int64 `json:"topics"`
-
-	// extra
-	// Required: true
-	Extra []*LotExtraResource `json:"extra"`
-
-	// Дата публикации в канале
-	// Required: true
-	PublishedAt *int64 `json:"published_at"`
 }
 
-// Validate validates this owned lot
-func (m *OwnedLot) Validate(formats strfmt.Registry) error {
+// Validate validates this lot list item
+func (m *LotListItem) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateExternalID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -112,10 +87,6 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateBio(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validatePrice(formats); err != nil {
 		res = append(res, err)
 	}
@@ -128,27 +99,15 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateCreatedAt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePaidAt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateApprovedAt(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateTopics(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateExtra(formats); err != nil {
+	if err := m.validateInFavorites(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validatePublishedAt(formats); err != nil {
+	if err := m.validateCreatedAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -158,7 +117,7 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateID(formats strfmt.Registry) error {
+func (m *LotListItem) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
@@ -167,16 +126,7 @@ func (m *OwnedLot) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateExternalID(formats strfmt.Registry) error {
-
-	if err := validate.Required("external_id", "body", m.ExternalID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OwnedLot) validateName(formats strfmt.Registry) error {
+func (m *LotListItem) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
@@ -185,7 +135,7 @@ func (m *OwnedLot) validateName(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateAvatar(formats strfmt.Registry) error {
+func (m *LotListItem) validateAvatar(formats strfmt.Registry) error {
 
 	if err := validate.Required("avatar", "body", m.Avatar); err != nil {
 		return err
@@ -194,7 +144,7 @@ func (m *OwnedLot) validateAvatar(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateUsername(formats strfmt.Registry) error {
+func (m *LotListItem) validateUsername(formats strfmt.Registry) error {
 
 	if err := validate.Required("username", "body", m.Username); err != nil {
 		return err
@@ -203,7 +153,7 @@ func (m *OwnedLot) validateUsername(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateLink(formats strfmt.Registry) error {
+func (m *LotListItem) validateLink(formats strfmt.Registry) error {
 
 	if err := validate.Required("link", "body", m.Link); err != nil {
 		return err
@@ -212,16 +162,7 @@ func (m *OwnedLot) validateLink(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateBio(formats strfmt.Registry) error {
-
-	if err := validate.Required("bio", "body", m.Bio); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OwnedLot) validatePrice(formats strfmt.Registry) error {
+func (m *LotListItem) validatePrice(formats strfmt.Registry) error {
 
 	if err := validate.Required("price", "body", m.Price); err != nil {
 		return err
@@ -239,7 +180,7 @@ func (m *OwnedLot) validatePrice(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateComment(formats strfmt.Registry) error {
+func (m *LotListItem) validateComment(formats strfmt.Registry) error {
 
 	if err := validate.Required("comment", "body", m.Comment); err != nil {
 		return err
@@ -248,7 +189,7 @@ func (m *OwnedLot) validateComment(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateMetrics(formats strfmt.Registry) error {
+func (m *LotListItem) validateMetrics(formats strfmt.Registry) error {
 
 	if err := validate.Required("metrics", "body", m.Metrics); err != nil {
 		return err
@@ -266,37 +207,10 @@ func (m *OwnedLot) validateMetrics(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateCreatedAt(formats strfmt.Registry) error {
+func (m *LotListItem) validateTopics(formats strfmt.Registry) error {
 
-	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OwnedLot) validatePaidAt(formats strfmt.Registry) error {
-
-	if err := validate.Required("paid_at", "body", m.PaidAt); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OwnedLot) validateApprovedAt(formats strfmt.Registry) error {
-
-	if err := validate.Required("approved_at", "body", m.ApprovedAt); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OwnedLot) validateTopics(formats strfmt.Registry) error {
-
-	if err := validate.Required("topics", "body", m.Topics); err != nil {
-		return err
+	if swag.IsZero(m.Topics) { // not required
+		return nil
 	}
 
 	for i := 0; i < len(m.Topics); i++ {
@@ -314,34 +228,18 @@ func (m *OwnedLot) validateTopics(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OwnedLot) validateExtra(formats strfmt.Registry) error {
+func (m *LotListItem) validateInFavorites(formats strfmt.Registry) error {
 
-	if err := validate.Required("extra", "body", m.Extra); err != nil {
+	if err := validate.Required("in_favorites", "body", m.InFavorites); err != nil {
 		return err
-	}
-
-	for i := 0; i < len(m.Extra); i++ {
-		if swag.IsZero(m.Extra[i]) { // not required
-			continue
-		}
-
-		if m.Extra[i] != nil {
-			if err := m.Extra[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("extra" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil
 }
 
-func (m *OwnedLot) validatePublishedAt(formats strfmt.Registry) error {
+func (m *LotListItem) validateCreatedAt(formats strfmt.Registry) error {
 
-	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
+	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
 		return err
 	}
 
@@ -349,7 +247,7 @@ func (m *OwnedLot) validatePublishedAt(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *OwnedLot) MarshalBinary() ([]byte, error) {
+func (m *LotListItem) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -357,8 +255,8 @@ func (m *OwnedLot) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *OwnedLot) UnmarshalBinary(b []byte) error {
-	var res OwnedLot
+func (m *LotListItem) UnmarshalBinary(b []byte) error {
+	var res LotListItem
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

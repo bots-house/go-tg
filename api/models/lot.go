@@ -57,11 +57,44 @@ func NewOwnedLot(s storage.Storage, in *catalog.OwnedLot) *models.OwnedLot {
 		Price:       newLotPrice(in.Price),
 		Comment:     swag.String(in.Comment),
 		Metrics:     newLotMetrics(in.Metrics),
+		Topics: 	 NewTopicIDSlice(in.TopicIDs),
 		CreatedAt:   timeToUnix(in.CreatedAt),
 		PaidAt:      nullTimeToUnix(in.PaidAt),
 		ApprovedAt:  nullTimeToUnix(in.ApprovedAt),
 		PublishedAt: nullTimeToUnix(in.PublishedAt),
-		Topics: NewTopicSlice(in.Topics),
 		Extra: newLotExtraResourceSlice(in.ExtraResources),
 	}
+}
+
+func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
+
+	var avatar string
+
+	if in.Avatar.Valid {
+		avatar = s.PublicURL(in.Avatar.String)
+	}
+
+	return &models.LotListItem{
+		ID:          swag.Int64(int64(in.ID)),
+		Name:        swag.String(in.Name),
+		Avatar:      swag.String(avatar),
+		Username:    nullStringToString(in.Username),
+		Link:        swag.String(in.Link()),
+		Price:       newLotPrice(in.Price),
+		Comment:     swag.String(in.Comment),
+		Metrics:     newLotMetrics(in.Metrics),
+		InFavorites: swag.Bool(false),
+		Topics:      NewTopicIDSlice(in.Topics),
+		CreatedAt:   timeToUnix(in.CreatedAt),
+	}
+}
+
+func NewItemLotSlice(s storage.Storage, in []*catalog.ItemLot) []*models.LotListItem {
+	result := make([]*models.LotListItem, len(in))
+
+	for i, v := range in {
+		result[i] = NewItemLot(s, v)
+	}
+
+	return result
 }

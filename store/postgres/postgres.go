@@ -27,12 +27,12 @@ func NewPostgres(db *sql.DB) *Postgres {
 	pg := &Postgres{
 		DB:       db,
 		migrator: migrations.New(db),
-		Lot:      &LotStore{ContextExecutor: db},
 		User:     &UserStore{ContextExecutor: db},
 		Topic:    &TopicStore{ContextExecutor: db},
 	}
 
 	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx}
+	pg.Lot = &LotStore{ContextExecutor: db, txier: pg.Tx, lotTopicStore: pg.LotTopic}
 
 	return pg
 }

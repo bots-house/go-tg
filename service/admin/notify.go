@@ -65,7 +65,7 @@ func (ns *Notifications) run() {
 			}
 
 			msg := tgbotapi.NewMessage(ns.channelID, res.String())
-			msg.ParseMode = tgbotapi.ModeMarkdown
+			msg.ParseMode = tgbotapi.ModeHTML
 
 			_, err = ns.client.Send(msg)
 			if err != nil {

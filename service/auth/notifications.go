@@ -10,11 +10,11 @@ type NewUserNotification struct {
 
 func (n NewUserNotification) NotificationTemplate() string {
 	return `
-		🆕 *Новый пользователь!* 
+		🆕 <b>Новый пользователь!</b> 
 		
-		[{{ .User.Name }}]({{ .User.TelegramLink }}) {{ if .User.Telegram.Username.Valid }}@{{ .User.Telegram.Username.String }}{{ end }} 
+		<a href="{{ .User.TelegramLink }}">{{ .User.Name }}</a> {{ if .User.Telegram.Username.Valid }}@{{ .User.Telegram.Username.String }}{{ end }}
 		
-		**Способ регистрации:** _{{ if eq .User.JoinedFrom  "bot" }}бот{{ else }}cайт{{ end }}_.
+		<b>Способ регистрации:</b> <i>{{ if eq .User.JoinedFrom  "bot" }}бот{{ else }}cайт{{ end }}</i>.
 
 		#user{{ .User.ID }}
 	`

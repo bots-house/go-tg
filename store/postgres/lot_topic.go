@@ -12,7 +12,7 @@ import (
 )
 
 type LotTopicStore struct {
-	db *sql.DB
+	db    *sql.DB
 	txier store.Txier
 }
 
@@ -45,7 +45,6 @@ func (ls *LotTopicStore) delete(ctx context.Context, lot core.LotID) error {
 
 	return nil
 }
-
 
 func (ls *LotTopicStore) Set(ctx context.Context, lot core.LotID, topics []core.TopicID) error {
 	return ls.txier(ctx, func(ctx context.Context) error {

@@ -57,12 +57,12 @@ func NewOwnedLot(s storage.Storage, in *catalog.OwnedLot) *models.OwnedLot {
 		Price:       newLotPrice(in.Price),
 		Comment:     swag.String(in.Comment),
 		Metrics:     newLotMetrics(in.Metrics),
-		Topics: 	 NewTopicIDSlice(in.TopicIDs),
+		Topics:      NewTopicIDSlice(in.TopicIDs),
 		CreatedAt:   timeToUnix(in.CreatedAt),
 		PaidAt:      nullTimeToUnix(in.PaidAt),
 		ApprovedAt:  nullTimeToUnix(in.ApprovedAt),
 		PublishedAt: nullTimeToUnix(in.PublishedAt),
-		Extra: newLotExtraResourceSlice(in.ExtraResources),
+		Extra:       newLotExtraResourceSlice(in.ExtraResources),
 	}
 }
 

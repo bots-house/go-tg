@@ -36,7 +36,7 @@ type OwnedLot struct {
 
 func (srv *Service) newOwnedLot(ctx context.Context, lot *core.Lot) (*OwnedLot, error) {
 	return &OwnedLot{
-		Lot:    lot,
+		Lot: lot,
 	}, nil
 }
 
@@ -100,23 +100,23 @@ func (srv *Service) GetFilterBoundaries(ctx context.Context, query *core.LotFilt
 }
 
 type LotsQuery struct {
-	Topics []core.TopicID
-	MembersCountFrom int
-	MembersCountTo int
-	PriceFrom int
-	PriceTo int
+	Topics             []core.TopicID
+	MembersCountFrom   int
+	MembersCountTo     int
+	PriceFrom          int
+	PriceTo            int
 	PricePerMemberFrom float64
-	PricePerMemberTo float64
-	DailyCoverageFrom int
-	DailyCoverageTo int
-	PricePerViewFrom float64
-	PricePerViewTo float64
-	MonthlyIncomeFrom int
-	MonthlyIncomeTo int
-	PaybackPeriodFrom float64
-	PaybackPeriodTo float64
-	SortBy core.LotField
-	SortByType store.SortType
+	PricePerMemberTo   float64
+	DailyCoverageFrom  int
+	DailyCoverageTo    int
+	PricePerViewFrom   float64
+	PricePerViewTo     float64
+	MonthlyIncomeFrom  int
+	MonthlyIncomeTo    int
+	PaybackPeriodFrom  float64
+	PaybackPeriodTo    float64
+	SortBy             core.LotField
+	SortByType         store.SortType
 }
 
 type ItemLot struct {

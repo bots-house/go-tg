@@ -88,7 +88,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder 
 		PaybackPeriodFrom:  swag.Float64Value(params.PaybackPeriodFrom),
 		PaybackPeriodTo:    swag.Float64Value(params.PaybackPeriodTo),
 		//SortBy:             sortBy,
-		SortByType:         0,
+		SortByType: 0,
 	}
 
 	if params.SortBy != nil {

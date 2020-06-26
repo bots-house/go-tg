@@ -16,9 +16,9 @@ type Postgres struct {
 	*sql.DB
 	migrator *migrations.Migrator
 
-	Lot   *LotStore
-	User  *UserStore
-	Topic *TopicStore
+	Lot      *LotStore
+	User     *UserStore
+	Topic    *TopicStore
 	LotTopic *LotTopicStore
 }
 

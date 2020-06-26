@@ -19,7 +19,7 @@ import (
 
 type LotStore struct {
 	boil.ContextExecutor
-	txier store.Txier
+	txier         store.Txier
 	lotTopicStore *LotTopicStore
 }
 
@@ -95,10 +95,9 @@ func (store *LotStore) FilterBoundaries(ctx context.Context, query *core.LotFilt
 	result := &filterBoundaries{}
 
 	var (
-		args = []interface{}{}
+		args     = []interface{}{}
 		sqlQuery = queryFilterBoundariesAll
 	)
-
 
 	if query != nil && len(query.Topics) > 0 {
 		sqlQuery = queryFilterBoudariesTopics
@@ -243,11 +242,9 @@ func (store *LotStore) add(ctx context.Context, lot *core.Lot) error {
 
 	lot.ID = core.LotID(row.ID)
 
-
 	if err := store.lotTopicStore.Set(ctx, lot.ID, lot.TopicIDs); err != nil {
 		return errors.Wrap(err, "create lot topics")
 	}
-
 
 	return nil
 }
@@ -282,7 +279,6 @@ func (store *LotStore) update(ctx context.Context, lot *core.Lot) error {
 func (store *LotStore) Query() core.LotStoreQuery {
 	return &LotStoreQuery{store: store}
 }
-
 
 type LotStoreQuery struct {
 	mods  []qm.QueryMod
@@ -390,7 +386,8 @@ func (lsq *LotStoreQuery) MembersCountFrom(v int) core.LotStoreQuery {
 
 func (lsq *LotStoreQuery) MembersCountTo(v int) core.LotStoreQuery {
 	lsq.mods = append(lsq.mods, dal.LotWhere.MetricsMembersCount.LTE(v))
-	return lsq}
+	return lsq
+}
 
 func (lsq *LotStoreQuery) ID(ids ...core.LotID) core.LotStoreQuery {
 	idsInt := make([]int, len(ids))

@@ -1,6 +1,5 @@
 package store
 
-
 type SortType int8
 
 const (

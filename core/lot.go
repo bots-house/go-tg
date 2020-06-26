@@ -83,18 +83,18 @@ func (lm *LotMetrics) Refresh(price int) {
 
 func (lm *LotMetrics) refreshPricePerMember(price int) {
 	v := float64(price) / float64(lm.MembersCount)
-	lm.PricePerMember = math.Round(v*100)/100
+	lm.PricePerMember = math.Round(v*100) / 100
 }
 
 func (lm *LotMetrics) refreshPricePerView(price int) {
 	v := float64(price) / float64(lm.DailyCoverage)
-	lm.PricePerView = math.Round(v*100)/100
+	lm.PricePerView = math.Round(v*100) / 100
 }
 
 func (lm *LotMetrics) refreshPaybackPeriod(price int) {
 	if lm.MonthlyIncome.Valid {
 		v := float64(price) / float64(lm.MonthlyIncome.Int)
-		lm.PaybackPeriod = null.Float64From(math.Round(v*100)/100)
+		lm.PaybackPeriod = null.Float64From(math.Round(v*100) / 100)
 	} else {
 		lm.PaybackPeriod.Valid = false
 	}
@@ -246,15 +246,15 @@ const (
 )
 
 var (
-	stringToLotField =  map[string]LotField{
-		"members_count": LotFieldMembersCount,
-		"price": LotFieldPrice,
+	stringToLotField = map[string]LotField{
+		"members_count":    LotFieldMembersCount,
+		"price":            LotFieldPrice,
 		"price_per_member": LotFieldPricePerMember,
-		"daily_coverage": LotFieldDailyCoverage,
-		"price_per_view": LotFieldPricePerView,
-		"monthly_income": LotFieldMonthlyIncome,
-		"payback_period": LotFieldPaybackPeriod,
-		"created_at": LotFieldCreatedAt,
+		"daily_coverage":   LotFieldDailyCoverage,
+		"price_per_view":   LotFieldPricePerView,
+		"monthly_income":   LotFieldMonthlyIncome,
+		"payback_period":   LotFieldPaybackPeriod,
+		"created_at":       LotFieldCreatedAt,
 	}
 
 	lotFieldToString = mirrorStringToLotField(stringToLotField)

@@ -15,11 +15,12 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml010339795 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml884348788 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -96,6 +97,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.PersonalAreaGetPaymentStatusHandler == nil {
 		api.PersonalAreaGetPaymentStatusHandler = personal_area.GetPaymentStatusHandlerFunc(func(params personal_area.GetPaymentStatusParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetPaymentStatus has not yet been implemented")
+		})
+	}
+	if api.LandingGetReviewsHandler == nil {
+		api.LandingGetReviewsHandler = landing.GetReviewsHandlerFunc(func(params landing.GetReviewsParams) middleware.Responder {
+			return middleware.NotImplemented("operation landing.GetReviews has not yet been implemented")
 		})
 	}
 	if api.CatalogGetTopicsHandler == nil {

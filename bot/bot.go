@@ -7,6 +7,7 @@ import (
 
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/auth"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 
@@ -22,16 +23,18 @@ type Config struct {
 type Bot struct {
 	client *tgbotapi.BotAPI
 
-	cfg     Config
-	authSrv *auth.Service
-	handler tg.Handler
+	cfg      Config
+	authSrv  *auth.Service
+	adminSrv *admin.Service
+	handler  tg.Handler
 }
 
-func New(cfg Config, client *tgbotapi.BotAPI, authSrv *auth.Service) *Bot {
+func New(cfg Config, client *tgbotapi.BotAPI, authSrv *auth.Service, adminSrv *admin.Service) *Bot {
 	bot := &Bot{
-		client:  client,
-		authSrv: authSrv,
-		cfg:     cfg,
+		client:   client,
+		authSrv:  authSrv,
+		adminSrv: adminSrv,
+		cfg:      cfg,
 	}
 
 	bot.initHandler()
@@ -79,12 +82,19 @@ func (bot *Bot) initHandler() {
 	bot.handler = handler
 }
 
+func isForward(msg *tgbotapi.Message) bool {
+	return msg.ForwardFrom != nil
+}
+
 func (bot *Bot) onUpdate(ctx context.Context, update *tgbotapi.Update) error {
 
 	if msg := update.Message; msg != nil {
 		switch msg.Command() {
 		case "start":
 			return bot.onStart(ctx, msg)
+		}
+		if isForward(msg) {
+			return bot.onForward(ctx, msg)
 		}
 	}
 

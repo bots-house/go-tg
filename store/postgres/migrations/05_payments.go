@@ -64,6 +64,11 @@ func init() {
               updated_at timestamp with time zone
         );
 	`), query(`
-		delete type lot_status
+        delete type lot_status;
+        drop table lot_canceled_reason;
+        delete type payment_status;
+        delete type payment_purpose;
+        delete type payment_gateway;
+        drop table payment;
     `))
 }

@@ -17,6 +17,6 @@ func init() {
 			updated_at timestamp with time zone
 		);
     `), query(`
-		delete table settings
+		drop table settings;
     `))
 }

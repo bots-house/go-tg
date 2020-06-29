@@ -539,6 +539,51 @@ func init() {
         }
       ]
     },
+    "/reviews": {
+      "get": {
+        "security": [],
+        "description": "Получить список отзывов.",
+        "tags": [
+          "landing"
+        ],
+        "summary": "Get Reviews",
+        "operationId": "getReviews",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет отзывов.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит отзывов.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReviewList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/tg/resolve": {
       "get": {
         "security": [],
@@ -1384,6 +1429,89 @@ func init() {
         }
       }
     },
+    "Review": {
+      "description": "Отзыв.",
+      "required": [
+        "id",
+        "user",
+        "text",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Дата создания отзыва.",
+          "type": "integer",
+          "format": "int64",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID отзыва.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "text": {
+          "description": "Текст отзыва.",
+          "type": "string",
+          "x-order": 2
+        },
+        "user": {
+          "x-order": 1,
+          "$ref": "#/definitions/ReviewUser"
+        }
+      }
+    },
+    "ReviewList": {
+      "description": "Отзывы и их количетсво.",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Review"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество отзывов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "ReviewUser": {
+      "description": "Пользователь который оставил отзыв.",
+      "required": [
+        "first_name",
+        "last_name",
+        "username",
+        "avatar"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя.",
+          "type": "string",
+          "x-order": 3
+        },
+        "first_name": {
+          "description": "Имя пользователя.",
+          "type": "string",
+          "x-order": 0
+        },
+        "last_name": {
+          "description": "Фамилия пользователя.",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "Юзернейм пользователя.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
     "TelegramResolveResult": {
       "description": "Сущность соотвествующая запросу.",
       "type": "object",
@@ -1652,7 +1780,7 @@ func init() {
       "name": "catalog"
     },
     {
-      "description": "Приватные методы пользователя\n",
+      "description": "Приватные методы пользователя.\n",
       "name": "personal-area"
     },
     {
@@ -1660,7 +1788,11 @@ func init() {
       "name": "bot"
     },
     {
-      "description": "Содержит методы для обработки уведомлений от сторонних сервисов\n",
+      "description": "Содержит методы для работы на лендинге.\n",
+      "name": "landing"
+    },
+    {
+      "description": "Содержит методы для обработки уведомлений от сторонних сервисов.\n",
       "name": "webhook"
     }
   ]
@@ -2198,6 +2330,51 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/reviews": {
+      "get": {
+        "security": [],
+        "description": "Получить список отзывов.",
+        "tags": [
+          "landing"
+        ],
+        "summary": "Get Reviews",
+        "operationId": "getReviews",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет отзывов.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит отзывов.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReviewList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/tg/resolve": {
       "get": {
@@ -3074,6 +3251,89 @@ func init() {
         }
       }
     },
+    "Review": {
+      "description": "Отзыв.",
+      "required": [
+        "id",
+        "user",
+        "text",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Дата создания отзыва.",
+          "type": "integer",
+          "format": "int64",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID отзыва.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "text": {
+          "description": "Текст отзыва.",
+          "type": "string",
+          "x-order": 2
+        },
+        "user": {
+          "x-order": 1,
+          "$ref": "#/definitions/ReviewUser"
+        }
+      }
+    },
+    "ReviewList": {
+      "description": "Отзывы и их количетсво.",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Review"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество отзывов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "ReviewUser": {
+      "description": "Пользователь который оставил отзыв.",
+      "required": [
+        "first_name",
+        "last_name",
+        "username",
+        "avatar"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя.",
+          "type": "string",
+          "x-order": 3
+        },
+        "first_name": {
+          "description": "Имя пользователя.",
+          "type": "string",
+          "x-order": 0
+        },
+        "last_name": {
+          "description": "Фамилия пользователя.",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "Юзернейм пользователя.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
     "TelegramResolveResult": {
       "description": "Сущность соотвествующая запросу.",
       "type": "object",
@@ -3460,7 +3720,7 @@ func init() {
       "name": "catalog"
     },
     {
-      "description": "Приватные методы пользователя\n",
+      "description": "Приватные методы пользователя.\n",
       "name": "personal-area"
     },
     {
@@ -3468,7 +3728,11 @@ func init() {
       "name": "bot"
     },
     {
-      "description": "Содержит методы для обработки уведомлений от сторонних сервисов\n",
+      "description": "Содержит методы для работы на лендинге.\n",
+      "name": "landing"
+    },
+    {
+      "description": "Содержит методы для обработки уведомлений от сторонних сервисов.\n",
       "name": "webhook"
     }
   ]

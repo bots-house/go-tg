@@ -23,6 +23,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
@@ -72,6 +73,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		PersonalAreaGetPaymentStatusHandler: personal_area.GetPaymentStatusHandlerFunc(func(params personal_area.GetPaymentStatusParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetPaymentStatus has not yet been implemented")
+		}),
+		LandingGetReviewsHandler: landing.GetReviewsHandlerFunc(func(params landing.GetReviewsParams) middleware.Responder {
+			return middleware.NotImplemented("operation landing.GetReviews has not yet been implemented")
 		}),
 		CatalogGetTopicsHandler: catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
@@ -165,6 +169,8 @@ type BirzzhaAPI struct {
 	CatalogGetLotsHandler catalog.GetLotsHandler
 	// PersonalAreaGetPaymentStatusHandler sets the operation handler for the get payment status operation
 	PersonalAreaGetPaymentStatusHandler personal_area.GetPaymentStatusHandler
+	// LandingGetReviewsHandler sets the operation handler for the get reviews operation
+	LandingGetReviewsHandler landing.GetReviewsHandler
 	// CatalogGetTopicsHandler sets the operation handler for the get topics operation
 	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
@@ -276,6 +282,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.PersonalAreaGetPaymentStatusHandler == nil {
 		unregistered = append(unregistered, "personal_area.GetPaymentStatusHandler")
+	}
+	if o.LandingGetReviewsHandler == nil {
+		unregistered = append(unregistered, "landing.GetReviewsHandler")
 	}
 	if o.CatalogGetTopicsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetTopicsHandler")
@@ -434,6 +443,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/payments/{id}/status"] = personal_area.NewGetPaymentStatus(o.context, o.PersonalAreaGetPaymentStatusHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/reviews"] = landing.NewGetReviews(o.context, o.LandingGetReviewsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

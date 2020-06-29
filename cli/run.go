@@ -25,6 +25,7 @@ import (
 	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/bots-house/birzzha/service/catalog"
+	"github.com/bots-house/birzzha/service/landing"
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/payment/interkassa"
 	"github.com/bots-house/birzzha/service/personal"
@@ -178,11 +179,24 @@ func run(ctx context.Context) error {
 		Txier:    pg.Tx,
 	}
 
+	adminSrv := &admin.Service{
+		Review:  pg.Review,
+		User:    pg.User,
+		Storage: strg,
+		AvatarResolver: tg.AvatarResolver{
+			Client: &http.Client{},
+		},
+	}
+
+	landingSrv := &landing.Service{
+		Review: pg.Review,
+	}
+
 	bot := bot.New(bot.Config{
 		Site:            cfg.Site,
 		PathSellChannel: cfg.SitePathSellChannel,
 		PathListChannel: cfg.SitePathListChannel,
-	}, tgClient, authSrv)
+	}, tgClient, authSrv, adminSrv)
 
 	if err := bot.SetWebhookIfNeed(ctx, cfg.BotWebhookDomain, cfg.BotWebhookPath); err != nil {
 		return errors.Wrap(err, "set bot webhook")
@@ -209,6 +223,8 @@ func run(ctx context.Context) error {
 		Catalog:      catalogSrv,
 		Storage:      strg,
 		Gateways:     gateways,
+		Landing:      landingSrv,
+		Logger:       log.Logger(ctx),
 	}
 
 	server := newServer(cfg, handler.Make())

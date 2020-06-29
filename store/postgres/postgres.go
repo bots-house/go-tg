@@ -21,6 +21,7 @@ type Postgres struct {
 	User     *UserStore
 	Topic    *TopicStore
 	LotTopic *LotTopicStore
+	Review   *ReviewStore
 	Settings *SettingsStore
 	Payment  *PaymentStore
 }
@@ -32,6 +33,7 @@ func NewPostgres(db *sql.DB) *Postgres {
 		migrator: migrations.New(db),
 		User:     &UserStore{ContextExecutor: db},
 		Topic:    &TopicStore{ContextExecutor: db},
+		Review:   &ReviewStore{ContextExecutor: db},
 		Payment:  &PaymentStore{ContextExecutor: db},
 	}
 

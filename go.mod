@@ -42,4 +42,6 @@ require (
 	github.com/volatiletech/sqlboiler/v4 v4.1.2
 	github.com/volatiletech/strmangle v0.0.1
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+	github.com/PuerkitoBio/goquery v1.5.1
+
 )

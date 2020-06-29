@@ -45,13 +45,18 @@ tags:
        - объявление (`lot`)
   - name: personal-area
     description: |
-      Приватные методы пользователя
+      Приватные методы пользователя.
   - name: bot
     description: |
       Содержит методы для работы с ботом.
+
+  - name: landing
+    description: |
+      Содержит методы для работы на лендинге.
+
   - name: webhook
     description: |
-      Содержит методы для обработки уведомлений от сторонних сервисов
+      Содержит методы для обработки уведомлений от сторонних сервисов.
 
 consumes:
   - application/json
@@ -219,7 +224,39 @@ paths:
               $ref: "#/definitions/Topic"
         500:
           description: Internal Server Error
-
+  
+  /reviews:
+    get:
+      summary: Get Reviews
+      operationId: getReviews
+      description: Получить список отзывов.
+      tags: [landing]
+      security: []
+      parameters:
+        - in: query
+          name: offset
+          type: integer
+          required: false
+          description: Офсет отзывов.
+        - in: query
+          name: limit
+          type: integer
+          required: false
+          description: Лимит отзывов.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ReviewList"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+      
   /tg/resolve:
     get:
       summary: Resolve Telegram Identity
@@ -1197,3 +1234,60 @@ definitions:
       auth_deep_link:
         type: string
         description: Значение параметра `?start=` который нужно передать при формировании URL для авторизации через `LoginUrl`.
+  
+  ReviewUser:
+    description: Пользователь который оставил отзыв.
+    required:
+      - first_name
+      - last_name
+      - username
+      - avatar
+    properties:
+      first_name:
+        type: string
+        description: Имя пользователя.
+      last_name:
+        type: string
+        description: Фамилия пользователя.
+      username:
+        type: string
+        description: Юзернейм пользователя.
+      avatar:
+        type: string
+        description: Ссылка на аватарку пользователя.
+  
+  Review:
+    description: Отзыв.
+    required:
+      - id
+      - user
+      - text
+      - created_at
+    properties:
+      id:
+        type: integer
+        description: ID отзыва.
+      user:
+        $ref: "#/definitions/ReviewUser"
+      text:
+        type: string
+        description: Текст отзыва.
+      created_at:
+        type: integer
+        format: int64
+        description: Дата создания отзыва.
+  
+  ReviewList:
+    description: Отзывы и их количетсво.
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: Общее количество отзывов.
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/Review"
+        

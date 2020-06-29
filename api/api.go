@@ -12,10 +12,14 @@ import (
 	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/landing"
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/personal"
 
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+	landingops "github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
+	kitlog "github.com/go-kit/kit/log"
+
 	"github.com/go-http-utils/etag"
 
 	"github.com/bots-house/birzzha/bot"
@@ -34,6 +38,8 @@ type Handler struct {
 	BotFileProxy *tg.FileProxy
 	Storage      storage.Storage
 	Gateways     *payment.GatewayRegistry
+	Landing      *landing.Service
+	Logger       kitlog.Logger
 }
 
 func (h Handler) newAPI() *operations.BirzzhaAPI {
@@ -77,6 +83,9 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.CatalogGetFilterBoundariesHandler = catalogops.GetFilterBoundariesHandlerFunc(h.getFilterBoundaries)
 	api.CatalogGetLotsHandler = catalogops.GetLotsHandlerFunc(h.getLots)
 
+	// landing
+	api.LandingGetReviewsHandler = landingops.GetReviewsHandlerFunc(h.getReviews)
+
 	// personal
 	api.PersonalAreaCreateLotHandler = personalops.CreateLotHandlerFunc(h.createLot)
 	api.PersonalAreaGetApplicationInoviceHandler = personalops.GetApplicationInoviceHandlerFunc(h.getApplicationInvoice)
@@ -96,9 +105,10 @@ func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
 }
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {
-	// handler = common.WrapMiddlewareRecovery(handler)
 	// handler = common.WrapMiddlewareFS(handler, h.Service.Config.MediaStoragePath)
+	handler = h.wrapMiddlewareLogger(handler)
 
+	handler = h.wrapMiddlewareRecovery(handler)
 	fileProxyWrapper := newFileProxyWrapper(h.BotFileProxy)
 
 	handler = fileProxyWrapper(handler)

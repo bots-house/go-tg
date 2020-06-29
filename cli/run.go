@@ -15,7 +15,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
-	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/bots-house/birzzha/api"
@@ -90,9 +89,9 @@ func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistr
 
 func run(ctx context.Context) error {
 	// load .env
-	if err := godotenv.Load(".env.local"); err != nil {
-		return errors.Wrap(err, "load env")
-	}
+	// if err := godotenv.Load(".env.local"); err != nil {
+	// 	return errors.Wrap(err, "load env")
+	// }
 
 	// parse config
 	var cfg Config

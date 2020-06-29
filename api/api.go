@@ -8,8 +8,12 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
 	authops "github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	personalops "github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
+	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/payment"
+	"github.com/bots-house/birzzha/service/personal"
 
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/go-http-utils/etag"
@@ -25,9 +29,11 @@ import (
 type Handler struct {
 	Auth         *auth.Service
 	Catalog      *catalog.Service
+	Personal     *personal.Service
 	Bot          *bot.Bot
 	BotFileProxy *tg.FileProxy
 	Storage      storage.Storage
+	Gateways     *payment.GatewayRegistry
 }
 
 func (h Handler) newAPI() *operations.BirzzhaAPI {
@@ -68,9 +74,17 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	// catalog
 	api.CatalogGetTopicsHandler = catalogops.GetTopicsHandlerFunc(h.getTopics)
 	api.CatalogResolveTelegramHandler = catalogops.ResolveTelegramHandlerFunc(h.resolveTelegram)
-	api.CatalogCreateLotHandler = catalogops.CreateLotHandlerFunc(h.createLot)
 	api.CatalogGetFilterBoundariesHandler = catalogops.GetFilterBoundariesHandlerFunc(h.getFilterBoundaries)
 	api.CatalogGetLotsHandler = catalogops.GetLotsHandlerFunc(h.getLots)
+
+	// personal
+	api.PersonalAreaCreateLotHandler = personalops.CreateLotHandlerFunc(h.createLot)
+	api.PersonalAreaGetApplicationInoviceHandler = personalops.GetApplicationInoviceHandlerFunc(h.getApplicationInvoice)
+	api.PersonalAreaCreateApplicationPaymentHandler = personalops.CreateApplicationPaymentHandlerFunc(h.createApplicationPayment)
+	api.PersonalAreaGetPaymentStatusHandler = personalops.GetPaymentStatusHandlerFunc(h.getPaymentStatus)
+
+	// webhook
+	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handleGatewayNotification)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

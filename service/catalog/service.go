@@ -13,6 +13,7 @@ type Service struct {
 	Topic    core.TopicStore
 	Lot      core.LotStore
 	LotTopic core.LotTopicStore
+	Settings core.SettingsStore
 
 	Resolver tg.Resolver
 	Storage  storage.Storage

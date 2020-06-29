@@ -5,45 +5,12 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
 
-	"github.com/bots-house/birzzha/api/authz"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/bots-house/birzzha/store"
 )
-
-func (h *Handler) createLot(params catalogops.CreateLotParams, identity *authz.Identity) middleware.Responder {
-	ctx := params.HTTPRequest.Context()
-
-	payload := params.Payload
-
-	topics := make([]core.TopicID, len(payload.Topics))
-	for i, v := range payload.Topics {
-		topics[i] = core.TopicID(v)
-	}
-
-	in := &catalog.LotInput{
-		Query:         swag.StringValue(payload.Query),
-		TelegramID:    swag.Int64Value(payload.TelegramID),
-		TopicIDs:      topics,
-		Price:         int(swag.Int64Value(payload.Price)),
-		IsBargain:     swag.BoolValue(payload.IsBargain),
-		MonthlyIncome: int(swag.Int64Value(payload.MonthlyIncome)),
-		Comment:       swag.StringValue(payload.Comment),
-		Extra:         payload.Extra,
-	}
-
-	lot, err := h.Catalog.AddLot(ctx, identity.User, in)
-	if err != nil {
-		if err2, ok := errors.Cause(err).(*core.Error); ok {
-			return catalogops.NewCreateLotBadRequest().WithPayload(models.NewError(err2))
-		}
-		return catalogops.NewCreateLotInternalServerError().WithPayload(models.NewInternalServerError(err))
-	}
-
-	return catalogops.NewCreateLotCreated().WithPayload(models.NewOwnedLot(h.Storage, lot))
-}
 
 func newTopicIDSlice(in []int64) []core.TopicID {
 	result := make([]core.TopicID, len(in))
@@ -62,7 +29,7 @@ func (h *Handler) getFilterBoundaries(params catalogops.GetFilterBoundariesParam
 
 	boundaries, err := h.Catalog.GetFilterBoundaries(ctx, query)
 	if err != nil {
-		return catalogops.NewCreateLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetFilterBoundariesInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 
 	return catalogops.NewGetFilterBoundariesOK().WithPayload(models.NewFilterBoundaries(boundaries))
@@ -122,4 +89,29 @@ func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder 
 	}
 
 	return catalogops.NewGetLotsOK().WithPayload(models.NewItemLotSlice(h.Storage, lots))
+}
+
+func (h *Handler) resolveTelegram(params catalogops.ResolveTelegramParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Catalog.ResolveTelegram(ctx, params.Q)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return catalogops.NewResolveTelegramBadRequest().WithPayload(models.NewError(err2))
+		}
+		return catalogops.NewResolveTelegramBadRequest().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return catalogops.NewResolveTelegramOK().WithPayload(models.NewResolveResult(result))
+}
+
+func (h *Handler) getTopics(params catalogops.GetTopicsParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	topics, err := h.Catalog.GetTopics(ctx)
+	if err != nil {
+		return catalogops.NewGetTopicsInternalServerError()
+	}
+
+	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopicSlice(topics))
 }

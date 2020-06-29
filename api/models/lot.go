@@ -7,6 +7,7 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/service/catalog"
+	"github.com/bots-house/birzzha/service/personal"
 )
 
 func newLotPrice(in core.LotPrice) *models.LotPrice {
@@ -38,7 +39,7 @@ func newLotExtraResourceSlice(in []core.LotExtraResource) []*models.LotExtraReso
 	return result
 }
 
-func NewOwnedLot(s storage.Storage, in *catalog.OwnedLot) *models.OwnedLot {
+func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 
 	var avatar string
 

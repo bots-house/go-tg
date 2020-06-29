@@ -43,10 +43,15 @@ tags:
       Существуют следующие сущности:
        - категория объявления (`topic`)
        - объявление (`lot`)
-
+  - name: personal-area
+    description: |
+      Приватные методы пользователя
   - name: bot
     description: |
       Содержит методы для работы с ботом.
+  - name: webhook
+    description: |
+      Содержит методы для обработки уведомлений от сторонних сервисов
 
 consumes:
   - application/json
@@ -265,7 +270,7 @@ paths:
     post:
       summary: Create Lot
       operationId: createLot
-      tags: [catalog]
+      tags: ['personal-area']
       description: |
         Создание лота.
         Предварительно нужно получить ID канала через метод `/tg/resolve` и отправить его в запросе как `telegram_id`.
@@ -442,7 +447,218 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /lots/{id}/application-invoice:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID неоплаченного лота
+    get:
+      summary: Get Application Invoice
+      description: |
+        Получить информацию для оплаты объявления.
+      operationId: getApplicationInovice
+      tags: ['personal-area']
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ApplicationInvoice'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /lots/{id}/application-payment:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID неоплаченного лота
+    post:
+      summary: Create Application Payment
+      parameters:
+        - in: query
+          name: gateway
+          required: true
+          type: string
+          enum: [interkassa, direct]
+      description: |
+        Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
+      operationId: createApplicationPayment
+      tags: ['personal-area']
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/PaymentForm'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  /payments/{id}/status:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID платежа
+    get:
+      summary: Get Payment Status
+      description: |
+        Получить статус платежа по его ID.
+      operationId: getPaymentStatus
+      tags: ['personal-area']
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/PaymentStatus'
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /webhooks/gateways/{name}:
+    parameters:
+      - name: name
+        type: string
+        in: path
+        required: true
+        enum: [interkassa]
+
+    post:
+      operationId: handleGatewayNotification
+      summary: Handle Gateway Notification
+      description: |
+        Обработка уведомления о изменении состояния платжа
+      tags: [webhook]
+      consumes:
+        - 'application/x-www-form-urlencoded'
+      security: []
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
+  PaymentStatus:
+    type: object
+    required:
+      - status
+      - lot_id
+      - purpose
+    properties:
+      status:
+        type: string
+        description: Статус платежа
+        enum:
+          - created
+          - pending
+          - success
+          - failed
+      lot_id:
+        type: integer
+        description: ID лота который относится к данному платежу
+      purpose:
+        type: string
+        description: Предназначение оплаты (размещение или изменение цены).
+        enum:
+          - application
+          - change_price
+
+  PaymentForm:
+    type: object
+    required:
+      - method
+      - action
+      - values
+    properties:
+      method:
+        type: string
+        description: метод с которым нужно отправить запрос
+        enum: [POST, GET]
+      action:
+        type: string
+        format: url
+        description: URL на который нужно отправить запрос
+      values:
+        type: array
+        items:
+          type: object
+          required: [key, value]
+          properties:
+            key:
+              type: string
+            value:
+              type: string
+
+  ApplicationInvoice:
+    type: object
+    required:
+      - lot
+      - price
+      - gateways
+    properties:
+      lot:
+        $ref: '#/definitions/OwnedLot'
+      price:
+        description: Цена размещения
+        $ref: '#/definitions/Money'
+      cashier:
+        type: object
+        description: |
+          Содержит контакты человека для приема оплат напрямую.
+        required:
+          - username
+          - link
+        properties:
+          username:
+            type: string
+          link:
+            type: string
+      gateways:
+        type: array
+        items:
+          type: string
+          enum:
+            - interkassa
+            - direct
+
+  Money:
+    type: object
+    required:
+      - currency
+      - amount
+    properties:
+      currency:
+        description: Валюта (USD, RUB, ...)
+        type: string
+      amount:
+        description: Сумма
+        type: number
+
   LotFilterBoundaries:
     type: object
     required:

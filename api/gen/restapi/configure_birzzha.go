@@ -15,9 +15,11 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml204448806 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml494371000 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -34,6 +36,7 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	// api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
+	api.UrlformConsumer = runtime.DiscardConsumer
 
 	api.JSONProducer = runtime.JSONProducer()
 
@@ -55,14 +58,24 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
-	if api.CatalogCreateLotHandler == nil {
-		api.CatalogCreateLotHandler = catalog.CreateLotHandlerFunc(func(params catalog.CreateLotParams, principal *authz.Identity) middleware.Responder {
-			return middleware.NotImplemented("operation catalog.CreateLot has not yet been implemented")
+	if api.PersonalAreaCreateApplicationPaymentHandler == nil {
+		api.PersonalAreaCreateApplicationPaymentHandler = personal_area.CreateApplicationPaymentHandlerFunc(func(params personal_area.CreateApplicationPaymentParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CreateApplicationPayment has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaCreateLotHandler == nil {
+		api.PersonalAreaCreateLotHandler = personal_area.CreateLotHandlerFunc(func(params personal_area.CreateLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CreateLot has not yet been implemented")
 		})
 	}
 	if api.AuthCreateTokenHandler == nil {
 		api.AuthCreateTokenHandler = auth.CreateTokenHandlerFunc(func(params auth.CreateTokenParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.CreateToken has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaGetApplicationInoviceHandler == nil {
+		api.PersonalAreaGetApplicationInoviceHandler = personal_area.GetApplicationInoviceHandlerFunc(func(params personal_area.GetApplicationInoviceParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetApplicationInovice has not yet been implemented")
 		})
 	}
 	if api.BotGetBotInfoHandler == nil {
@@ -80,6 +93,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		})
 	}
+	if api.PersonalAreaGetPaymentStatusHandler == nil {
+		api.PersonalAreaGetPaymentStatusHandler = personal_area.GetPaymentStatusHandlerFunc(func(params personal_area.GetPaymentStatusParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetPaymentStatus has not yet been implemented")
+		})
+	}
 	if api.CatalogGetTopicsHandler == nil {
 		api.CatalogGetTopicsHandler = catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
@@ -88,6 +106,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AuthGetUserHandler == nil {
 		api.AuthGetUserHandler = auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
+		})
+	}
+	if api.WebhookHandleGatewayNotificationHandler == nil {
+		api.WebhookHandleGatewayNotificationHandler = webhook.HandleGatewayNotificationHandlerFunc(func(params webhook.HandleGatewayNotificationParams) middleware.Responder {
+			return middleware.NotImplemented("operation webhook.HandleGatewayNotification has not yet been implemented")
 		})
 	}
 	if api.BotHandleUpdateHandler == nil {

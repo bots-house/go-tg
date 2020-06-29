@@ -1,6 +1,9 @@
 package cli
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 type Config struct {
 	Domain      string `default:"localhost:8000"`
@@ -26,13 +29,28 @@ type Config struct {
 	BotWebhookPath        string        `default:"/" split_words:"true"`
 	BotWidgetAuthLifeTime time.Duration `default:"1m" split_words:"true"`
 
-	Site                string `default:"https://dev.birzzha.me/" split_words:"true"`
+	InterkassaCheckoutID    string `split_words:"true"`
+	InterkassaSecretKey     string `split_words:"true"`
+	InterkassaTestSecretKey string ` split_words:"true"`
+
+	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
+
 	SitePathSellChannel string `default:"/channels/sell" split_words:"true"`
 	SitePathListChannel string `default:"/channels" split_words:"true"`
+
+	SitePathPaymentSuccess string `split_words:"true" default:"/payment/success"`
+	SitePathPaymentFailed  string `split_words:"true" default:"/payment/failed"`
+	SitePathPaymentPending string `split_words:"true" default:"/payment/pending"`
 
 	FileProxyCachePath string `default:".cache" split_words:"true"`
 
 	AdminNotificationsChannelID int64 `required:"true" split_words:"true"`
 
 	Addr string `default:":8000"`
+}
+
+func (cfg Config) getSiteFullPath(path string) string {
+	site := strings.TrimPrefix(cfg.Site, "/")
+	path = strings.TrimPrefix(path, "/")
+	return strings.Join([]string{site, path}, "/")
 }

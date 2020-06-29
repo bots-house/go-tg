@@ -46,6 +46,8 @@ type Lot struct {
 	PaidAt                null.Time    `boil:"paid_at" json:"paid_at,omitempty" toml:"paid_at" yaml:"paid_at,omitempty"`
 	ApprovedAt            null.Time    `boil:"approved_at" json:"approved_at,omitempty" toml:"approved_at" yaml:"approved_at,omitempty"`
 	PublishedAt           null.Time    `boil:"published_at" json:"published_at,omitempty" toml:"published_at" yaml:"published_at,omitempty"`
+	Status                string       `boil:"status" json:"status" toml:"status" yaml:"status"`
+	CanceledReasonID      null.Int     `boil:"canceled_reason_id" json:"canceled_reason_id,omitempty" toml:"canceled_reason_id" yaml:"canceled_reason_id,omitempty"`
 
 	R *lotR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L lotL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -74,6 +76,8 @@ var LotColumns = struct {
 	PaidAt                string
 	ApprovedAt            string
 	PublishedAt           string
+	Status                string
+	CanceledReasonID      string
 }{
 	ID:                    "id",
 	OwnerID:               "owner_id",
@@ -97,6 +101,8 @@ var LotColumns = struct {
 	PaidAt:                "paid_at",
 	ApprovedAt:            "approved_at",
 	PublishedAt:           "published_at",
+	Status:                "status",
+	CanceledReasonID:      "canceled_reason_id",
 }
 
 // Generated where
@@ -367,6 +373,8 @@ var LotWhere = struct {
 	PaidAt                whereHelpernull_Time
 	ApprovedAt            whereHelpernull_Time
 	PublishedAt           whereHelpernull_Time
+	Status                whereHelperstring
+	CanceledReasonID      whereHelpernull_Int
 }{
 	ID:                    whereHelperint{field: "\"lot\".\"id\""},
 	OwnerID:               whereHelperint{field: "\"lot\".\"owner_id\""},
@@ -390,21 +398,29 @@ var LotWhere = struct {
 	PaidAt:                whereHelpernull_Time{field: "\"lot\".\"paid_at\""},
 	ApprovedAt:            whereHelpernull_Time{field: "\"lot\".\"approved_at\""},
 	PublishedAt:           whereHelpernull_Time{field: "\"lot\".\"published_at\""},
+	Status:                whereHelperstring{field: "\"lot\".\"status\""},
+	CanceledReasonID:      whereHelpernull_Int{field: "\"lot\".\"canceled_reason_id\""},
 }
 
 // LotRels is where relationship names are stored.
 var LotRels = struct {
-	Owner     string
-	LotTopics string
+	CanceledReason string
+	Owner          string
+	LotTopics      string
+	Payments       string
 }{
-	Owner:     "Owner",
-	LotTopics: "LotTopics",
+	CanceledReason: "CanceledReason",
+	Owner:          "Owner",
+	LotTopics:      "LotTopics",
+	Payments:       "Payments",
 }
 
 // lotR is where relationships are stored.
 type lotR struct {
-	Owner     *User         `boil:"Owner" json:"Owner" toml:"Owner" yaml:"Owner"`
-	LotTopics LotTopicSlice `boil:"LotTopics" json:"LotTopics" toml:"LotTopics" yaml:"LotTopics"`
+	CanceledReason *LotCanceledReason `boil:"CanceledReason" json:"CanceledReason" toml:"CanceledReason" yaml:"CanceledReason"`
+	Owner          *User              `boil:"Owner" json:"Owner" toml:"Owner" yaml:"Owner"`
+	LotTopics      LotTopicSlice      `boil:"LotTopics" json:"LotTopics" toml:"LotTopics" yaml:"LotTopics"`
+	Payments       PaymentSlice       `boil:"Payments" json:"Payments" toml:"Payments" yaml:"Payments"`
 }
 
 // NewStruct creates a new relationship struct
@@ -416,8 +432,8 @@ func (*lotR) NewStruct() *lotR {
 type lotL struct{}
 
 var (
-	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at"}
-	lotColumnsWithoutDefault = []string{"owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at"}
+	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id"}
+	lotColumnsWithoutDefault = []string{"owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id"}
 	lotColumnsWithDefault    = []string{"id"}
 	lotPrimaryKeyColumns     = []string{"id"}
 )
@@ -513,6 +529,20 @@ func (q lotQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, 
 	return count > 0, nil
 }
 
+// CanceledReason pointed to by the foreign key.
+func (o *Lot) CanceledReason(mods ...qm.QueryMod) lotCanceledReasonQuery {
+	queryMods := []qm.QueryMod{
+		qm.Where("\"id\" = ?", o.CanceledReasonID),
+	}
+
+	queryMods = append(queryMods, mods...)
+
+	query := LotCanceledReasons(queryMods...)
+	queries.SetFrom(query.Query, "\"lot_canceled_reason\"")
+
+	return query
+}
+
 // Owner pointed to by the foreign key.
 func (o *Lot) Owner(mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
@@ -546,6 +576,127 @@ func (o *Lot) LotTopics(mods ...qm.QueryMod) lotTopicQuery {
 	}
 
 	return query
+}
+
+// Payments retrieves all the payment's Payments with an executor.
+func (o *Lot) Payments(mods ...qm.QueryMod) paymentQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"payment\".\"lot_id\"=?", o.ID),
+	)
+
+	query := Payments(queryMods...)
+	queries.SetFrom(query.Query, "\"payment\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"payment\".*"})
+	}
+
+	return query
+}
+
+// LoadCanceledReason allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for an N-1 relationship.
+func (lotL) LoadCanceledReason(ctx context.Context, e boil.ContextExecutor, singular bool, maybeLot interface{}, mods queries.Applicator) error {
+	var slice []*Lot
+	var object *Lot
+
+	if singular {
+		object = maybeLot.(*Lot)
+	} else {
+		slice = *maybeLot.(*[]*Lot)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &lotR{}
+		}
+		if !queries.IsNil(object.CanceledReasonID) {
+			args = append(args, object.CanceledReasonID)
+		}
+
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &lotR{}
+			}
+
+			for _, a := range args {
+				if queries.Equal(a, obj.CanceledReasonID) {
+					continue Outer
+				}
+			}
+
+			if !queries.IsNil(obj.CanceledReasonID) {
+				args = append(args, obj.CanceledReasonID)
+			}
+
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`lot_canceled_reason`),
+		qm.WhereIn(`lot_canceled_reason.id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load LotCanceledReason")
+	}
+
+	var resultSlice []*LotCanceledReason
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice LotCanceledReason")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results of eager load for lot_canceled_reason")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for lot_canceled_reason")
+	}
+
+	if len(resultSlice) == 0 {
+		return nil
+	}
+
+	if singular {
+		foreign := resultSlice[0]
+		object.R.CanceledReason = foreign
+		if foreign.R == nil {
+			foreign.R = &lotCanceledReasonR{}
+		}
+		foreign.R.CanceledReasonLots = append(foreign.R.CanceledReasonLots, object)
+		return nil
+	}
+
+	for _, local := range slice {
+		for _, foreign := range resultSlice {
+			if queries.Equal(local.CanceledReasonID, foreign.ID) {
+				local.R.CanceledReason = foreign
+				if foreign.R == nil {
+					foreign.R = &lotCanceledReasonR{}
+				}
+				foreign.R.CanceledReasonLots = append(foreign.R.CanceledReasonLots, local)
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
 // LoadOwner allows an eager lookup of values, cached into the
@@ -735,6 +886,177 @@ func (lotL) LoadLotTopics(ctx context.Context, e boil.ContextExecutor, singular 
 	return nil
 }
 
+// LoadPayments allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (lotL) LoadPayments(ctx context.Context, e boil.ContextExecutor, singular bool, maybeLot interface{}, mods queries.Applicator) error {
+	var slice []*Lot
+	var object *Lot
+
+	if singular {
+		object = maybeLot.(*Lot)
+	} else {
+		slice = *maybeLot.(*[]*Lot)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &lotR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &lotR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`payment`),
+		qm.WhereIn(`payment.lot_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load payment")
+	}
+
+	var resultSlice []*Payment
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice payment")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on payment")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for payment")
+	}
+
+	if singular {
+		object.R.Payments = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &paymentR{}
+			}
+			foreign.R.Lot = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.LotID {
+				local.R.Payments = append(local.R.Payments, foreign)
+				if foreign.R == nil {
+					foreign.R = &paymentR{}
+				}
+				foreign.R.Lot = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// SetCanceledReason of the lot to the related item.
+// Sets o.R.CanceledReason to related.
+// Adds o to related.R.CanceledReasonLots.
+func (o *Lot) SetCanceledReason(ctx context.Context, exec boil.ContextExecutor, insert bool, related *LotCanceledReason) error {
+	var err error
+	if insert {
+		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+			return errors.Wrap(err, "failed to insert into foreign table")
+		}
+	}
+
+	updateQuery := fmt.Sprintf(
+		"UPDATE \"lot\" SET %s WHERE %s",
+		strmangle.SetParamNames("\"", "\"", 1, []string{"canceled_reason_id"}),
+		strmangle.WhereClause("\"", "\"", 2, lotPrimaryKeyColumns),
+	)
+	values := []interface{}{related.ID, o.ID}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, updateQuery)
+		fmt.Fprintln(writer, values)
+	}
+	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	queries.Assign(&o.CanceledReasonID, related.ID)
+	if o.R == nil {
+		o.R = &lotR{
+			CanceledReason: related,
+		}
+	} else {
+		o.R.CanceledReason = related
+	}
+
+	if related.R == nil {
+		related.R = &lotCanceledReasonR{
+			CanceledReasonLots: LotSlice{o},
+		}
+	} else {
+		related.R.CanceledReasonLots = append(related.R.CanceledReasonLots, o)
+	}
+
+	return nil
+}
+
+// RemoveCanceledReason relationship.
+// Sets o.R.CanceledReason to nil.
+// Removes o from all passed in related items' relationships struct (Optional).
+func (o *Lot) RemoveCanceledReason(ctx context.Context, exec boil.ContextExecutor, related *LotCanceledReason) error {
+	var err error
+
+	queries.SetScanner(&o.CanceledReasonID, nil)
+	if _, err = o.Update(ctx, exec, boil.Whitelist("canceled_reason_id")); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	if o.R != nil {
+		o.R.CanceledReason = nil
+	}
+	if related == nil || related.R == nil {
+		return nil
+	}
+
+	for i, ri := range related.R.CanceledReasonLots {
+		if queries.Equal(o.CanceledReasonID, ri.CanceledReasonID) {
+			continue
+		}
+
+		ln := len(related.R.CanceledReasonLots)
+		if ln > 1 && i < ln-1 {
+			related.R.CanceledReasonLots[i] = related.R.CanceledReasonLots[ln-1]
+		}
+		related.R.CanceledReasonLots = related.R.CanceledReasonLots[:ln-1]
+		break
+	}
+	return nil
+}
+
 // SetOwner of the lot to the related item.
 // Sets o.R.Owner to related.
 // Adds o to related.R.OwnerLots.
@@ -826,6 +1148,59 @@ func (o *Lot) AddLotTopics(ctx context.Context, exec boil.ContextExecutor, inser
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &lotTopicR{
+				Lot: o,
+			}
+		} else {
+			rel.R.Lot = o
+		}
+	}
+	return nil
+}
+
+// AddPayments adds the given related objects to the existing relationships
+// of the lot, optionally inserting them as new records.
+// Appends related to o.R.Payments.
+// Sets related.R.Lot appropriately.
+func (o *Lot) AddPayments(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Payment) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.LotID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"payment\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"lot_id"}),
+				strmangle.WhereClause("\"", "\"", 2, paymentPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.LotID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &lotR{
+			Payments: related,
+		}
+	} else {
+		o.R.Payments = append(o.R.Payments, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &paymentR{
 				Lot: o,
 			}
 		} else {

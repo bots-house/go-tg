@@ -23,6 +23,8 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
 // NewBirzzhaAPI creates a new Birzzha instance
@@ -42,15 +44,22 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		APIKeyAuthenticator: security.APIKeyAuth,
 		BearerAuthenticator: security.BearerAuth,
 
-		JSONConsumer: runtime.JSONConsumer(),
+		JSONConsumer:    runtime.JSONConsumer(),
+		UrlformConsumer: runtime.DiscardConsumer,
 
 		JSONProducer: runtime.JSONProducer(),
 
-		CatalogCreateLotHandler: catalog.CreateLotHandlerFunc(func(params catalog.CreateLotParams, principal *authz.Identity) middleware.Responder {
-			return middleware.NotImplemented("operation catalog.CreateLot has not yet been implemented")
+		PersonalAreaCreateApplicationPaymentHandler: personal_area.CreateApplicationPaymentHandlerFunc(func(params personal_area.CreateApplicationPaymentParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CreateApplicationPayment has not yet been implemented")
+		}),
+		PersonalAreaCreateLotHandler: personal_area.CreateLotHandlerFunc(func(params personal_area.CreateLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CreateLot has not yet been implemented")
 		}),
 		AuthCreateTokenHandler: auth.CreateTokenHandlerFunc(func(params auth.CreateTokenParams) middleware.Responder {
 			return middleware.NotImplemented("operation auth.CreateToken has not yet been implemented")
+		}),
+		PersonalAreaGetApplicationInoviceHandler: personal_area.GetApplicationInoviceHandlerFunc(func(params personal_area.GetApplicationInoviceParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetApplicationInovice has not yet been implemented")
 		}),
 		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
@@ -61,11 +70,17 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		}),
+		PersonalAreaGetPaymentStatusHandler: personal_area.GetPaymentStatusHandlerFunc(func(params personal_area.GetPaymentStatusParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetPaymentStatus has not yet been implemented")
+		}),
 		CatalogGetTopicsHandler: catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
 		}),
 		AuthGetUserHandler: auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
+		}),
+		WebhookHandleGatewayNotificationHandler: webhook.HandleGatewayNotificationHandlerFunc(func(params webhook.HandleGatewayNotificationParams) middleware.Responder {
+			return middleware.NotImplemented("operation webhook.HandleGatewayNotification has not yet been implemented")
 		}),
 		BotHandleUpdateHandler: bot.HandleUpdateHandlerFunc(func(params bot.HandleUpdateParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.HandleUpdate has not yet been implemented")
@@ -115,6 +130,9 @@ type BirzzhaAPI struct {
 	// JSONConsumer registers a consumer for the following mime types:
 	//   - application/json
 	JSONConsumer runtime.Consumer
+	// UrlformConsumer registers a consumer for the following mime types:
+	//   - application/x-www-form-urlencoded
+	UrlformConsumer runtime.Consumer
 
 	// JSONProducer registers a producer for the following mime types:
 	//   - application/json
@@ -131,20 +149,28 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// CatalogCreateLotHandler sets the operation handler for the create lot operation
-	CatalogCreateLotHandler catalog.CreateLotHandler
+	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
+	PersonalAreaCreateApplicationPaymentHandler personal_area.CreateApplicationPaymentHandler
+	// PersonalAreaCreateLotHandler sets the operation handler for the create lot operation
+	PersonalAreaCreateLotHandler personal_area.CreateLotHandler
 	// AuthCreateTokenHandler sets the operation handler for the create token operation
 	AuthCreateTokenHandler auth.CreateTokenHandler
+	// PersonalAreaGetApplicationInoviceHandler sets the operation handler for the get application inovice operation
+	PersonalAreaGetApplicationInoviceHandler personal_area.GetApplicationInoviceHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
 	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
 	// CatalogGetLotsHandler sets the operation handler for the get lots operation
 	CatalogGetLotsHandler catalog.GetLotsHandler
+	// PersonalAreaGetPaymentStatusHandler sets the operation handler for the get payment status operation
+	PersonalAreaGetPaymentStatusHandler personal_area.GetPaymentStatusHandler
 	// CatalogGetTopicsHandler sets the operation handler for the get topics operation
 	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
 	AuthGetUserHandler auth.GetUserHandler
+	// WebhookHandleGatewayNotificationHandler sets the operation handler for the handle gateway notification operation
+	WebhookHandleGatewayNotificationHandler webhook.HandleGatewayNotificationHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
 	BotHandleUpdateHandler bot.HandleUpdateHandler
 	// AuthLoginViaBotHandler sets the operation handler for the login via bot operation
@@ -212,6 +238,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.JSONConsumer == nil {
 		unregistered = append(unregistered, "JSONConsumer")
 	}
+	if o.UrlformConsumer == nil {
+		unregistered = append(unregistered, "UrlformConsumer")
+	}
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
@@ -224,11 +253,17 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
-	if o.CatalogCreateLotHandler == nil {
-		unregistered = append(unregistered, "catalog.CreateLotHandler")
+	if o.PersonalAreaCreateApplicationPaymentHandler == nil {
+		unregistered = append(unregistered, "personal_area.CreateApplicationPaymentHandler")
+	}
+	if o.PersonalAreaCreateLotHandler == nil {
+		unregistered = append(unregistered, "personal_area.CreateLotHandler")
 	}
 	if o.AuthCreateTokenHandler == nil {
 		unregistered = append(unregistered, "auth.CreateTokenHandler")
+	}
+	if o.PersonalAreaGetApplicationInoviceHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetApplicationInoviceHandler")
 	}
 	if o.BotGetBotInfoHandler == nil {
 		unregistered = append(unregistered, "bot.GetBotInfoHandler")
@@ -239,11 +274,17 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.CatalogGetLotsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetLotsHandler")
 	}
+	if o.PersonalAreaGetPaymentStatusHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetPaymentStatusHandler")
+	}
 	if o.CatalogGetTopicsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetTopicsHandler")
 	}
 	if o.AuthGetUserHandler == nil {
 		unregistered = append(unregistered, "auth.GetUserHandler")
+	}
+	if o.WebhookHandleGatewayNotificationHandler == nil {
+		unregistered = append(unregistered, "webhook.HandleGatewayNotificationHandler")
 	}
 	if o.BotHandleUpdateHandler == nil {
 		unregistered = append(unregistered, "bot.HandleUpdateHandler")
@@ -302,6 +343,8 @@ func (o *BirzzhaAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consum
 		switch mt {
 		case "application/json":
 			result["application/json"] = o.JSONConsumer
+		case "application/x-www-form-urlencoded":
+			result["application/x-www-form-urlencoded"] = o.UrlformConsumer
 		}
 
 		if c, ok := o.customConsumers[mt]; ok {
@@ -362,11 +405,19 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/lots"] = catalog.NewCreateLot(o.context, o.CatalogCreateLotHandler)
+	o.handlers["POST"]["/lots/{id}/application-payment"] = personal_area.NewCreateApplicationPayment(o.context, o.PersonalAreaCreateApplicationPaymentHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/lots"] = personal_area.NewCreateLot(o.context, o.PersonalAreaCreateLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/auth"] = auth.NewCreateToken(o.context, o.AuthCreateTokenHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots/{id}/application-invoice"] = personal_area.NewGetApplicationInovice(o.context, o.PersonalAreaGetApplicationInoviceHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -382,11 +433,19 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/payments/{id}/status"] = personal_area.NewGetPaymentStatus(o.context, o.PersonalAreaGetPaymentStatusHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/topics"] = catalog.NewGetTopics(o.context, o.CatalogGetTopicsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/user"] = auth.NewGetUser(o.context, o.AuthGetUserHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/webhooks/gateways/{name}"] = webhook.NewHandleGatewayNotification(o.context, o.WebhookHandleGatewayNotificationHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

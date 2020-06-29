@@ -4,13 +4,19 @@
 package dal
 
 var TableNames = struct {
-	Lot      string
-	LotTopic string
-	Topic    string
-	User     string
+	Lot               string
+	LotCanceledReason string
+	LotTopic          string
+	Payment           string
+	Settings          string
+	Topic             string
+	User              string
 }{
-	Lot:      "lot",
-	LotTopic: "lot_topic",
-	Topic:    "topic",
-	User:     "user",
+	Lot:               "lot",
+	LotCanceledReason: "lot_canceled_reason",
+	LotTopic:          "lot_topic",
+	Payment:           "payment",
+	Settings:          "settings",
+	Topic:             "topic",
+	User:              "user",
 }

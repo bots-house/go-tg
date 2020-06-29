@@ -328,7 +328,7 @@ func init() {
       "post": {
         "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
-          "catalog"
+          "personal-area"
         ],
         "summary": "Create Lot",
         "operationId": "createLot",
@@ -399,6 +399,135 @@ func init() {
           }
         }
       }
+    },
+    "/lots/{id}/application-invoice": {
+      "get": {
+        "description": "Получить информацию для оплаты объявления.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Application Invoice",
+        "operationId": "getApplicationInovice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ApplicationInvoice"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/application-payment": {
+      "post": {
+        "description": "Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Application Payment",
+        "operationId": "createApplicationPayment",
+        "parameters": [
+          {
+            "enum": [
+              "interkassa",
+              "direct"
+            ],
+            "type": "string",
+            "name": "gateway",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/PaymentForm"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/payments/{id}/status": {
+      "get": {
+        "description": "Получить статус платежа по его ID.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Payment Status",
+        "operationId": "getPaymentStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PaymentStatus"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID платежа",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
     },
     "/tg/resolve": {
       "get": {
@@ -502,9 +631,100 @@ func init() {
           }
         }
       }
+    },
+    "/webhooks/gateways/{name}": {
+      "post": {
+        "security": [],
+        "description": "Обработка уведомления о изменении состояния платжа\n",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "webhook"
+        ],
+        "summary": "Handle Gateway Notification",
+        "operationId": "handleGatewayNotification",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "enum": [
+            "interkassa"
+          ],
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
     }
   },
   "definitions": {
+    "ApplicationInvoice": {
+      "type": "object",
+      "required": [
+        "lot",
+        "price",
+        "gateways"
+      ],
+      "properties": {
+        "cashier": {
+          "description": "Содержит контакты человека для приема оплат напрямую.\n",
+          "type": "object",
+          "required": [
+            "username",
+            "link"
+          ],
+          "properties": {
+            "link": {
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 2
+        },
+        "gateways": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "interkassa",
+              "direct"
+            ]
+          },
+          "x-order": 3
+        },
+        "lot": {
+          "x-order": 0,
+          "$ref": "#/definitions/OwnedLot"
+        },
+        "price": {
+          "description": "Цена размещения",
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "BotInfo": {
       "description": "Информация о боте",
       "required": [
@@ -924,6 +1144,25 @@ func init() {
         }
       }
     },
+    "Money": {
+      "type": "object",
+      "required": [
+        "currency",
+        "amount"
+      ],
+      "properties": {
+        "amount": {
+          "description": "Сумма",
+          "type": "number",
+          "x-order": 1
+        },
+        "currency": {
+          "description": "Валюта (USD, RUB, ...)",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
     "OwnedLot": {
       "description": "Данные лота которым владает пользователь",
       "type": "object",
@@ -1031,6 +1270,85 @@ func init() {
           "description": "@username канала (может быть null)",
           "type": "string",
           "x-order": 4
+        }
+      }
+    },
+    "PaymentForm": {
+      "type": "object",
+      "required": [
+        "method",
+        "action",
+        "values"
+      ],
+      "properties": {
+        "action": {
+          "description": "URL на который нужно отправить запрос",
+          "type": "string",
+          "format": "url",
+          "x-order": 1
+        },
+        "method": {
+          "description": "метод с которым нужно отправить запрос",
+          "type": "string",
+          "enum": [
+            "POST",
+            "GET"
+          ],
+          "x-order": 0
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "key",
+              "value"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          "x-order": 2
+        }
+      }
+    },
+    "PaymentStatus": {
+      "type": "object",
+      "required": [
+        "status",
+        "lot_id",
+        "purpose"
+      ],
+      "properties": {
+        "lot_id": {
+          "description": "ID лота который относится к данному платежу",
+          "type": "integer",
+          "x-order": 1
+        },
+        "purpose": {
+          "description": "Предназначение оплаты (размещение или изменение цены).",
+          "type": "string",
+          "enum": [
+            "application",
+            "change_price"
+          ],
+          "x-order": 2
+        },
+        "status": {
+          "description": "Статус платежа",
+          "type": "string",
+          "enum": [
+            "created",
+            "pending",
+            "success",
+            "failed"
+          ],
+          "x-order": 0
         }
       }
     },
@@ -1302,8 +1620,16 @@ func init() {
       "name": "catalog"
     },
     {
+      "description": "Приватные методы пользователя\n",
+      "name": "personal-area"
+    },
+    {
       "description": "Содержит методы для работы с ботом.\n",
       "name": "bot"
+    },
+    {
+      "description": "Содержит методы для обработки уведомлений от сторонних сервисов\n",
+      "name": "webhook"
     }
   ]
 }`))
@@ -1630,7 +1956,7 @@ func init() {
       "post": {
         "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
-          "catalog"
+          "personal-area"
         ],
         "summary": "Create Lot",
         "operationId": "createLot",
@@ -1701,6 +2027,135 @@ func init() {
           }
         }
       }
+    },
+    "/lots/{id}/application-invoice": {
+      "get": {
+        "description": "Получить информацию для оплаты объявления.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Application Invoice",
+        "operationId": "getApplicationInovice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ApplicationInvoice"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/application-payment": {
+      "post": {
+        "description": "Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Application Payment",
+        "operationId": "createApplicationPayment",
+        "parameters": [
+          {
+            "enum": [
+              "interkassa",
+              "direct"
+            ],
+            "type": "string",
+            "name": "gateway",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/PaymentForm"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/payments/{id}/status": {
+      "get": {
+        "description": "Получить статус платежа по его ID.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Payment Status",
+        "operationId": "getPaymentStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PaymentStatus"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID платежа",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
     },
     "/tg/resolve": {
       "get": {
@@ -1812,9 +2267,119 @@ func init() {
           }
         }
       }
+    },
+    "/webhooks/gateways/{name}": {
+      "post": {
+        "security": [],
+        "description": "Обработка уведомления о изменении состояния платжа\n",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "webhook"
+        ],
+        "summary": "Handle Gateway Notification",
+        "operationId": "handleGatewayNotification",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "enum": [
+            "interkassa"
+          ],
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
     }
   },
   "definitions": {
+    "ApplicationInvoice": {
+      "type": "object",
+      "required": [
+        "lot",
+        "price",
+        "gateways"
+      ],
+      "properties": {
+        "cashier": {
+          "description": "Содержит контакты человека для приема оплат напрямую.\n",
+          "type": "object",
+          "required": [
+            "username",
+            "link"
+          ],
+          "properties": {
+            "link": {
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 2
+        },
+        "gateways": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "interkassa",
+              "direct"
+            ]
+          },
+          "x-order": 3
+        },
+        "lot": {
+          "x-order": 0,
+          "$ref": "#/definitions/OwnedLot"
+        },
+        "price": {
+          "description": "Цена размещения",
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "ApplicationInvoiceCashier": {
+      "description": "Содержит контакты человека для приема оплат напрямую.\n",
+      "type": "object",
+      "required": [
+        "username",
+        "link"
+      ],
+      "properties": {
+        "link": {
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "type": "string",
+          "x-order": 0
+        }
+      },
+      "x-order": 2
+    },
     "BotInfo": {
       "description": "Информация о боте",
       "required": [
@@ -2234,6 +2799,25 @@ func init() {
         }
       }
     },
+    "Money": {
+      "type": "object",
+      "required": [
+        "currency",
+        "amount"
+      ],
+      "properties": {
+        "amount": {
+          "description": "Сумма",
+          "type": "number",
+          "x-order": 1
+        },
+        "currency": {
+          "description": "Валюта (USD, RUB, ...)",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
     "OwnedLot": {
       "description": "Данные лота которым владает пользователь",
       "type": "object",
@@ -2341,6 +2925,88 @@ func init() {
           "description": "@username канала (может быть null)",
           "type": "string",
           "x-order": 4
+        }
+      }
+    },
+    "PaymentForm": {
+      "type": "object",
+      "required": [
+        "method",
+        "action",
+        "values"
+      ],
+      "properties": {
+        "action": {
+          "description": "URL на который нужно отправить запрос",
+          "type": "string",
+          "format": "url",
+          "x-order": 1
+        },
+        "method": {
+          "description": "метод с которым нужно отправить запрос",
+          "type": "string",
+          "enum": [
+            "POST",
+            "GET"
+          ],
+          "x-order": 0
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PaymentFormValuesItems0"
+          },
+          "x-order": 2
+        }
+      }
+    },
+    "PaymentFormValuesItems0": {
+      "type": "object",
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "PaymentStatus": {
+      "type": "object",
+      "required": [
+        "status",
+        "lot_id",
+        "purpose"
+      ],
+      "properties": {
+        "lot_id": {
+          "description": "ID лота который относится к данному платежу",
+          "type": "integer",
+          "x-order": 1
+        },
+        "purpose": {
+          "description": "Предназначение оплаты (размещение или изменение цены).",
+          "type": "string",
+          "enum": [
+            "application",
+            "change_price"
+          ],
+          "x-order": 2
+        },
+        "status": {
+          "description": "Статус платежа",
+          "type": "string",
+          "enum": [
+            "created",
+            "pending",
+            "success",
+            "failed"
+          ],
+          "x-order": 0
         }
       }
     },
@@ -2730,8 +3396,16 @@ func init() {
       "name": "catalog"
     },
     {
+      "description": "Приватные методы пользователя\n",
+      "name": "personal-area"
+    },
+    {
       "description": "Содержит методы для работы с ботом.\n",
       "name": "bot"
+    },
+    {
+      "description": "Содержит методы для обработки уведомлений от сторонних сервисов\n",
+      "name": "webhook"
     }
   ]
 }`))

@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
+	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/bots-house/birzzha/api"
@@ -25,6 +26,9 @@ import (
 	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/auth"
 	"github.com/bots-house/birzzha/service/catalog"
+	"github.com/bots-house/birzzha/service/payment"
+	"github.com/bots-house/birzzha/service/payment/interkassa"
+	"github.com/bots-house/birzzha/service/personal"
 	"github.com/bots-house/birzzha/store/postgres"
 
 	"github.com/pkg/errors"
@@ -60,7 +64,36 @@ func newStorage(cfg Config) *storage.Space {
 	}
 }
 
+func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistry {
+	var gateways []payment.Gateway
+
+	if cfg.InterkassaCheckoutID != "" {
+		gateways = append(gateways, &interkassa.Gateway{
+			CheckoutID:      cfg.InterkassaCheckoutID,
+			SecretKey:       cfg.InterkassaSecretKey,
+			TestSecretKey:   cfg.InterkassaTestSecretKey,
+			NotificationURL: fmt.Sprintf("https://%s/v1/webhooks/gateways/interkassa", cfg.BotWebhookDomain),
+			SuccessURL:      cfg.getSiteFullPath(cfg.SitePathPaymentSuccess),
+			PendingURL:      cfg.getSiteFullPath(cfg.SitePathPaymentPending),
+			FailedURL:       cfg.getSiteFullPath(cfg.SitePathPaymentFailed),
+		})
+
+		if cfg.InterkassaTestSecretKey != "" {
+			log.Warn(ctx, "interkassa was configured in test mode")
+		}
+	} else {
+		log.Warn(ctx, "interkassa gateway is not configured")
+	}
+
+	return payment.NewGatewayRegistry(gateways...)
+}
+
 func run(ctx context.Context) error {
+	// load .env
+	if err := godotenv.Load(".env.local"); err != nil {
+		return errors.Wrap(err, "load env")
+	}
+
 	// parse config
 	var cfg Config
 
@@ -135,11 +168,13 @@ func run(ctx context.Context) error {
 		},
 	}
 
+	resolverCache := tg.NewResolverCache(resolver, time.Minute*30)
+
 	catalogSrv := &catalog.Service{
 		Topic:    pg.Topic,
 		Lot:      pg.Lot,
 		LotTopic: pg.LotTopic,
-		Resolver: tg.NewResolverCache(resolver, time.Minute*30),
+		Resolver: resolverCache,
 		Storage:  strg,
 		Txier:    pg.Tx,
 	}
@@ -154,12 +189,27 @@ func run(ctx context.Context) error {
 		return errors.Wrap(err, "set bot webhook")
 	}
 
+	gateways := newGatewayRegistry(ctx, cfg)
+
+	personalSrv := &personal.Service{
+		Lot:         pg.Lot,
+		Resolver:    resolver,
+		Payment:     pg.Payment,
+		Txier:       pg.Tx,
+		Storage:     strg,
+		Settings:    pg.Settings,
+		Gateways:    gateways,
+		AdminNotify: notifications,
+	}
+
 	handler := api.Handler{
 		Auth:         authSrv,
 		Bot:          bot,
 		BotFileProxy: tgFileProxy,
+		Personal:     personalSrv,
 		Catalog:      catalogSrv,
 		Storage:      strg,
+		Gateways:     gateways,
 	}
 
 	server := newServer(cfg, handler.Make())

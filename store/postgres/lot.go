@@ -84,8 +84,8 @@ const queryFilterBoudariesTopics = `
 		max(metrics_payback_period) as payback_period_max
 	from
 		lot
-	inner join lot_topic 
-		lt on lot.id = lt.lot_id 
+	inner join lot_topic
+		lt on lot.id = lt.lot_id
 	where lt.topic_id = any($1)
 `
 
@@ -167,6 +167,8 @@ func (store *LotStore) toRow(lot *core.Lot) (*dal.Lot, error) {
 		PricePrevious:         lot.Price.Previous,
 		PriceIsBargain:        lot.Price.IsBargain,
 		Comment:               lot.Comment,
+		Status:                lot.Status.String(),
+		CanceledReasonID:      null.NewInt(int(lot.CanceledReasonID), lot.CanceledReasonID != 0),
 		MetricsMembersCount:   lot.Metrics.MembersCount,
 		MetricsDailyCoverage:  lot.Metrics.DailyCoverage,
 		MetricsMonthlyIncome:  lot.Metrics.MonthlyIncome,
@@ -194,14 +196,21 @@ func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
 		topics[i] = core.TopicID(v.TopicID)
 	}
 
+	status, err := core.ParseLotStatus(row.Status)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse status")
+	}
+
 	return &core.Lot{
-		ID:         core.LotID(row.ID),
-		OwnerID:    core.UserID(row.OwnerID),
-		ExternalID: row.ExternalID,
-		Name:       row.Name,
-		Avatar:     row.Avatar,
-		Username:   row.Username,
-		JoinLink:   row.JoinLink,
+		ID:               core.LotID(row.ID),
+		OwnerID:          core.UserID(row.OwnerID),
+		ExternalID:       row.ExternalID,
+		Name:             row.Name,
+		Avatar:           row.Avatar,
+		Username:         row.Username,
+		JoinLink:         row.JoinLink,
+		Status:           status,
+		CanceledReasonID: core.LotCanceledReasonID(row.CanceledReasonID.Int),
 		Price: core.LotPrice{
 			Current:   row.PriceCurrent,
 			Previous:  row.PricePrevious,
@@ -283,6 +292,11 @@ func (store *LotStore) Query() core.LotStoreQuery {
 type LotStoreQuery struct {
 	mods  []qm.QueryMod
 	store *LotStore
+}
+
+func (lsq *LotStoreQuery) OwnerID(id core.UserID) core.LotStoreQuery {
+	lsq.mods = append(lsq.mods, dal.LotWhere.OwnerID.EQ(int(id)))
+	return lsq
 }
 
 func (lsq *LotStoreQuery) SortBy(field core.LotField, typ store.SortType) core.LotStoreQuery {
@@ -389,6 +403,18 @@ func (lsq *LotStoreQuery) MembersCountTo(v int) core.LotStoreQuery {
 	return lsq
 }
 
+func (lsq *LotStoreQuery) Statuses(statuses ...core.LotStatus) core.LotStoreQuery {
+	vs := make([]string, len(statuses))
+
+	for i, status := range statuses {
+		vs[i] = status.String()
+	}
+
+	lsq.mods = append(lsq.mods, dal.LotWhere.Status.IN(vs))
+
+	return lsq
+}
+
 func (lsq *LotStoreQuery) ID(ids ...core.LotID) core.LotStoreQuery {
 	idsInt := make([]int, len(ids))
 	for i, id := range ids {
@@ -419,6 +445,8 @@ func (lsq *LotStoreQuery) eager() {
 }
 
 func (lsq *LotStoreQuery) One(ctx context.Context) (*core.Lot, error) {
+	lsq.eager()
+
 	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
 
 	row, err := dal.Lots(lsq.mods...).One(ctx, executor)
@@ -432,9 +460,9 @@ func (lsq *LotStoreQuery) One(ctx context.Context) (*core.Lot, error) {
 }
 
 func (lsq *LotStoreQuery) All(ctx context.Context) (core.LotSlice, error) {
-	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
-
 	lsq.eager()
+
+	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
 
 	rows, err := dal.Lots(lsq.mods...).All(ctx, executor)
 	if err == sql.ErrNoRows {

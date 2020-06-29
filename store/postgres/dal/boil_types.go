@@ -51,6 +51,35 @@ func makeCacheKey(cols boil.Columns, nzDefaults []string) string {
 	return str
 }
 
+// Enum values for lot_status
+const (
+	LotStatusCreated   = "created"
+	LotStatusPaid      = "paid"
+	LotStatusPublished = "published"
+	LotStatusDeclined  = "declined"
+	LotStatusCanceled  = "canceled"
+)
+
+// Enum values for payment_gateway
+const (
+	PaymentGatewayInterkassa = "interkassa"
+	PaymentGatewayDirect     = "direct"
+)
+
+// Enum values for payment_purpose
+const (
+	PaymentPurposeApplication = "application"
+	PaymentPurposeChangePrice = "change_price"
+)
+
+// Enum values for payment_status
+const (
+	PaymentStatusCreated = "created"
+	PaymentStatusPending = "pending"
+	PaymentStatusSuccess = "success"
+	PaymentStatusFailed  = "failed"
+)
+
 // Enum values for joined_from
 const (
 	JoinedFromSite = "site"

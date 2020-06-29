@@ -3,97 +3,12 @@ package catalog
 import (
 	"context"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store"
 )
-
-type LotInput struct {
-	Query         string
-	TelegramID    int64
-	TopicIDs      []core.TopicID
-	Price         int
-	IsBargain     bool
-	MonthlyIncome int
-	Comment       string
-	Extra         []string
-}
-
-var (
-	ErrLotIsNotChannel = core.NewError(
-		"lot_is_not_channel",
-		"lot is not channel, only channels is supported",
-	)
-)
-
-type OwnedLot struct {
-	*core.Lot
-}
-
-func (srv *Service) newOwnedLot(ctx context.Context, lot *core.Lot) (*OwnedLot, error) {
-	return &OwnedLot{
-		Lot: lot,
-	}, nil
-}
-
-func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (*OwnedLot, error) {
-	result, err := srv.Resolver.ResolveByID(ctx, in.TelegramID)
-	if err != nil {
-		return nil, errors.Wrap(err, "resolve by id")
-	}
-
-	info := result.Channel
-
-	if info == nil {
-		return nil, ErrLotIsNotChannel
-	}
-
-	price := core.NewLotPrice(in.Price, in.IsBargain)
-
-	lot := core.NewLot(
-		user.ID,
-		in.TelegramID,
-		info.Name,
-		price,
-		in.Comment,
-		info.MembersCount,
-		info.DailyCoverage,
-		null.NewInt(in.MonthlyIncome, in.MonthlyIncome != 0),
-	)
-
-	lot.Bio = null.NewString(info.Description, info.Description != "")
-
-	if info.Username == "" {
-		lot.JoinLink = null.NewString(in.Query, in.Query != "")
-	} else {
-		lot.Username = null.NewString(info.Username, info.Username != "")
-	}
-
-	if info.Avatar != "" {
-		avatar, err := srv.Storage.AddByURL(ctx, "lot", info.Avatar)
-		if err != nil {
-			return nil, errors.Wrap(err, "add by url")
-		}
-		lot.Avatar = null.StringFrom(avatar)
-	}
-
-	lot.ExtraResources = make([]core.LotExtraResource, len(in.Extra))
-	for i, v := range in.Extra {
-		lot.ExtraResources[i] = core.LotExtraResource{URL: v}
-	}
-
-	lot.TopicIDs = in.TopicIDs
-
-	if err := srv.Lot.Add(ctx, lot); err != nil {
-		return nil, errors.Wrap(err, "add lot to store")
-	}
-
-	return srv.newOwnedLot(ctx, lot)
-}
 
 func (srv *Service) GetFilterBoundaries(ctx context.Context, query *core.LotFilterBoundariesQuery) (*core.LotFilterBoundaries, error) {
 	return srv.Lot.FilterBoundaries(ctx, query)
@@ -135,12 +50,8 @@ func (srv *Service) newItemLotSlice(ctx context.Context, lots core.LotSlice) ([]
 	return result, nil
 }
 
-func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) ([]*ItemLot, error) {
+func (srv *Service) newLotsQuery(ctx context.Context, query *LotsQuery) core.LotStoreQuery {
 	qry := srv.Lot.Query()
-
-	spew.Dump(query)
-
-	ctx = boil.WithDebug(ctx, true)
 
 	if query != nil {
 		if len(query.Topics) > 0 {
@@ -207,6 +118,16 @@ func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) ([]*ItemLot, 
 			qry = qry.SortBy(query.SortBy, query.SortByType)
 		}
 	}
+
+	return qry
+}
+
+func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) ([]*ItemLot, error) {
+	qry := srv.
+		newLotsQuery(ctx, query).
+		Statuses(core.ShowLotStatus...)
+
+	ctx = boil.WithDebug(ctx, true)
 
 	lots, err := qry.All(ctx)
 	if err != nil {

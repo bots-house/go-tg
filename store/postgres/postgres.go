@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 
+	_ "github.com/lib/pq"
+	"github.com/pkg/errors"
+
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/store"
 	"github.com/bots-house/birzzha/store/postgres/migrations"
 	"github.com/bots-house/birzzha/store/postgres/shared"
-	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
 )
 
 type Postgres struct {
@@ -20,6 +21,8 @@ type Postgres struct {
 	User     *UserStore
 	Topic    *TopicStore
 	LotTopic *LotTopicStore
+	Settings *SettingsStore
+	Payment  *PaymentStore
 }
 
 // NewPostgres create postgres based database with all stores.
@@ -29,10 +32,12 @@ func NewPostgres(db *sql.DB) *Postgres {
 		migrator: migrations.New(db),
 		User:     &UserStore{ContextExecutor: db},
 		Topic:    &TopicStore{ContextExecutor: db},
+		Payment:  &PaymentStore{ContextExecutor: db},
 	}
 
 	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx}
 	pg.Lot = &LotStore{ContextExecutor: db, txier: pg.Tx, lotTopicStore: pg.LotTopic}
+	pg.Settings = &SettingsStore{db: db, txier: pg.Tx}
 
 	return pg
 }

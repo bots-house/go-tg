@@ -14,5 +14,5 @@ wipe = true
   pass   = "brz"
   sslmode = "disable"
   blacklist = [
-    "schema_migrations"
+    "schema_migrations",
   ]

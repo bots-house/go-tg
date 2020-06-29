@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/volatiletech/null/v8"
@@ -100,6 +101,56 @@ func (lm *LotMetrics) refreshPaybackPeriod(price int) {
 	}
 }
 
+type LotStatus int8
+
+const (
+	LotStatusCreated LotStatus = iota + 1
+	LotStatusPaid
+	LotStatusPublished
+	LotStatusDeclined
+	LotStatusCanceled
+)
+
+var ShowLotStatus = []LotStatus{
+	LotStatusPaid,
+}
+
+var (
+	lotStatusToString = map[LotStatus]string{
+		LotStatusCreated:   "created",
+		LotStatusPaid:      "paid",
+		LotStatusPublished: "published",
+		LotStatusDeclined:  "declined",
+		LotStatusCanceled:  "canceled",
+	}
+
+	stringToLotStatus = func() map[string]LotStatus {
+		result := make(map[string]LotStatus, len(lotStatusToString))
+
+		for k, v := range lotStatusToString {
+			result[v] = k
+		}
+
+		return result
+	}()
+
+	ErrLotStatusInvalid = NewError("lot_status_invalid", "lot status is invalid")
+)
+
+// ParseLotStatus returns lot status by string
+func ParseLotStatus(v string) (LotStatus, error) {
+	status, ok := stringToLotStatus[strings.ToLower(v)]
+	if !ok {
+		return LotStatus(-1), ErrLotStatusInvalid
+	}
+	return status, nil
+}
+
+// String representation of lot status.
+func (ls LotStatus) String() string {
+	return lotStatusToString[ls]
+}
+
 // Lot for sale
 type Lot struct {
 	// Unique ID of lot.
@@ -122,6 +173,14 @@ type Lot struct {
 
 	// Private join link of channel
 	JoinLink null.String
+
+	// Status of lot.
+	// Default is created.
+	Status LotStatus
+
+	// Reference to canceled reason.
+	// Optional.
+	CanceledReasonID LotCanceledReasonID
 
 	// Bio of channel
 	Bio null.String
@@ -157,6 +216,17 @@ type Lot struct {
 	PublishedAt null.Time
 }
 
+func (lot *Lot) SetStatus(status LotStatus) {
+	switch status {
+	case LotStatusPaid:
+		lot.Status = status
+		lot.PaidAt.SetValid(time.Now())
+	case LotStatusPublished:
+		lot.Status = status
+		lot.PublishedAt.SetValid(time.Now())
+	}
+}
+
 func (lot *Lot) Link() string {
 	if lot.JoinLink.Valid {
 		return lot.JoinLink.String
@@ -182,6 +252,7 @@ func NewLot(
 		ExternalID:     externalID,
 		Name:           name,
 		Price:          price,
+		Status:         LotStatusCreated,
 		Comment:        comment,
 		Metrics:        NewLotMetrics(price.Current, membersCount, dailyCoverage, monthlyIncome),
 		ExtraResources: nil,
@@ -310,6 +381,9 @@ type LotStoreQuery interface {
 	PaybackPeriodTo(v float64) LotStoreQuery
 
 	SortBy(field LotField, typ store.SortType) LotStoreQuery
+
+	OwnerID(id UserID) LotStoreQuery
+	Statuses(statuses ...LotStatus) LotStoreQuery
 
 	One(ctx context.Context) (*Lot, error)
 	All(ctx context.Context) (LotSlice, error)

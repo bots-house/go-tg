@@ -3,6 +3,7 @@ package migrations
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/remind101/migrate"
 )
@@ -45,6 +46,13 @@ var migrations []migrate.Migration
 
 // include migration to list
 func include(id int, up, down func(tx *sql.Tx) error) {
+
+	for _, migration := range migrations {
+		if migration.ID == id {
+			panic(fmt.Sprintf("migration #%d already exists", id))
+		}
+	}
+
 	migrations = append(migrations, migrate.Migration{
 		ID:   id,
 		Up:   up,

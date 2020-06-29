@@ -2,10 +2,10 @@ package admin
 
 import (
 	"bytes"
-	"html/template"
 	"log"
 	"strings"
 	"sync"
+	"text/template"
 
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/lithammer/dedent"
@@ -66,6 +66,7 @@ func (ns *Notifications) run() {
 
 			msg := tgbotapi.NewMessage(ns.channelID, res.String())
 			msg.ParseMode = tgbotapi.ModeHTML
+			msg.DisableWebPagePreview = true
 
 			_, err = ns.client.Send(msg)
 			if err != nil {

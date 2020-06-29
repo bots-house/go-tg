@@ -382,10 +382,13 @@ type LotStoreQuery interface {
 	PaybackPeriodTo(v float64) LotStoreQuery
 
 	SortBy(field LotField, typ store.SortType) LotStoreQuery
+	Offset(v int) LotStoreQuery
+	Limit(v int) LotStoreQuery
 
 	OwnerID(id UserID) LotStoreQuery
 	Statuses(statuses ...LotStatus) LotStoreQuery
 
+	Count(ctx context.Context) (int, error)
 	One(ctx context.Context) (*Lot, error)
 	All(ctx context.Context) (LotSlice, error)
 }

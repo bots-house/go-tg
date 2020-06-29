@@ -17,10 +17,12 @@ import (
 type GetLotsURL struct {
 	DailyCoverageFrom  *int64
 	DailyCoverageTo    *int64
+	Limit              *int64
 	MembersCountFrom   *int64
 	MembersCountTo     *int64
 	MonthlyIncomeFrom  *int64
 	MonthlyIncomeTo    *int64
+	Offset             *int64
 	PaybackPeriodFrom  *float64
 	PaybackPeriodTo    *float64
 	PriceFrom          *int64
@@ -83,6 +85,14 @@ func (o *GetLotsURL) Build() (*url.URL, error) {
 		qs.Set("daily_coverage_to", dailyCoverageToQ)
 	}
 
+	var limitQ string
+	if o.Limit != nil {
+		limitQ = swag.FormatInt64(*o.Limit)
+	}
+	if limitQ != "" {
+		qs.Set("limit", limitQ)
+	}
+
 	var membersCountFromQ string
 	if o.MembersCountFrom != nil {
 		membersCountFromQ = swag.FormatInt64(*o.MembersCountFrom)
@@ -113,6 +123,14 @@ func (o *GetLotsURL) Build() (*url.URL, error) {
 	}
 	if monthlyIncomeToQ != "" {
 		qs.Set("monthly_income_to", monthlyIncomeToQ)
+	}
+
+	var offsetQ string
+	if o.Offset != nil {
+		offsetQ = swag.FormatInt64(*o.Offset)
+	}
+	if offsetQ != "" {
+		qs.Set("offset", offsetQ)
 	}
 
 	var paybackPeriodFromQ string

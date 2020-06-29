@@ -25,7 +25,7 @@ type GetLotsOK struct {
 	/*
 	  In: Body
 	*/
-	Payload []*models.LotListItem `json:"body,omitempty"`
+	Payload *models.LotList `json:"body,omitempty"`
 }
 
 // NewGetLotsOK creates GetLotsOK with default headers values
@@ -35,13 +35,13 @@ func NewGetLotsOK() *GetLotsOK {
 }
 
 // WithPayload adds the payload to the get lots o k response
-func (o *GetLotsOK) WithPayload(payload []*models.LotListItem) *GetLotsOK {
+func (o *GetLotsOK) WithPayload(payload *models.LotList) *GetLotsOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get lots o k response
-func (o *GetLotsOK) SetPayload(payload []*models.LotListItem) {
+func (o *GetLotsOK) SetPayload(payload *models.LotList) {
 	o.Payload = payload
 }
 
@@ -49,14 +49,11 @@ func (o *GetLotsOK) SetPayload(payload []*models.LotListItem) {
 func (o *GetLotsOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if payload == nil {
-		// return empty array
-		payload = make([]*models.LotListItem, 0, 50)
-	}
-
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 

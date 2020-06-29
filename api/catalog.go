@@ -54,6 +54,8 @@ func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder 
 		MonthlyIncomeTo:    int(swag.Int64Value(params.MonthlyIncomeTo)),
 		PaybackPeriodFrom:  swag.Float64Value(params.PaybackPeriodFrom),
 		PaybackPeriodTo:    swag.Float64Value(params.PaybackPeriodTo),
+		Offset:             int(swag.Int64Value(params.Offset)),
+		Limit:              int(swag.Int64Value(params.Limit)),
 		//SortBy:             sortBy,
 		SortByType: 0,
 	}
@@ -88,7 +90,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder 
 		return catalogops.NewGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 
-	return catalogops.NewGetLotsOK().WithPayload(models.NewItemLotSlice(h.Storage, lots))
+	return catalogops.NewGetLotsOK().WithPayload(models.NewLotList(h.Storage, lots))
 }
 
 func (h *Handler) resolveTelegram(params catalogops.ResolveTelegramParams) middleware.Responder {

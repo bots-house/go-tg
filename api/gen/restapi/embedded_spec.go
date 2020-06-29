@@ -297,7 +297,20 @@ func init() {
             ],
             "type": "string",
             "default": "desc",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
             "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "сдвиг начала каждой страницы на указанное количество единиц",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "максимальное количество объектов, которое может вернуть запрос",
+            "name": "limit",
             "in": "query"
           }
         ],
@@ -305,10 +318,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/LotListItem"
-              }
+              "$ref": "#/definitions/LotList"
             }
           },
           "400": {
@@ -996,6 +1006,28 @@ func init() {
             1,
             2
           ]
+        }
+      }
+    },
+    "LotList": {
+      "description": "Список лотов",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotListItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "кол-во объектов подходщих под фильтр",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },
@@ -1925,7 +1957,20 @@ func init() {
             ],
             "type": "string",
             "default": "desc",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
             "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "сдвиг начала каждой страницы на указанное количество единиц",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "максимальное количество объектов, которое может вернуть запрос",
+            "name": "limit",
             "in": "query"
           }
         ],
@@ -1933,10 +1978,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/LotListItem"
-              }
+              "$ref": "#/definitions/LotList"
             }
           },
           "400": {
@@ -2651,6 +2693,28 @@ func init() {
             1,
             2
           ]
+        }
+      }
+    },
+    "LotList": {
+      "description": "Список лотов",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotListItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "кол-во объектов подходщих под фильтр",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },

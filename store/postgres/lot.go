@@ -439,6 +439,16 @@ func (lsq *LotStoreQuery) TopicIDs(ids ...core.TopicID) core.LotStoreQuery {
 	return lsq
 }
 
+func (lsq *LotStoreQuery) Offset(v int) core.LotStoreQuery {
+	lsq.mods = append(lsq.mods, qm.Offset(v))
+	return lsq
+}
+
+func (lsq *LotStoreQuery) Limit(v int) core.LotStoreQuery {
+	lsq.mods = append(lsq.mods, qm.Limit(v))
+	return lsq
+}
+
 func (lsq *LotStoreQuery) eager() {
 	lsq.mods = append(lsq.mods,
 		qm.Load(dal.LotRels.LotTopics),
@@ -458,6 +468,14 @@ func (lsq *LotStoreQuery) One(ctx context.Context) (*core.Lot, error) {
 	}
 
 	return lsq.store.fromRow(row)
+}
+
+func (lsq *LotStoreQuery) Count(ctx context.Context) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
+
+	count, err := dal.Lots(lsq.mods...).Count(ctx, executor)
+
+	return int(count), err
 }
 
 func (lsq *LotStoreQuery) All(ctx context.Context) (core.LotSlice, error) {

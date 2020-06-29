@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store"
@@ -32,6 +31,8 @@ type LotsQuery struct {
 	PaybackPeriodTo    float64
 	SortBy             core.LotField
 	SortByType         store.SortType
+	Offset             int
+	Limit              int
 }
 
 type ItemLot struct {
@@ -50,7 +51,26 @@ func (srv *Service) newItemLotSlice(ctx context.Context, lots core.LotSlice) ([]
 	return result, nil
 }
 
-func (srv *Service) newLotsQuery(ctx context.Context, query *LotsQuery) core.LotStoreQuery {
+func (srv *Service) newListLotsQuery(ctx context.Context, query *LotsQuery, qry core.LotStoreQuery) core.LotStoreQuery {
+	if query != nil {
+
+		if query.SortBy != 0 {
+			qry = qry.SortBy(query.SortBy, query.SortByType)
+		}
+
+		if query.Offset != 0 {
+			qry = qry.Offset(query.Offset)
+		}
+
+		if query.Limit != 0 {
+			qry = qry.Limit(query.Limit)
+		}
+	}
+
+	return qry
+}
+
+func (srv *Service) newBaseLotsQuery(ctx context.Context, query *LotsQuery) core.LotStoreQuery {
 	qry := srv.Lot.Query()
 
 	if query != nil {
@@ -113,26 +133,44 @@ func (srv *Service) newLotsQuery(ctx context.Context, query *LotsQuery) core.Lot
 		if query.PaybackPeriodTo != 0 {
 			qry = qry.PaybackPeriodTo(query.PaybackPeriodTo)
 		}
-
-		if query.SortBy != 0 {
-			qry = qry.SortBy(query.SortBy, query.SortByType)
-		}
 	}
 
 	return qry
 }
 
-func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) ([]*ItemLot, error) {
+type LotList struct {
+	Total int
+	Items []*ItemLot
+}
+
+func (srv *Service) newLotList(ctx context.Context, total int, lots []*core.Lot) (*LotList, error) {
+	items, err := srv.newItemLotSlice(ctx, lots)
+	if err != nil {
+		return nil, errors.Wrap(err, "to item lot")
+	}
+
+	return &LotList{
+		Items: items,
+		Total: total,
+	}, nil
+}
+
+func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) (*LotList, error) {
 	qry := srv.
-		newLotsQuery(ctx, query).
+		newBaseLotsQuery(ctx, query).
 		Statuses(core.ShowLotStatus...)
 
-	ctx = boil.WithDebug(ctx, true)
+	total, err := qry.Count(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get total")
+	}
+
+	qry = srv.newListLotsQuery(ctx, query, qry)
 
 	lots, err := qry.All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get lots")
 	}
 
-	return srv.newItemLotSlice(ctx, lots)
+	return srv.newLotList(ctx, total, lots)
 }

@@ -52,6 +52,10 @@ type GetLotsParams struct {
 	  In: query
 	*/
 	DailyCoverageTo *int64
+	/*максимальное количество объектов, которое может вернуть запрос
+	  In: query
+	*/
+	Limit *int64
 	/*От кол-ва пдп
 	  In: query
 	*/
@@ -68,6 +72,10 @@ type GetLotsParams struct {
 	  In: query
 	*/
 	MonthlyIncomeTo *int64
+	/*сдвиг начала каждой страницы на указанное количество единиц
+	  In: query
+	*/
+	Offset *int64
 	/*Окупаемость в месацах от
 	  In: query
 	*/
@@ -105,7 +113,7 @@ type GetLotsParams struct {
 	  Default: "created_at"
 	*/
 	SortBy *string
-	/*
+	/*сортировать от меньшего к большему (`asc`), или от большего к меньшему (`desc`)
 	  In: query
 	  Default: "desc"
 	*/
@@ -137,6 +145,11 @@ func (o *GetLotsParams) BindRequest(r *http.Request, route *middleware.MatchedRo
 		res = append(res, err)
 	}
 
+	qLimit, qhkLimit, _ := qs.GetOK("limit")
+	if err := o.bindLimit(qLimit, qhkLimit, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qMembersCountFrom, qhkMembersCountFrom, _ := qs.GetOK("members_count_from")
 	if err := o.bindMembersCountFrom(qMembersCountFrom, qhkMembersCountFrom, route.Formats); err != nil {
 		res = append(res, err)
@@ -154,6 +167,11 @@ func (o *GetLotsParams) BindRequest(r *http.Request, route *middleware.MatchedRo
 
 	qMonthlyIncomeTo, qhkMonthlyIncomeTo, _ := qs.GetOK("monthly_income_to")
 	if err := o.bindMonthlyIncomeTo(qMonthlyIncomeTo, qhkMonthlyIncomeTo, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qOffset, qhkOffset, _ := qs.GetOK("offset")
+	if err := o.bindOffset(qOffset, qhkOffset, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -262,6 +280,28 @@ func (o *GetLotsParams) bindDailyCoverageTo(rawData []string, hasKey bool, forma
 	return nil
 }
 
+// bindLimit binds and validates parameter Limit from query.
+func (o *GetLotsParams) bindLimit(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("limit", "query", "int64", raw)
+	}
+	o.Limit = &value
+
+	return nil
+}
+
 // bindMembersCountFrom binds and validates parameter MembersCountFrom from query.
 func (o *GetLotsParams) bindMembersCountFrom(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
@@ -346,6 +386,28 @@ func (o *GetLotsParams) bindMonthlyIncomeTo(rawData []string, hasKey bool, forma
 		return errors.InvalidType("monthly_income_to", "query", "int64", raw)
 	}
 	o.MonthlyIncomeTo = &value
+
+	return nil
+}
+
+// bindOffset binds and validates parameter Offset from query.
+func (o *GetLotsParams) bindOffset(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("offset", "query", "int64", raw)
+	}
+	o.Offset = &value
 
 	return nil
 }

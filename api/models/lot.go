@@ -90,6 +90,13 @@ func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
 	}
 }
 
+func NewLotList(s storage.Storage, list *catalog.LotList) *models.LotList {
+	return &models.LotList{
+		Items: NewItemLotSlice(s, list.Items),
+		Total: swag.Int64(int64(list.Total)),
+	}
+}
+
 func NewItemLotSlice(s storage.Storage, in []*catalog.ItemLot) []*models.LotListItem {
 	result := make([]*models.LotListItem, len(in))
 

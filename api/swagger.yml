@@ -256,7 +256,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/TelegramResolveResult'
+            $ref: "#/definitions/TelegramResolveResult"
         400:
           description: Bad Request
           schema:
@@ -270,7 +270,7 @@ paths:
     post:
       summary: Create Lot
       operationId: createLot
-      tags: ['personal-area']
+      tags: ["personal-area"]
       description: |
         Создание лота.
         Предварительно нужно получить ID канала через метод `/tg/resolve` и отправить его в запросе как `telegram_id`.
@@ -287,12 +287,12 @@ paths:
           name: payload
           required: true
           schema:
-            $ref: '#/definitions/LotInput'
+            $ref: "#/definitions/LotInput"
       responses:
         201:
           description: Created
           schema:
-            $ref: '#/definitions/OwnedLot'
+            $ref: "#/definitions/OwnedLot"
         400:
           description: Bad Request
           schema:
@@ -405,14 +405,24 @@ paths:
             - asc
             - desc
           default: desc
+          description: сортировать от меньшего к большему (`asc`), или от большего к меньшему (`desc`)
+
+        - in: query
+          name: offset
+          type: integer
+          description: сдвиг начала каждой страницы на указанное количество единиц
+
+        - in: query
+          name: limit
+          type: integer
+          description: максимальное количество объектов, которое может вернуть запрос
+
       security: []
       responses:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/LotListItem'
+            $ref: "#/definitions/LotList"
         400:
           description: Bad Request
           schema:
@@ -441,7 +451,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/LotFilterBoundaries'
+            $ref: "#/definitions/LotFilterBoundaries"
         500:
           description: Internal Server Error
           schema:
@@ -459,12 +469,12 @@ paths:
       description: |
         Получить информацию для оплаты объявления.
       operationId: getApplicationInovice
-      tags: ['personal-area']
+      tags: ["personal-area"]
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/ApplicationInvoice'
+            $ref: "#/definitions/ApplicationInvoice"
         400:
           description: Bad Request
           schema:
@@ -492,12 +502,12 @@ paths:
       description: |
         Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
       operationId: createApplicationPayment
-      tags: ['personal-area']
+      tags: ["personal-area"]
       responses:
         201:
           description: Created
           schema:
-            $ref: '#/definitions/PaymentForm'
+            $ref: "#/definitions/PaymentForm"
         400:
           description: Bad Request
           schema:
@@ -518,12 +528,12 @@ paths:
       description: |
         Получить статус платежа по его ID.
       operationId: getPaymentStatus
-      tags: ['personal-area']
+      tags: ["personal-area"]
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/PaymentStatus'
+            $ref: "#/definitions/PaymentStatus"
         400:
           description: Bad Request
           schema:
@@ -548,7 +558,7 @@ paths:
         Обработка уведомления о изменении состояния платжа
       tags: [webhook]
       consumes:
-        - 'application/x-www-form-urlencoded'
+        - "application/x-www-form-urlencoded"
       security: []
       responses:
         200:
@@ -622,10 +632,10 @@ definitions:
       - gateways
     properties:
       lot:
-        $ref: '#/definitions/OwnedLot'
+        $ref: "#/definitions/OwnedLot"
       price:
         description: Цена размещения
-        $ref: '#/definitions/Money'
+        $ref: "#/definitions/Money"
       cashier:
         type: object
         description: |
@@ -671,19 +681,19 @@ definitions:
       - payback_period
     properties:
       members_count:
-        $ref: '#/definitions/IntBoundaries'
+        $ref: "#/definitions/IntBoundaries"
       price:
-        $ref: '#/definitions/IntBoundaries'
+        $ref: "#/definitions/IntBoundaries"
       price_per_member:
-        $ref: '#/definitions/FloatBoundaries'
+        $ref: "#/definitions/FloatBoundaries"
       price_per_view:
-        $ref: '#/definitions/FloatBoundaries'
+        $ref: "#/definitions/FloatBoundaries"
       daily_coverage:
-        $ref: '#/definitions/IntBoundaries'
+        $ref: "#/definitions/IntBoundaries"
       monthly_income:
-        $ref: '#/definitions/IntBoundaries'
+        $ref: "#/definitions/IntBoundaries"
       payback_period:
-        $ref: '#/definitions/FloatBoundaries'
+        $ref: "#/definitions/FloatBoundaries"
 
   FloatBoundaries:
     type: object
@@ -710,6 +720,21 @@ definitions:
       to:
         type: integer
         description: to
+
+  LotList:
+    type: object
+    description: Список лотов
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: кол-во объектов подходщих под фильтр
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/LotListItem"
 
   LotListItem:
     type: object
@@ -738,18 +763,18 @@ definitions:
         description: Аватарка лота
       username:
         type: string
-        description: '@username канала (может быть null)'
+        description: "@username канала (может быть null)"
       link:
         type: string
         description: Ссылка для вступления (как приватная так и публичная)
         format: url
       price:
-        $ref: '#/definitions/LotPrice'
+        $ref: "#/definitions/LotPrice"
       comment:
         type: string
         description: Комментарий к лоту
       metrics:
-        $ref: '#/definitions/LotMetrics'
+        $ref: "#/definitions/LotMetrics"
       topics:
         type: array
         items:
@@ -799,7 +824,7 @@ definitions:
         description: Аватарка лота
       username:
         type: string
-        description: '@username канала (может быть null)'
+        description: "@username канала (может быть null)"
       link:
         type: string
         description: Ссылка для вступления (как приватная так и публичная)
@@ -808,12 +833,12 @@ definitions:
         type: string
         description: Описаник канала с Telegram
       price:
-        $ref: '#/definitions/LotPrice'
+        $ref: "#/definitions/LotPrice"
       comment:
         type: string
         description: Комментарий к лоту
       metrics:
-        $ref: '#/definitions/LotMetrics'
+        $ref: "#/definitions/LotMetrics"
       created_at:
         type: integer
         description: Дата создания
@@ -832,7 +857,7 @@ definitions:
       extra:
         type: array
         items:
-          $ref: '#/definitions/LotExtraResource'
+          $ref: "#/definitions/LotExtraResource"
       published_at:
         type: integer
         description: Дата публикации в канале
@@ -906,7 +931,7 @@ definitions:
       query:
         type: string
         description: Запрос пользователя, @username или приватная ссылка.
-        example: '@channely_updates'
+        example: "@channely_updates"
       telegram_id:
         type: integer
         description: ID канала в Telegram

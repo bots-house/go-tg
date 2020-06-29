@@ -226,6 +226,7 @@ func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
 			PaybackPeriod:  row.MetricsPaybackPeriod,
 		},
 		ExtraResources: extra,
+		TopicIDs:       topics,
 		CreatedAt:      row.CreatedAt,
 		PaidAt:         row.PaidAt,
 		ApprovedAt:     row.ApprovedAt,

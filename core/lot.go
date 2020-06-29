@@ -113,6 +113,7 @@ const (
 
 var ShowLotStatus = []LotStatus{
 	LotStatusPaid,
+	LotStatusCreated,
 }
 
 var (

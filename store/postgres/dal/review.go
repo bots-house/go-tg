@@ -25,7 +25,7 @@ import (
 // Review is an object representing the database table.
 type Review struct {
 	ID         int         `boil:"id" json:"id" toml:"id" yaml:"id"`
-	TelegramID int         `boil:"telegram_id" json:"telegram_id" toml:"telegram_id" yaml:"telegram_id"`
+	TelegramID null.Int    `boil:"telegram_id" json:"telegram_id,omitempty" toml:"telegram_id" yaml:"telegram_id,omitempty"`
 	FirstName  string      `boil:"first_name" json:"first_name" toml:"first_name" yaml:"first_name"`
 	LastName   null.String `boil:"last_name" json:"last_name,omitempty" toml:"last_name" yaml:"last_name,omitempty"`
 	Username   null.String `boil:"username" json:"username,omitempty" toml:"username" yaml:"username,omitempty"`
@@ -61,7 +61,7 @@ var ReviewColumns = struct {
 
 var ReviewWhere = struct {
 	ID         whereHelperint
-	TelegramID whereHelperint
+	TelegramID whereHelpernull_Int
 	FirstName  whereHelperstring
 	LastName   whereHelpernull_String
 	Username   whereHelpernull_String
@@ -70,7 +70,7 @@ var ReviewWhere = struct {
 	CreatedAt  whereHelpertime_Time
 }{
 	ID:         whereHelperint{field: "\"review\".\"id\""},
-	TelegramID: whereHelperint{field: "\"review\".\"telegram_id\""},
+	TelegramID: whereHelpernull_Int{field: "\"review\".\"telegram_id\""},
 	FirstName:  whereHelperstring{field: "\"review\".\"first_name\""},
 	LastName:   whereHelpernull_String{field: "\"review\".\"last_name\""},
 	Username:   whereHelpernull_String{field: "\"review\".\"username\""},

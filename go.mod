@@ -4,10 +4,11 @@ module github.com/bots-house/birzzha
 go 1.14
 
 require (
+	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Rhymond/go-money v1.0.1
 	github.com/aws/aws-sdk-go v1.32.7
 	github.com/benbjohnson/clock v1.0.3
-	github.com/bots-house/telegram-bot-api v1.0.1-0.20200622142737-6721de82af68
+	github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a
 	github.com/cristalhq/jwt v1.2.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/friendsofgo/errors v0.9.2
@@ -42,6 +43,5 @@ require (
 	github.com/volatiletech/sqlboiler/v4 v4.1.2
 	github.com/volatiletech/strmangle v0.0.1
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
-	github.com/PuerkitoBio/goquery v1.5.1
 
 )

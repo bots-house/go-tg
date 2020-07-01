@@ -83,7 +83,7 @@ func (bot *Bot) initHandler() {
 }
 
 func isForward(msg *tgbotapi.Message) bool {
-	return msg.ForwardFrom != nil
+	return msg.ForwardFrom != nil || msg.ForwardSenderName != ""
 }
 
 func (bot *Bot) onUpdate(ctx context.Context, update *tgbotapi.Update) error {

@@ -21,15 +21,15 @@ type ReviewUser struct {
 	// Required: true
 	FirstName *string `json:"first_name"`
 
-	// Фамилия пользователя.
+	// Фамилия пользователя (может быть null).
 	// Required: true
 	LastName *string `json:"last_name"`
 
-	// Юзернейм пользователя.
+	// Юзернейм пользователя (может быть null).
 	// Required: true
 	Username *string `json:"username"`
 
-	// Ссылка на аватарку пользователя.
+	// Ссылка на аватарку пользователя (может быть null).
 	// Required: true
 	Avatar *string `json:"avatar"`
 }

@@ -1293,14 +1293,14 @@ definitions:
         description: Имя пользователя.
       last_name:
         type: string
-        description: Фамилия пользователя.
+        description: Фамилия пользователя (может быть null).
       username:
         type: string
-        description: Юзернейм пользователя.
+        description: Юзернейм пользователя (может быть null).
       avatar:
         type: string
-        description: Ссылка на аватарку пользователя.
-
+        description: Ссылка на аватарку пользователя (может быть null).
+  
   Review:
     description: Отзыв.
     required:

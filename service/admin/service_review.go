@@ -48,7 +48,7 @@ func (srv *Service) AddReview(ctx context.Context, user *core.User, in *ReviewIn
 
 	review := core.NewReview(
 		core.NewReviewUser(
-			in.TelegramID,
+			null.NewInt(in.TelegramID, in.TelegramID != 0),
 			in.FirstName,
 			null.NewString(in.LastName, in.LastName != ""),
 			null.NewString(in.Username, in.Username != ""),

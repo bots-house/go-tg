@@ -39,7 +39,7 @@ func NewReview(
 
 type ReviewUser struct {
 	// External Telegram ID.
-	TelegramID int
+	TelegramID null.Int
 
 	// First name.
 	FirstName string
@@ -55,7 +55,7 @@ type ReviewUser struct {
 }
 
 func NewReviewUser(
-	telegramID int,
+	telegramID null.Int,
 	firstName string,
 	lastName null.String,
 	username null.String,

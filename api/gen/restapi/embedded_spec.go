@@ -1559,7 +1559,7 @@ func init() {
       ],
       "properties": {
         "avatar": {
-          "description": "Ссылка на аватарку пользователя.",
+          "description": "Ссылка на аватарку пользователя (может быть null).",
           "type": "string",
           "x-order": 3
         },
@@ -1569,12 +1569,12 @@ func init() {
           "x-order": 0
         },
         "last_name": {
-          "description": "Фамилия пользователя.",
+          "description": "Фамилия пользователя (может быть null).",
           "type": "string",
           "x-order": 1
         },
         "username": {
-          "description": "Юзернейм пользователя.",
+          "description": "Юзернейм пользователя (может быть null).",
           "type": "string",
           "x-order": 2
         }
@@ -3472,7 +3472,7 @@ func init() {
       ],
       "properties": {
         "avatar": {
-          "description": "Ссылка на аватарку пользователя.",
+          "description": "Ссылка на аватарку пользователя (может быть null).",
           "type": "string",
           "x-order": 3
         },
@@ -3482,12 +3482,12 @@ func init() {
           "x-order": 0
         },
         "last_name": {
-          "description": "Фамилия пользователя.",
+          "description": "Фамилия пользователя (может быть null).",
           "type": "string",
           "x-order": 1
         },
         "username": {
-          "description": "Юзернейм пользователя.",
+          "description": "Юзернейм пользователя (может быть null).",
           "type": "string",
           "x-order": 2
         }

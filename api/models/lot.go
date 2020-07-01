@@ -50,18 +50,10 @@ func NewOwnedLotSlice(s storage.Storage, lots []*personal.OwnedLot) []*models.Ow
 }
 
 func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
-
-	var avatar string
-
-	if in.Avatar.Valid {
-		avatar = s.PublicURL(in.Avatar.String)
-	}
-
-	return &models.OwnedLot{
+	ownedLot := &models.OwnedLot{
 		ID:          swag.Int64(int64(in.ID)),
 		ExternalID:  swag.Int64(in.ExternalID),
 		Name:        swag.String(in.Name),
-		Avatar:      swag.String(avatar),
 		Username:    nullStringToString(in.Username),
 		Link:        swag.String(in.Link()),
 		Bio:         nullStringToString(in.Bio),
@@ -81,20 +73,17 @@ func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 			CanCancel:          swag.Bool(in.CanCancel()),
 		},
 	}
+	if in.Avatar.Valid {
+		ownedLot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+
+	return ownedLot
 }
 
 func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
-
-	var avatar string
-
-	if in.Avatar.Valid {
-		avatar = s.PublicURL(in.Avatar.String)
-	}
-
-	return &models.LotListItem{
+	lotListItem := &models.LotListItem{
 		ID:          swag.Int64(int64(in.ID)),
 		Name:        swag.String(in.Name),
-		Avatar:      swag.String(avatar),
 		Username:    nullStringToString(in.Username),
 		Link:        swag.String(in.Link()),
 		Price:       newLotPrice(in.Price),
@@ -104,6 +93,11 @@ func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
 		Topics:      NewTopicIDSlice(in.Topics),
 		CreatedAt:   timeToUnix(in.CreatedAt),
 	}
+	if in.Avatar.Valid {
+		lotListItem.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+
+	return lotListItem
 }
 
 func NewLotList(s storage.Storage, list *catalog.LotList) *models.LotList {

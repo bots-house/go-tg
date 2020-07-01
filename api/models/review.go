@@ -9,18 +9,16 @@ import (
 )
 
 func newReviewUser(s storage.Storage, user core.ReviewUser) *models.ReviewUser {
-	var avatar string
 
-	if user.Avatar.Valid {
-		avatar = s.PublicURL(avatar)
-	}
-
-	return &models.ReviewUser{
+	reviewUser := &models.ReviewUser{
 		FirstName: swag.String(user.FirstName),
 		LastName:  nullStringToString(user.LastName),
 		Username:  nullStringToString(user.Username),
-		Avatar:    swag.String(avatar),
 	}
+	if user.Avatar.Valid {
+		reviewUser.Avatar = swag.String(s.PublicURL(user.Avatar.String))
+	}
+	return reviewUser
 }
 
 func newReview(s storage.Storage, review *core.Review) *models.Review {

@@ -217,6 +217,18 @@ type Lot struct {
 	PublishedAt null.Time
 }
 
+func (lot *Lot) CanCancel() bool {
+	return lot.Status == LotStatusPublished
+}
+
+func (lot *Lot) CanChangePriceFree() bool {
+	return lot.Status == LotStatusCreated || lot.Status == LotStatusPaid
+}
+
+func (lot *Lot) CanChangePricePaid() bool {
+	return lot.Status == LotStatusPublished
+}
+
 func (lot *Lot) SetStatus(status LotStatus) {
 	switch status {
 	case LotStatusPaid:

@@ -39,6 +39,16 @@ func newLotExtraResourceSlice(in []core.LotExtraResource) []*models.LotExtraReso
 	return result
 }
 
+func NewOwnedLotSlice(s storage.Storage, lots []*personal.OwnedLot) []*models.OwnedLot {
+	items := make([]*models.OwnedLot, len(lots))
+
+	for i, lot := range lots {
+		items[i] = NewOwnedLot(s, lot)
+	}
+
+	return items
+}
+
 func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 
 	var avatar string
@@ -56,6 +66,7 @@ func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 		Link:        swag.String(in.Link()),
 		Bio:         nullStringToString(in.Bio),
 		Price:       newLotPrice(in.Price),
+		Status:      swag.String(in.Status.String()),
 		Comment:     swag.String(in.Comment),
 		Metrics:     newLotMetrics(in.Metrics),
 		Topics:      NewTopicIDSlice(in.TopicIDs),
@@ -64,6 +75,11 @@ func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 		ApprovedAt:  nullTimeToUnix(in.ApprovedAt),
 		PublishedAt: nullTimeToUnix(in.PublishedAt),
 		Extra:       newLotExtraResourceSlice(in.ExtraResources),
+		Actions: &models.OwnedLotActions{
+			CanChangePricePaid: swag.Bool(in.CanChangePricePaid()),
+			CanChangePriceFree: swag.Bool(in.CanChangePriceFree()),
+			CanCancel:          swag.Bool(in.CanCancel()),
+		},
 	}
 }
 

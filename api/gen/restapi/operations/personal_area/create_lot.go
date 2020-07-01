@@ -31,7 +31,7 @@ func NewCreateLot(ctx *middleware.Context, handler CreateLotHandler) *CreateLot 
 	return &CreateLot{Context: ctx, Handler: handler}
 }
 
-/*CreateLot swagger:route POST /lots personal-area createLot
+/*CreateLot swagger:route POST /user/lots personal-area createLot
 
 Create Lot
 

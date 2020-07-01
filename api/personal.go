@@ -91,3 +91,18 @@ func (h *Handler) getPaymentStatus(params personalops.GetPaymentStatusParams, id
 
 	return personalops.NewGetPaymentStatusOK().WithPayload(models.NewPaymentStatus(status))
 }
+
+func (h *Handler) getOwnedLots(params personalops.GetUserLotsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	lots, err := h.Personal.GetLots(ctx, identity.User)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewGetUserLotsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewGetUserLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return personalops.NewGetUserLotsOK().WithPayload(models.NewOwnedLotSlice(h.Storage, lots))
+
+}

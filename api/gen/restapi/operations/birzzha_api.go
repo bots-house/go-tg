@@ -83,6 +83,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AuthGetUserHandler: auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
 		}),
+		PersonalAreaGetUserLotsHandler: personal_area.GetUserLotsHandlerFunc(func(params personal_area.GetUserLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetUserLots has not yet been implemented")
+		}),
 		WebhookHandleGatewayNotificationHandler: webhook.HandleGatewayNotificationHandlerFunc(func(params webhook.HandleGatewayNotificationParams) middleware.Responder {
 			return middleware.NotImplemented("operation webhook.HandleGatewayNotification has not yet been implemented")
 		}),
@@ -175,6 +178,8 @@ type BirzzhaAPI struct {
 	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
 	AuthGetUserHandler auth.GetUserHandler
+	// PersonalAreaGetUserLotsHandler sets the operation handler for the get user lots operation
+	PersonalAreaGetUserLotsHandler personal_area.GetUserLotsHandler
 	// WebhookHandleGatewayNotificationHandler sets the operation handler for the handle gateway notification operation
 	WebhookHandleGatewayNotificationHandler webhook.HandleGatewayNotificationHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
@@ -291,6 +296,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AuthGetUserHandler == nil {
 		unregistered = append(unregistered, "auth.GetUserHandler")
+	}
+	if o.PersonalAreaGetUserLotsHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetUserLotsHandler")
 	}
 	if o.WebhookHandleGatewayNotificationHandler == nil {
 		unregistered = append(unregistered, "webhook.HandleGatewayNotificationHandler")
@@ -418,7 +426,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/lots"] = personal_area.NewCreateLot(o.context, o.PersonalAreaCreateLotHandler)
+	o.handlers["POST"]["/user/lots"] = personal_area.NewCreateLot(o.context, o.PersonalAreaCreateLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -455,6 +463,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/user"] = auth.NewGetUser(o.context, o.AuthGetUserHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/user/lots"] = personal_area.NewGetUserLots(o.context, o.PersonalAreaGetUserLotsHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

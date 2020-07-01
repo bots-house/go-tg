@@ -6,6 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/go-openapi/errors"
@@ -59,6 +60,11 @@ type OwnedLot struct {
 	// Required: true
 	Metrics *LotMetrics `json:"metrics"`
 
+	// status
+	// Required: true
+	// Enum: [created paid published declined canceled]
+	Status *string `json:"status"`
+
 	// Дата создания
 	// Required: true
 	CreatedAt *int64 `json:"created_at"`
@@ -82,6 +88,9 @@ type OwnedLot struct {
 	// Дата публикации в канале
 	// Required: true
 	PublishedAt *int64 `json:"published_at"`
+
+	// actions
+	Actions *OwnedLotActions `json:"actions,omitempty"`
 }
 
 // Validate validates this owned lot
@@ -128,6 +137,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateStatus(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCreatedAt(formats); err != nil {
 		res = append(res, err)
 	}
@@ -149,6 +162,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePublishedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateActions(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -266,6 +283,58 @@ func (m *OwnedLot) validateMetrics(formats strfmt.Registry) error {
 	return nil
 }
 
+var ownedLotTypeStatusPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["created","paid","published","declined","canceled"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		ownedLotTypeStatusPropEnum = append(ownedLotTypeStatusPropEnum, v)
+	}
+}
+
+const (
+
+	// OwnedLotStatusCreated captures enum value "created"
+	OwnedLotStatusCreated string = "created"
+
+	// OwnedLotStatusPaid captures enum value "paid"
+	OwnedLotStatusPaid string = "paid"
+
+	// OwnedLotStatusPublished captures enum value "published"
+	OwnedLotStatusPublished string = "published"
+
+	// OwnedLotStatusDeclined captures enum value "declined"
+	OwnedLotStatusDeclined string = "declined"
+
+	// OwnedLotStatusCanceled captures enum value "canceled"
+	OwnedLotStatusCanceled string = "canceled"
+)
+
+// prop value enum
+func (m *OwnedLot) validateStatusEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, ownedLotTypeStatusPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *OwnedLot) validateStatus(formats strfmt.Registry) error {
+
+	if err := validate.Required("status", "body", m.Status); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *OwnedLot) validateCreatedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
@@ -348,6 +417,24 @@ func (m *OwnedLot) validatePublishedAt(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *OwnedLot) validateActions(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Actions) { // not required
+		return nil
+	}
+
+	if m.Actions != nil {
+		if err := m.Actions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("actions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // MarshalBinary interface implementation
 func (m *OwnedLot) MarshalBinary() ([]byte, error) {
 	if m == nil {
@@ -359,6 +446,91 @@ func (m *OwnedLot) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *OwnedLot) UnmarshalBinary(b []byte) error {
 	var res OwnedLot
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}
+
+// OwnedLotActions owned lot actions
+//
+// swagger:model OwnedLotActions
+type OwnedLotActions struct {
+
+	// can change price free
+	// Required: true
+	CanChangePriceFree *bool `json:"can_change_price_free"`
+
+	// can change price paid
+	// Required: true
+	CanChangePricePaid *bool `json:"can_change_price_paid"`
+
+	// can cancel
+	// Required: true
+	CanCancel *bool `json:"can_cancel"`
+}
+
+// Validate validates this owned lot actions
+func (m *OwnedLotActions) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateCanChangePriceFree(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCanChangePricePaid(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCanCancel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *OwnedLotActions) validateCanChangePriceFree(formats strfmt.Registry) error {
+
+	if err := validate.Required("actions"+"."+"can_change_price_free", "body", m.CanChangePriceFree); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLotActions) validateCanChangePricePaid(formats strfmt.Registry) error {
+
+	if err := validate.Required("actions"+"."+"can_change_price_paid", "body", m.CanChangePricePaid); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLotActions) validateCanCancel(formats strfmt.Registry) error {
+
+	if err := validate.Required("actions"+"."+"can_cancel", "body", m.CanCancel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *OwnedLotActions) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *OwnedLotActions) UnmarshalBinary(b []byte) error {
+	var res OwnedLotActions
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

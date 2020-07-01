@@ -37,6 +37,26 @@ func (srv *Service) newOwnedLot(ctx context.Context, lot *core.Lot) (*OwnedLot, 
 	}, nil
 }
 
+func (srv *Service) newOwnedLotSlice(ctx context.Context, lots []*core.Lot) ([]*OwnedLot, error) {
+	result := make([]*OwnedLot, len(lots))
+	for i, lot := range lots {
+		var err error
+		result[i], err = srv.newOwnedLot(ctx, lot)
+		if err != nil {
+			return nil, errors.Wrap(err, "new owned lot")
+		}
+	}
+	return result, nil
+}
+
+func (srv *Service) GetLots(ctx context.Context, user *core.User) ([]*OwnedLot, error) {
+	lots, err := srv.Lot.Query().OwnerID(user.ID).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lots")
+	}
+	return srv.newOwnedLotSlice(ctx, lots)
+}
+
 func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (*OwnedLot, error) {
 	result, err := srv.Resolver.ResolveByID(ctx, in.TelegramID)
 	if err != nil {

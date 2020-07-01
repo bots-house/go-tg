@@ -334,44 +334,6 @@ func init() {
             }
           }
         }
-      },
-      "post": {
-        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
-        "tags": [
-          "personal-area"
-        ],
-        "summary": "Create Lot",
-        "operationId": "createLot",
-        "parameters": [
-          {
-            "name": "payload",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/LotInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/OwnedLot"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
       }
     },
     "/lots/filter-boundaries": {
@@ -670,6 +632,77 @@ func init() {
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/lots": {
+      "get": {
+        "description": "Получить список лотов пользователя.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get User Lots",
+        "operationId": "getUserLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OwnedLot"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Lot",
+        "operationId": "createLot",
+        "parameters": [
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LotInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
             }
           },
           "400": {
@@ -1253,6 +1286,7 @@ func init() {
         "bio",
         "price",
         "comment",
+        "status",
         "metrics",
         "topics",
         "extra",
@@ -1262,10 +1296,33 @@ func init() {
         "published_at"
       ],
       "properties": {
+        "actions": {
+          "type": "object",
+          "required": [
+            "can_change_price_free",
+            "can_change_price_paid",
+            "can_cancel"
+          ],
+          "properties": {
+            "can_cancel": {
+              "type": "boolean",
+              "x-order": 2
+            },
+            "can_change_price_free": {
+              "type": "boolean",
+              "x-order": 0
+            },
+            "can_change_price_paid": {
+              "type": "boolean",
+              "x-order": 1
+            }
+          },
+          "x-order": 15
+        },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -1286,7 +1343,7 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 10
+          "x-order": 11
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -1298,7 +1355,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 14
+          "x-order": 16
         },
         "id": {
           "description": "ID лота",
@@ -1323,7 +1380,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "price": {
           "x-order": 7,
@@ -1332,7 +1389,18 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 15
+          "x-order": 17
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "x-order": 10
         },
         "topics": {
           "type": "array",
@@ -1341,7 +1409,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 13
+          "x-order": 14
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -2126,44 +2194,6 @@ func init() {
             }
           }
         }
-      },
-      "post": {
-        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
-        "tags": [
-          "personal-area"
-        ],
-        "summary": "Create Lot",
-        "operationId": "createLot",
-        "parameters": [
-          {
-            "name": "payload",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/LotInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/OwnedLot"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
       }
     },
     "/lots/filter-boundaries": {
@@ -2470,6 +2500,77 @@ func init() {
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/lots": {
+      "get": {
+        "description": "Получить список лотов пользователя.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get User Lots",
+        "operationId": "getUserLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OwnedLot"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Создание лота.\nПредварительно нужно получить ID канала через метод ` + "`" + `/tg/resolve` + "`" + ` и отправить его в запросе как ` + "`" + `telegram_id` + "`" + `.\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `lot_is_not_channel` + "`" + ` | лот не является каналом |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Lot",
+        "operationId": "createLot",
+        "parameters": [
+          {
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LotInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
             }
           },
           "400": {
@@ -3072,6 +3173,7 @@ func init() {
         "bio",
         "price",
         "comment",
+        "status",
         "metrics",
         "topics",
         "extra",
@@ -3081,10 +3183,33 @@ func init() {
         "published_at"
       ],
       "properties": {
+        "actions": {
+          "type": "object",
+          "required": [
+            "can_change_price_free",
+            "can_change_price_paid",
+            "can_cancel"
+          ],
+          "properties": {
+            "can_cancel": {
+              "type": "boolean",
+              "x-order": 2
+            },
+            "can_change_price_free": {
+              "type": "boolean",
+              "x-order": 0
+            },
+            "can_change_price_paid": {
+              "type": "boolean",
+              "x-order": 1
+            }
+          },
+          "x-order": 15
+        },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -3105,7 +3230,7 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 10
+          "x-order": 11
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -3117,7 +3242,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 14
+          "x-order": 16
         },
         "id": {
           "description": "ID лота",
@@ -3142,7 +3267,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "price": {
           "x-order": 7,
@@ -3151,7 +3276,18 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 15
+          "x-order": 17
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "x-order": 10
         },
         "topics": {
           "type": "array",
@@ -3160,7 +3296,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 13
+          "x-order": 14
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -3168,6 +3304,29 @@ func init() {
           "x-order": 4
         }
       }
+    },
+    "OwnedLotActions": {
+      "type": "object",
+      "required": [
+        "can_change_price_free",
+        "can_change_price_paid",
+        "can_cancel"
+      ],
+      "properties": {
+        "can_cancel": {
+          "type": "boolean",
+          "x-order": 2
+        },
+        "can_change_price_free": {
+          "type": "boolean",
+          "x-order": 0
+        },
+        "can_change_price_paid": {
+          "type": "boolean",
+          "x-order": 1
+        }
+      },
+      "x-order": 15
     },
     "PaymentForm": {
       "type": "object",

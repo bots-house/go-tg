@@ -224,7 +224,7 @@ paths:
               $ref: "#/definitions/Topic"
         500:
           description: Internal Server Error
-  
+
   /reviews:
     get:
       summary: Get Reviews
@@ -256,7 +256,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-      
+
   /tg/resolve:
     get:
       summary: Resolve Telegram Identity
@@ -303,7 +303,29 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /lots:
+  /user/lots:
+    get:
+      summary: Get User Lots
+      operationId: getUserLots
+      tags: ["personal-area"]
+      description: |
+        Получить список лотов пользователя.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/OwnedLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
     post:
       summary: Create Lot
       operationId: createLot
@@ -318,7 +340,6 @@ paths:
         |:---------|:--------------|:-----------------|
         | 400 | `lot_is_not_channel` | лот не является каналом |
         | 500 | `internal_error` | Внутреняя ошибка сервера |
-
       parameters:
         - in: body
           name: payload
@@ -338,6 +359,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+
+  /lots:
     get:
       summary: Get Lots
       operationId: getLots
@@ -838,6 +861,7 @@ definitions:
       - bio
       - price
       - comment
+      - status
       - metrics
       - topics
       - extra
@@ -876,6 +900,14 @@ definitions:
         description: Комментарий к лоту
       metrics:
         $ref: "#/definitions/LotMetrics"
+      status:
+        type: string
+        enum:
+          - created
+          - paid
+          - published
+          - declined
+          - canceled
       created_at:
         type: integer
         description: Дата создания
@@ -891,6 +923,19 @@ definitions:
           type: integer
           minLength: 1
           maxLength: 3
+      actions:
+        type: object
+        required:
+          - can_change_price_free
+          - can_change_price_paid
+          - can_cancel
+        properties:
+          can_change_price_free:
+            type: boolean
+          can_change_price_paid:
+            type: boolean
+          can_cancel:
+            type: boolean
       extra:
         type: array
         items:
@@ -1234,7 +1279,7 @@ definitions:
       auth_deep_link:
         type: string
         description: Значение параметра `?start=` который нужно передать при формировании URL для авторизации через `LoginUrl`.
-  
+
   ReviewUser:
     description: Пользователь который оставил отзыв.
     required:
@@ -1255,7 +1300,7 @@ definitions:
       avatar:
         type: string
         description: Ссылка на аватарку пользователя.
-  
+
   Review:
     description: Отзыв.
     required:
@@ -1276,7 +1321,7 @@ definitions:
         type: integer
         format: int64
         description: Дата создания отзыва.
-  
+
   ReviewList:
     description: Отзывы и их количетсво.
     required:
@@ -1290,4 +1335,3 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Review"
-        

@@ -20,7 +20,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml884348788 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml649496631 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -112,6 +112,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AuthGetUserHandler == nil {
 		api.AuthGetUserHandler = auth.GetUserHandlerFunc(func(params auth.GetUserParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation auth.GetUser has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaGetUserLotsHandler == nil {
+		api.PersonalAreaGetUserLotsHandler = personal_area.GetUserLotsHandlerFunc(func(params personal_area.GetUserLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetUserLots has not yet been implemented")
 		})
 	}
 	if api.WebhookHandleGatewayNotificationHandler == nil {

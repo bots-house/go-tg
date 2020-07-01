@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/bots-house/birzzha/service/admin"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
@@ -32,6 +33,7 @@ func newReviewInput(msg *tgbotapi.Message) *admin.ReviewInput {
 		}
 	}
 	reviewInput.Text = msg.Text
+	reviewInput.CreatedAt = time.Unix(int64(msg.ForwardDate), 0)
 	return reviewInput
 }
 

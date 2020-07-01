@@ -29,11 +29,12 @@ type ReviewSlice []*Review
 func NewReview(
 	user ReviewUser,
 	text string,
+	createdAt time.Time,
 ) *Review {
 	return &Review{
 		User:      user,
 		Text:      text,
-		CreatedAt: time.Now(),
+		CreatedAt: createdAt,
 	}
 }
 

@@ -19,5 +19,5 @@ func (h *Handler) getReviews(params landingops.GetReviewsParams) middleware.Resp
 		}
 		return landingops.NewGetReviewsInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return landingops.NewGetReviewsOK().WithPayload(models.NewReviewList(result))
+	return landingops.NewGetReviewsOK().WithPayload(models.NewReviewList(h.Storage, result))
 }

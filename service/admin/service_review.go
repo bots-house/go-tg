@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"time"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
@@ -16,6 +17,7 @@ type ReviewInput struct {
 	LastName   string
 	Username   string
 	Text       string
+	CreatedAt  time.Time
 }
 
 const (
@@ -35,7 +37,6 @@ func (srv *Service) AddReview(ctx context.Context, user *core.User, in *ReviewIn
 		photoURL, err = srv.AvatarResolver.ResolveAvatar(ctx, in.Username)
 		if err != nil && err == tg.ErrCantDownloadAvatar {
 			log.Warn(ctx, "err", errors.Wrap(err, "resolve avatar"))
-
 		}
 	}
 
@@ -55,6 +56,7 @@ func (srv *Service) AddReview(ctx context.Context, user *core.User, in *ReviewIn
 			null.NewString(avatar, avatar != ""),
 		),
 		in.Text,
+		in.CreatedAt,
 	)
 
 	if err := srv.Review.Add(ctx, review); err != nil {

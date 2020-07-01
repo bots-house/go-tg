@@ -38,6 +38,7 @@ func newReviewInput(msg *tgbotapi.Message) *admin.ReviewInput {
 func (bot *Bot) onForward(ctx context.Context, msg *tgbotapi.Message) error {
 	if msg.Text == "" {
 		answ := bot.newAnswerMsg(ctx, msg, reviewTextCantBeNullable)
+		answ.ReplyToMessageID = msg.MessageID
 		return bot.send(ctx, answ)
 	}
 
@@ -49,5 +50,6 @@ func (bot *Bot) onForward(ctx context.Context, msg *tgbotapi.Message) error {
 	}
 
 	answ := bot.newAnswerMsg(ctx, msg, textReviewAddedSuccess)
+	answ.ReplyToMessageID = msg.MessageID
 	return bot.send(ctx, answ)
 }

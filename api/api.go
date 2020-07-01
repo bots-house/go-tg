@@ -92,6 +92,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.PersonalAreaCreateApplicationPaymentHandler = personalops.CreateApplicationPaymentHandlerFunc(h.createApplicationPayment)
 	api.PersonalAreaGetPaymentStatusHandler = personalops.GetPaymentStatusHandlerFunc(h.getPaymentStatus)
 	api.PersonalAreaGetUserLotsHandler = personalops.GetUserLotsHandlerFunc(h.getOwnedLots)
+
 	// webhook
 	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handleGatewayNotification)
 }

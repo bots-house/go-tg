@@ -36,7 +36,7 @@ func (srv *Service) AddReview(ctx context.Context, user *core.User, in *ReviewIn
 	if in.Username != "" {
 		photoURL, err = srv.AvatarResolver.ResolveAvatar(ctx, in.Username)
 		if err != nil && err == tg.ErrCantDownloadAvatar {
-			log.Warn(ctx, "err", errors.Wrap(err, "resolve avatar"))
+			log.Warn(ctx, "resolve avatar", "err", err)
 		}
 	}
 

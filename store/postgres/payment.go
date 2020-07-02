@@ -106,7 +106,7 @@ func (store *PaymentStore) fromRow(in *dal.Payment) (*core.Payment, error) {
 	if !in.Metadata.IsZero() {
 		result.Metadata = map[string]string{}
 
-		if err := in.Metadata.Unmarshal(result.Metadata); err != nil {
+		if err := in.Metadata.Unmarshal(&result.Metadata); err != nil {
 			return nil, errors.Wrap(err, "unmarshal metadata")
 		}
 	}

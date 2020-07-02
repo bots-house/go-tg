@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -81,6 +82,13 @@ type UserTelegram struct {
 
 	// LanguageCode from Telegram.
 	LanguageCode null.String
+}
+
+func (ut *UserTelegram) TelegramLink() null.String {
+	if ut.Username.Valid {
+		return null.StringFrom(fmt.Sprintf("https://t.me/%s", ut.Username.String))
+	}
+	return null.String{}
 }
 
 var (

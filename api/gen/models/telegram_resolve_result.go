@@ -101,7 +101,7 @@ func (m *TelegramResolveResult) UnmarshalBinary(b []byte) error {
 // swagger:model TelegramResolveResultChannel
 type TelegramResolveResultChannel struct {
 
-	// Уникальный ID канала в Telegrama
+	// Уникальный ID канала в Telegramа
 	// Required: true
 	ID *int64 `json:"id"`
 

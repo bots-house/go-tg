@@ -372,6 +372,46 @@ func init() {
         }
       }
     },
+    "/lots/{id}": {
+      "get": {
+        "security": [],
+        "description": "Получить лот.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Lot",
+        "operationId": "getLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/FullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/lots/{id}/application-invoice": {
       "get": {
         "description": "Получить информацию для оплаты объявления.\n",
@@ -879,6 +919,47 @@ func init() {
         }
       }
     },
+    "FullLot": {
+      "description": "Детали лота.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/LotListItem"
+        },
+        {
+          "type": "object",
+          "required": [
+            "views",
+            "extra",
+            "user",
+            "tgstat_link",
+            "telemetr_link"
+          ],
+          "properties": {
+            "extra": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotExtraResource"
+              }
+            },
+            "telemetr_link": {
+              "description": "Ссылка на telemetr.me.",
+              "type": "string"
+            },
+            "tgstat_link": {
+              "description": "Ссылка на tgstat.ru.",
+              "type": "string"
+            },
+            "user": {
+              "$ref": "#/definitions/LotOwner"
+            },
+            "views": {
+              "description": "Количество просмотров.",
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    },
     "Identity": {
       "x-go-type": {
         "import": {
@@ -1226,6 +1307,44 @@ func init() {
           "description": "Цена за просмотр",
           "type": "number",
           "x-order": 4
+        }
+      }
+    },
+    "LotOwner": {
+      "description": "Информация о создателе лота.",
+      "type": "object",
+      "required": [
+        "first_name",
+        "last_name",
+        "username",
+        "avatar",
+        "link"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя (может быть null).",
+          "type": "string",
+          "x-order": 3
+        },
+        "first_name": {
+          "description": "Имя пользователя.",
+          "type": "string",
+          "x-order": 0
+        },
+        "last_name": {
+          "description": "Фамилия пользователя (может быть null).",
+          "type": "string",
+          "x-order": 1
+        },
+        "link": {
+          "description": "Ссылка на пользователя в Telegram (может быть null).",
+          "type": "string",
+          "x-order": 4
+        },
+        "username": {
+          "description": "Юзернейм пользователя (может быть null).",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -1613,7 +1732,7 @@ func init() {
               "x-order": 3
             },
             "id": {
-              "description": "Уникальный ID канала в Telegrama",
+              "description": "Уникальный ID канала в Telegramа",
               "type": "integer",
               "x-order": 0
             },
@@ -2232,6 +2351,46 @@ func init() {
         }
       }
     },
+    "/lots/{id}": {
+      "get": {
+        "security": [],
+        "description": "Получить лот.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Lot",
+        "operationId": "getLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/FullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/lots/{id}/application-invoice": {
       "get": {
         "description": "Получить информацию для оплаты объявления.\n",
@@ -2766,6 +2925,47 @@ func init() {
         }
       }
     },
+    "FullLot": {
+      "description": "Детали лота.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/LotListItem"
+        },
+        {
+          "type": "object",
+          "required": [
+            "views",
+            "extra",
+            "user",
+            "tgstat_link",
+            "telemetr_link"
+          ],
+          "properties": {
+            "extra": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotExtraResource"
+              }
+            },
+            "telemetr_link": {
+              "description": "Ссылка на telemetr.me.",
+              "type": "string"
+            },
+            "tgstat_link": {
+              "description": "Ссылка на tgstat.ru.",
+              "type": "string"
+            },
+            "user": {
+              "$ref": "#/definitions/LotOwner"
+            },
+            "views": {
+              "description": "Количество просмотров.",
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    },
     "Identity": {
       "x-go-type": {
         "import": {
@@ -3113,6 +3313,44 @@ func init() {
           "description": "Цена за просмотр",
           "type": "number",
           "x-order": 4
+        }
+      }
+    },
+    "LotOwner": {
+      "description": "Информация о создателе лота.",
+      "type": "object",
+      "required": [
+        "first_name",
+        "last_name",
+        "username",
+        "avatar",
+        "link"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя (может быть null).",
+          "type": "string",
+          "x-order": 3
+        },
+        "first_name": {
+          "description": "Имя пользователя.",
+          "type": "string",
+          "x-order": 0
+        },
+        "last_name": {
+          "description": "Фамилия пользователя (может быть null).",
+          "type": "string",
+          "x-order": 1
+        },
+        "link": {
+          "description": "Ссылка на пользователя в Telegram (может быть null).",
+          "type": "string",
+          "x-order": 4
+        },
+        "username": {
+          "description": "Юзернейм пользователя (может быть null).",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -3526,7 +3764,7 @@ func init() {
               "x-order": 3
             },
             "id": {
-              "description": "Уникальный ID канала в Telegrama",
+              "description": "Уникальный ID канала в Telegramа",
               "type": "integer",
               "x-order": 0
             },
@@ -3625,7 +3863,7 @@ func init() {
           "x-order": 3
         },
         "id": {
-          "description": "Уникальный ID канала в Telegrama",
+          "description": "Уникальный ID канала в Telegramа",
           "type": "integer",
           "x-order": 0
         },

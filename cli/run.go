@@ -177,6 +177,7 @@ func run(ctx context.Context) error {
 		Resolver: resolverCache,
 		Storage:  strg,
 		Txier:    pg.Tx,
+		User:     pg.User,
 	}
 
 	adminSrv := &admin.Service{

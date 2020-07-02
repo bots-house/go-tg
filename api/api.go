@@ -82,6 +82,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.CatalogResolveTelegramHandler = catalogops.ResolveTelegramHandlerFunc(h.resolveTelegram)
 	api.CatalogGetFilterBoundariesHandler = catalogops.GetFilterBoundariesHandlerFunc(h.getFilterBoundaries)
 	api.CatalogGetLotsHandler = catalogops.GetLotsHandlerFunc(h.getLots)
+	api.CatalogGetLotHandler = catalogops.GetLotHandlerFunc(h.getLot)
 
 	// landing
 	api.LandingGetReviewsHandler = landingops.GetReviewsHandlerFunc(h.getReviews)

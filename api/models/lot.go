@@ -116,3 +116,28 @@ func NewItemLotSlice(s storage.Storage, in []*catalog.ItemLot) []*models.LotList
 
 	return result
 }
+
+func newLotOwner(s storage.Storage, user *core.User) *models.LotOwner {
+	usr := &models.LotOwner{
+		FirstName: swag.String(user.FirstName),
+		LastName:  nullStringToString(user.LastName),
+		Username:  nullStringToString(user.Telegram.Username),
+		Link:      nullStringToString(user.Telegram.TelegramLink()),
+	}
+	if user.Avatar.Valid {
+		usr.Avatar = swag.String(s.PublicURL(user.Avatar.String))
+	}
+
+	return usr
+}
+
+func NewFullLot(s storage.Storage, in *catalog.FullLot) *models.FullLot {
+	return &models.FullLot{
+		LotListItem:  *NewItemLot(s, in.ItemLot),
+		User:         newLotOwner(s, in.User),
+		TgstatLink:   swag.String(in.TgstatLink()),
+		TelemetrLink: swag.String(in.TelemetrLink()),
+		Views:        swag.Int64(int64(in.Views)),
+		Extra:        newLotExtraResourceSlice(in.ItemLot.ExtraResources),
+	}
+}

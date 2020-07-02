@@ -53,7 +53,7 @@ func (r *ResolverCache) save(typ queryType, val string, result *ResolveResult) {
 }
 
 func (r *ResolverCache) Resolve(ctx context.Context, query string) (*ResolveResult, error) {
-	qt, val := parseResolveQuery(query)
+	qt, val := ParseResolveQuery(query)
 
 	result, exists := r.get(qt, val)
 	if !exists {

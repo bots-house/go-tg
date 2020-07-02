@@ -2,10 +2,12 @@ package catalog
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/pkg/errors"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/store"
 )
 
@@ -173,4 +175,46 @@ func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) (*LotList, er
 	}
 
 	return srv.newLotList(ctx, total, lots)
+}
+
+type FullLot struct {
+	ItemLot *ItemLot
+	User    *core.User
+	Views   int
+}
+
+func (fl *FullLot) TgstatLink() string {
+	if fl.ItemLot.Username.Valid {
+		return fmt.Sprintf("https://tgstat.ru/channel/@%s", fl.ItemLot.Username.String)
+	}
+	_, value := tg.ParseResolveQuery(fl.ItemLot.JoinLink.String)
+	return fmt.Sprintf("https://tgstat.ru/channel/%s", value)
+}
+
+func (fl *FullLot) TelemetrLink() string {
+	if fl.ItemLot.Username.Valid {
+		return fmt.Sprintf("https://telemetr.me/@%s", fl.ItemLot.Username.String)
+	}
+	_, value := tg.ParseResolveQuery(fl.ItemLot.JoinLink.String)
+	return fmt.Sprintf("https://telemetr.me/joinchat/%s", value)
+}
+
+func (srv *Service) GetLot(ctx context.Context, id core.LotID) (*FullLot, error) {
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot")
+	}
+
+	user, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user")
+	}
+	return &FullLot{
+		ItemLot: &ItemLot{
+			lot,
+			lot.TopicIDs,
+		},
+		User:  user,
+		Views: 0,
+	}, nil
 }

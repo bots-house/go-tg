@@ -28,7 +28,7 @@ var (
 )
 
 func (r *BotResolver) Resolve(ctx context.Context, query string) (*ResolveResult, error) {
-	qt, val := parseResolveQuery(query)
+	qt, val := ParseResolveQuery(query)
 	switch qt {
 	case queryTypeJoinLink:
 		return nil, ErrJoinLinkIsNotSupported
@@ -66,29 +66,35 @@ func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResul
 	}
 
 	if chat.IsChannel() {
-		return &ResolveResult{
+		result := &ResolveResult{
 			Channel: &Channel{
 				ID:           chat.ID,
 				Name:         chat.Title,
-				Avatar:       r.PublicURL(avatarFileID),
 				MembersCount: membersCount,
 				Username:     chat.UserName,
 				Description:  chat.Description,
 				// TODO: real data
 				DailyCoverage: 1 + rand.Intn(membersCount),
 			},
-		}, nil
+		}
+		if avatarFileID != "" {
+			result.Channel.Avatar = r.PublicURL(avatarFileID)
+		}
+		return result, nil
+
 	} else if chat.IsGroup() || chat.IsSuperGroup() {
-		return &ResolveResult{
+		result := &ResolveResult{
 			Group: &Group{
 				ID:           chat.ID,
 				Name:         chat.Title,
-				Avatar:       r.PublicURL(avatarFileID),
 				MembersCount: membersCount,
 				Username:     chat.UserName,
 				Description:  chat.Description,
 			},
-		}, nil
+		}
+		if avatarFileID != "" {
+			result.Group.Avatar = r.PublicURL(avatarFileID)
+		}
 	}
 
 	return nil, errors.New("unknown type")

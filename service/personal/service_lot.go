@@ -89,7 +89,6 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 	} else {
 		lot.Username = null.NewString(info.Username, info.Username != "")
 	}
-
 	if info.Avatar != "" {
 		avatar, err := srv.Storage.AddByURL(ctx, "lot", info.Avatar)
 		if err != nil {

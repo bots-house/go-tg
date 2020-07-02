@@ -21,7 +21,7 @@ func TestGetQueryType(t *testing.T) {
 		{"@channely", queryTypeUsername, "channely"},
 		{},
 	} {
-		typ, val := parseResolveQuery(test.Input)
+		typ, val := ParseResolveQuery(test.Input)
 
 		assert.Equal(t, test.Excepted, typ)
 		assert.Equal(t, test.Value, val)

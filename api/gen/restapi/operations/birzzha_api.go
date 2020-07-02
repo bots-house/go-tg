@@ -68,6 +68,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
 		}),
+		CatalogGetLotHandler: catalog.GetLotHandlerFunc(func(params catalog.GetLotParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
+		}),
 		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		}),
@@ -168,6 +171,8 @@ type BirzzhaAPI struct {
 	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
+	// CatalogGetLotHandler sets the operation handler for the get lot operation
+	CatalogGetLotHandler catalog.GetLotHandler
 	// CatalogGetLotsHandler sets the operation handler for the get lots operation
 	CatalogGetLotsHandler catalog.GetLotsHandler
 	// PersonalAreaGetPaymentStatusHandler sets the operation handler for the get payment status operation
@@ -281,6 +286,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogGetFilterBoundariesHandler == nil {
 		unregistered = append(unregistered, "catalog.GetFilterBoundariesHandler")
+	}
+	if o.CatalogGetLotHandler == nil {
+		unregistered = append(unregistered, "catalog.GetLotHandler")
 	}
 	if o.CatalogGetLotsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetLotsHandler")
@@ -443,6 +451,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/filter-boundaries"] = catalog.NewGetFilterBoundaries(o.context, o.CatalogGetFilterBoundariesHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots/{id}"] = catalog.NewGetLot(o.context, o.CatalogGetLotHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

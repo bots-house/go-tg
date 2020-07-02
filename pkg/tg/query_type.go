@@ -18,7 +18,7 @@ var (
 	regexpJoinLink = regexp.MustCompile(`\/joinchat\/([\da-zA-Z_-]+)$`)
 )
 
-func parseResolveQuery(query string) (qt queryType, value string) {
+func ParseResolveQuery(query string) (qt queryType, value string) {
 	if matches := regexpJoinLink.FindStringSubmatch(query); len(matches) > 0 {
 		return queryTypeJoinLink, matches[1]
 	} else if matches := regexpUsername.FindStringSubmatch(query); len(matches) > 0 {

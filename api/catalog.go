@@ -117,3 +117,17 @@ func (h *Handler) getTopics(params catalogops.GetTopicsParams) middleware.Respon
 
 	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopicSlice(topics))
 }
+
+func (h *Handler) getLot(params catalogops.GetLotParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(int(params.ID))
+
+	result, err := h.Catalog.GetLot(ctx, id)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return catalogops.NewGetLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return catalogops.NewGetLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return catalogops.NewGetLotOK().WithPayload(models.NewFullLot(h.Storage, result))
+}

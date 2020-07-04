@@ -84,6 +84,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.CatalogGetLotsHandler = catalogops.GetLotsHandlerFunc(h.getLots)
 	api.CatalogGetLotHandler = catalogops.GetLotHandlerFunc(h.getLot)
 	api.CatalogGetSimilarLotsHandler = catalogops.GetSimilarLotsHandlerFunc(h.getSimilarLots)
+	api.CatalogToggleLotFavoriteHandler = catalogops.ToggleLotFavoriteHandlerFunc(h.toggleLotFavorite)
 
 	// landing
 	api.LandingGetReviewsHandler = landingops.GetReviewsHandlerFunc(h.getReviews)

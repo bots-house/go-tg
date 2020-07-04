@@ -15,6 +15,7 @@ type Service struct {
 	LotTopic core.LotTopicStore
 	Settings core.SettingsStore
 	User     core.UserStore
+	Favorite core.FavoriteStore
 
 	Resolver tg.Resolver
 	Storage  storage.Storage

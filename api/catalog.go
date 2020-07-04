@@ -5,6 +5,7 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
 
+	"github.com/bots-house/birzzha/api/authz"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
@@ -35,7 +36,7 @@ func (h *Handler) getFilterBoundaries(params catalogops.GetFilterBoundariesParam
 	return catalogops.NewGetFilterBoundariesOK().WithPayload(models.NewFilterBoundaries(boundaries))
 }
 
-func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder {
+func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	query := &catalog.LotsQuery{
@@ -82,7 +83,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams) middleware.Responder 
 		}
 	}
 
-	lots, err := h.Catalog.GetLots(ctx, query)
+	lots, err := h.Catalog.GetLots(ctx, identity.GetUser(), query)
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetLotsBadRequest().WithPayload(models.NewError(err2))
@@ -118,11 +119,11 @@ func (h *Handler) getTopics(params catalogops.GetTopicsParams) middleware.Respon
 	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopicSlice(topics))
 }
 
-func (h *Handler) getLot(params catalogops.GetLotParams) middleware.Responder {
+func (h *Handler) getLot(params catalogops.GetLotParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	id := core.LotID(int(params.ID))
 
-	result, err := h.Catalog.GetLot(ctx, id)
+	result, err := h.Catalog.GetLot(ctx, identity.GetUser(), id)
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetLotBadRequest().WithPayload(models.NewError(err2))
@@ -146,4 +147,18 @@ func (h *Handler) getSimilarLots(params catalogops.GetSimilarLotsParams) middlew
 		return catalogops.NewGetSimilarLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 	return catalogops.NewGetSimilarLotsOK().WithPayload(models.NewLotList(h.Storage, result))
+}
+
+func (h *Handler) toggleLotFavorite(params catalogops.ToggleLotFavoriteParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(int(params.ID))
+
+	result, err := h.Catalog.ToggleLotFavorite(ctx, identity.User, id)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return catalogops.NewToggleLotFavoriteBadRequest().WithPayload(models.NewError(err2))
+		}
+		return catalogops.NewToggleLotFavoriteInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return catalogops.NewToggleLotFavoriteOK().WithPayload(models.NewLotFavoriteStatus(result))
 }

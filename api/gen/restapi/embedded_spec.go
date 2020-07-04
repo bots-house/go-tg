@@ -173,7 +173,15 @@ func init() {
     },
     "/lots": {
       "get": {
-        "security": [],
+        "security": [
+          {},
+          {
+            "TokenHeader": []
+          },
+          {
+            "TokenQuery": []
+          }
+        ],
         "description": "Получение списка доступных лотов.",
         "tags": [
           "catalog"
@@ -374,7 +382,15 @@ func init() {
     },
     "/lots/{id}": {
       "get": {
-        "security": [],
+        "security": [
+          {},
+          {
+            "TokenHeader": []
+          },
+          {
+            "TokenQuery": []
+          }
+        ],
         "description": "Получить лот.",
         "tags": [
           "catalog"
@@ -496,6 +512,45 @@ func init() {
         {
           "type": "integer",
           "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/favorite": {
+      "post": {
+        "description": "Изменение статуса избранности лота.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Change Favorite Status",
+        "operationId": "toggleLotFavorite",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotFavoriteStatus"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
           "name": "id",
           "in": "path",
           "required": true
@@ -1099,6 +1154,20 @@ func init() {
         "url": {
           "type": "string",
           "format": "url",
+          "x-order": 0
+        }
+      }
+    },
+    "LotFavoriteStatus": {
+      "description": "Ответ после смены статуса избранности лота.",
+      "type": "object",
+      "required": [
+        "in_favorites"
+      ],
+      "properties": {
+        "in_favorites": {
+          "description": "Статус избранности лота.",
+          "type": "boolean",
           "x-order": 0
         }
       }
@@ -2206,7 +2275,15 @@ func init() {
     },
     "/lots": {
       "get": {
-        "security": [],
+        "security": [
+          {},
+          {
+            "TokenHeader": []
+          },
+          {
+            "TokenQuery": []
+          }
+        ],
         "description": "Получение списка доступных лотов.",
         "tags": [
           "catalog"
@@ -2407,7 +2484,15 @@ func init() {
     },
     "/lots/{id}": {
       "get": {
-        "security": [],
+        "security": [
+          {},
+          {
+            "TokenHeader": []
+          },
+          {
+            "TokenQuery": []
+          }
+        ],
         "description": "Получить лот.",
         "tags": [
           "catalog"
@@ -2529,6 +2614,45 @@ func init() {
         {
           "type": "integer",
           "description": "ID неоплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/favorite": {
+      "post": {
+        "description": "Изменение статуса избранности лота.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Change Favorite Status",
+        "operationId": "toggleLotFavorite",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotFavoriteStatus"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
           "name": "id",
           "in": "path",
           "required": true
@@ -3159,6 +3283,20 @@ func init() {
         "url": {
           "type": "string",
           "format": "url",
+          "x-order": 0
+        }
+      }
+    },
+    "LotFavoriteStatus": {
+      "description": "Ответ после смены статуса избранности лота.",
+      "type": "object",
+      "required": [
+        "in_favorites"
+      ],
+      "properties": {
+        "in_favorites": {
+          "description": "Статус избранности лота.",
+          "type": "boolean",
           "x-order": 0
         }
       }

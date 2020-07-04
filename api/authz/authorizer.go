@@ -12,6 +12,10 @@ type Authorizer struct {
 }
 
 func (authz *Authorizer) Authorize(r *http.Request, id interface{}) error {
+	if id == nil {
+		return nil
+	}
+
 	ctx := r.Context()
 	identity := id.(*Identity)
 

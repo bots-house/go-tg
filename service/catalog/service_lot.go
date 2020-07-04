@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
@@ -39,15 +40,22 @@ type LotsQuery struct {
 
 type ItemLot struct {
 	*core.Lot
-
-	Topics []core.TopicID
+	InFavorites null.Bool
 }
 
-func (srv *Service) newItemLotSlice(ctx context.Context, lots core.LotSlice) ([]*ItemLot, error) {
+func (srv *Service) newItemLotSlice(ctx context.Context, lots core.LotSlice, favorites core.FavoriteSlice) ([]*ItemLot, error) {
 	result := make([]*ItemLot, len(lots))
 
 	for i, v := range lots {
 		result[i] = &ItemLot{Lot: v}
+	}
+
+	if favorites == nil {
+		return result, nil
+	}
+
+	for _, v := range result {
+		v.InFavorites = null.BoolFrom(favorites.HasLot(v.ID))
 	}
 
 	return result, nil
@@ -145,8 +153,8 @@ type LotList struct {
 	Items []*ItemLot
 }
 
-func (srv *Service) newLotList(ctx context.Context, total int, lots []*core.Lot) (*LotList, error) {
-	items, err := srv.newItemLotSlice(ctx, lots)
+func (srv *Service) newLotList(ctx context.Context, total int, lots core.LotSlice, favorites core.FavoriteSlice) (*LotList, error) {
+	items, err := srv.newItemLotSlice(ctx, lots, favorites)
 	if err != nil {
 		return nil, errors.Wrap(err, "to item lot")
 	}
@@ -157,7 +165,7 @@ func (srv *Service) newLotList(ctx context.Context, total int, lots []*core.Lot)
 	}, nil
 }
 
-func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) (*LotList, error) {
+func (srv *Service) GetLots(ctx context.Context, user *core.User, query *LotsQuery) (*LotList, error) {
 	qry := srv.
 		newBaseLotsQuery(ctx, query).
 		Statuses(core.ShowLotStatus...)
@@ -174,7 +182,16 @@ func (srv *Service) GetLots(ctx context.Context, query *LotsQuery) (*LotList, er
 		return nil, errors.Wrap(err, "get lots")
 	}
 
-	return srv.newLotList(ctx, total, lots)
+	var favorites core.FavoriteSlice
+
+	if user != nil {
+		favorites, err = srv.Favorite.Query().UserID(user.ID).LotID(lots.IDs()...).All(ctx)
+		if err != core.ErrFavoriteNotFound && err != nil {
+			return nil, errors.Wrap(err, "get favorites")
+		}
+	}
+
+	return srv.newLotList(ctx, total, lots, favorites)
 }
 
 type FullLot struct {
@@ -199,24 +216,39 @@ func (fl *FullLot) TelemetrLink() string {
 	return fmt.Sprintf("https://telemetr.me/joinchat/%s", value)
 }
 
-func (srv *Service) GetLot(ctx context.Context, id core.LotID) (*FullLot, error) {
+func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {
 	lot, err := srv.Lot.Query().ID(id).One(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get lot")
 	}
 
-	user, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
+	usr, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get user")
 	}
-	return &FullLot{
+
+	fullLot := &FullLot{
 		ItemLot: &ItemLot{
-			lot,
-			lot.TopicIDs,
+			Lot: lot,
 		},
-		User:  user,
+		User:  usr,
 		Views: lot.Views.Total(),
-	}, nil
+	}
+
+	if user != nil {
+
+		favorite, err := srv.Favorite.Query().LotID(lot.ID).UserID(user.ID).One(ctx)
+		if err != core.ErrFavoriteNotFound && err != nil {
+			return nil, errors.Wrap(err, "get favorite")
+		}
+
+		if favorite != nil {
+			fullLot.ItemLot.InFavorites = null.BoolFrom(true)
+		}
+
+	}
+	return fullLot, nil
+
 }
 
 func (srv *Service) SimilarLots(ctx context.Context, id core.LotID, limit int, offset int) (*LotList, error) {
@@ -248,5 +280,26 @@ func (srv *Service) SimilarLots(ctx context.Context, id core.LotID, limit int, o
 
 	sortedLots := lots.SortByID(ids)
 
-	return srv.newLotList(ctx, count, sortedLots)
+	return srv.newLotList(ctx, count, sortedLots, nil)
+}
+
+func (srv *Service) ToggleLotFavorite(ctx context.Context, user *core.User, id core.LotID) (bool, error) {
+	_, err := srv.Favorite.Query().LotID(id).UserID(user.ID).One(ctx)
+	if err == core.ErrFavoriteNotFound {
+		f := core.NewFavorite(
+			id, user.ID,
+		)
+		if err := srv.Favorite.Add(ctx, f); err != nil {
+			return false, errors.Wrap(err, "add favorite")
+		}
+		return true, nil
+	} else if err != nil {
+		return false, errors.Wrap(err, "get favorite")
+	}
+
+	if err := srv.Favorite.Query().LotID(id).UserID(user.ID).Delete(ctx); err != nil {
+		return false, errors.Wrap(err, "delete favorite")
+	}
+
+	return false, nil
 }

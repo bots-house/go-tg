@@ -20,7 +20,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml445363018 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml464972429 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -90,12 +90,12 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 		})
 	}
 	if api.CatalogGetLotHandler == nil {
-		api.CatalogGetLotHandler = catalog.GetLotHandlerFunc(func(params catalog.GetLotParams) middleware.Responder {
+		api.CatalogGetLotHandler = catalog.GetLotHandlerFunc(func(params catalog.GetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
 		})
 	}
 	if api.CatalogGetLotsHandler == nil {
-		api.CatalogGetLotsHandler = catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
+		api.CatalogGetLotsHandler = catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		})
 	}
@@ -147,6 +147,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogResolveTelegramHandler == nil {
 		api.CatalogResolveTelegramHandler = catalog.ResolveTelegramHandlerFunc(func(params catalog.ResolveTelegramParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ResolveTelegram has not yet been implemented")
+		})
+	}
+	if api.CatalogToggleLotFavoriteHandler == nil {
+		api.CatalogToggleLotFavoriteHandler = catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
 		})
 	}
 

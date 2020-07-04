@@ -4,6 +4,7 @@
 package dal
 
 var TableNames = struct {
+	Favorite          string
 	Lot               string
 	LotCanceledReason string
 	LotTopic          string
@@ -13,6 +14,7 @@ var TableNames = struct {
 	Topic             string
 	User              string
 }{
+	Favorite:          "favorite",
 	Lot:               "lot",
 	LotCanceledReason: "lot_canceled_reason",
 	LotTopic:          "lot_topic",

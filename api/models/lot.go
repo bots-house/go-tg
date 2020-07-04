@@ -89,7 +89,7 @@ func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
 		Price:       newLotPrice(in.Price),
 		Comment:     swag.String(in.Comment),
 		Metrics:     newLotMetrics(in.Metrics),
-		InFavorites: swag.Bool(false),
+		InFavorites: nullBoolToBool(in.InFavorites),
 		Topics:      NewTopicIDSlice(in.TopicIDs),
 		CreatedAt:   timeToUnix(in.CreatedAt),
 	}

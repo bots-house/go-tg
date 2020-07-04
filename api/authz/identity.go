@@ -9,3 +9,10 @@ type Identity struct {
 	Token *jwt.Token
 	User  *core.User
 }
+
+func (i *Identity) GetUser() *core.User {
+	if i != nil {
+		return i.User
+	}
+	return nil
+}

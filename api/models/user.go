@@ -17,6 +17,13 @@ func nullStringToString(v null.String) *string {
 	return nil
 }
 
+func nullBoolToBool(v null.Bool) *bool {
+	if v.Valid {
+		return &v.Bool
+	}
+	return nil
+}
+
 func nullIntToInt64(v null.Int) *int64 {
 	if v.Valid {
 		x := int64(v.Int)

@@ -116,29 +116,6 @@ var LotColumns = struct {
 
 // Generated where
 
-type whereHelperint struct{ field string }
-
-func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint) IN(slice []int) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperint) NIN(slice []int) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
 type whereHelperint64 struct{ field string }
 
 func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
@@ -315,27 +292,6 @@ func (w whereHelpernull_JSON) GTE(x null.JSON) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
-type whereHelpertime_Time struct{ field string }
-
-func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.EQ, x)
-}
-func (w whereHelpertime_Time) NEQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.NEQ, x)
-}
-func (w whereHelpertime_Time) LT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertime_Time) LTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertime_Time) GT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
 type whereHelpernull_Time struct{ field string }
 
 func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
@@ -421,11 +377,13 @@ var LotWhere = struct {
 var LotRels = struct {
 	CanceledReason string
 	Owner          string
+	Favorites      string
 	LotTopics      string
 	Payments       string
 }{
 	CanceledReason: "CanceledReason",
 	Owner:          "Owner",
+	Favorites:      "Favorites",
 	LotTopics:      "LotTopics",
 	Payments:       "Payments",
 }
@@ -434,6 +392,7 @@ var LotRels = struct {
 type lotR struct {
 	CanceledReason *LotCanceledReason `boil:"CanceledReason" json:"CanceledReason" toml:"CanceledReason" yaml:"CanceledReason"`
 	Owner          *User              `boil:"Owner" json:"Owner" toml:"Owner" yaml:"Owner"`
+	Favorites      FavoriteSlice      `boil:"Favorites" json:"Favorites" toml:"Favorites" yaml:"Favorites"`
 	LotTopics      LotTopicSlice      `boil:"LotTopics" json:"LotTopics" toml:"LotTopics" yaml:"LotTopics"`
 	Payments       PaymentSlice       `boil:"Payments" json:"Payments" toml:"Payments" yaml:"Payments"`
 }
@@ -568,6 +527,27 @@ func (o *Lot) Owner(mods ...qm.QueryMod) userQuery {
 
 	query := Users(queryMods...)
 	queries.SetFrom(query.Query, "\"user\"")
+
+	return query
+}
+
+// Favorites retrieves all the favorite's Favorites with an executor.
+func (o *Lot) Favorites(mods ...qm.QueryMod) favoriteQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"favorite\".\"lot_id\"=?", o.ID),
+	)
+
+	query := Favorites(queryMods...)
+	queries.SetFrom(query.Query, "\"favorite\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"favorite\".*"})
+	}
 
 	return query
 }
@@ -802,6 +782,97 @@ func (lotL) LoadOwner(ctx context.Context, e boil.ContextExecutor, singular bool
 					foreign.R = &userR{}
 				}
 				foreign.R.OwnerLots = append(foreign.R.OwnerLots, local)
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadFavorites allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (lotL) LoadFavorites(ctx context.Context, e boil.ContextExecutor, singular bool, maybeLot interface{}, mods queries.Applicator) error {
+	var slice []*Lot
+	var object *Lot
+
+	if singular {
+		object = maybeLot.(*Lot)
+	} else {
+		slice = *maybeLot.(*[]*Lot)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &lotR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &lotR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`favorite`),
+		qm.WhereIn(`favorite.lot_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load favorite")
+	}
+
+	var resultSlice []*Favorite
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice favorite")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on favorite")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for favorite")
+	}
+
+	if singular {
+		object.R.Favorites = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &favoriteR{}
+			}
+			foreign.R.Lot = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.LotID {
+				local.R.Favorites = append(local.R.Favorites, foreign)
+				if foreign.R == nil {
+					foreign.R = &favoriteR{}
+				}
+				foreign.R.Lot = local
 				break
 			}
 		}
@@ -1116,6 +1187,59 @@ func (o *Lot) SetOwner(ctx context.Context, exec boil.ContextExecutor, insert bo
 		related.R.OwnerLots = append(related.R.OwnerLots, o)
 	}
 
+	return nil
+}
+
+// AddFavorites adds the given related objects to the existing relationships
+// of the lot, optionally inserting them as new records.
+// Appends related to o.R.Favorites.
+// Sets related.R.Lot appropriately.
+func (o *Lot) AddFavorites(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Favorite) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.LotID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"favorite\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"lot_id"}),
+				strmangle.WhereClause("\"", "\"", 2, favoritePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.LotID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &lotR{
+			Favorites: related,
+		}
+	} else {
+		o.R.Favorites = append(o.R.Favorites, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &favoriteR{
+				Lot: o,
+			}
+		} else {
+			rel.R.Lot = o
+		}
+	}
 	return nil
 }
 

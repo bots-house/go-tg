@@ -68,10 +68,10 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
 		}),
-		CatalogGetLotHandler: catalog.GetLotHandlerFunc(func(params catalog.GetLotParams) middleware.Responder {
+		CatalogGetLotHandler: catalog.GetLotHandlerFunc(func(params catalog.GetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
 		}),
-		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams) middleware.Responder {
+		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
 		}),
 		PersonalAreaGetPaymentStatusHandler: personal_area.GetPaymentStatusHandlerFunc(func(params personal_area.GetPaymentStatusParams, principal *authz.Identity) middleware.Responder {
@@ -103,6 +103,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		CatalogResolveTelegramHandler: catalog.ResolveTelegramHandlerFunc(func(params catalog.ResolveTelegramParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ResolveTelegram has not yet been implemented")
+		}),
+		CatalogToggleLotFavoriteHandler: catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
 		}),
 
 		// Applies when the "X-Token" header is set
@@ -198,6 +201,8 @@ type BirzzhaAPI struct {
 	AuthLoginViaBotHandler auth.LoginViaBotHandler
 	// CatalogResolveTelegramHandler sets the operation handler for the resolve telegram operation
 	CatalogResolveTelegramHandler catalog.ResolveTelegramHandler
+	// CatalogToggleLotFavoriteHandler sets the operation handler for the toggle lot favorite operation
+	CatalogToggleLotFavoriteHandler catalog.ToggleLotFavoriteHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -327,6 +332,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogResolveTelegramHandler == nil {
 		unregistered = append(unregistered, "catalog.ResolveTelegramHandler")
+	}
+	if o.CatalogToggleLotFavoriteHandler == nil {
+		unregistered = append(unregistered, "catalog.ToggleLotFavoriteHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -507,6 +515,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/tg/resolve"] = catalog.NewResolveTelegram(o.context, o.CatalogResolveTelegramHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/lots/{id}/favorite"] = catalog.NewToggleLotFavorite(o.context, o.CatalogToggleLotFavoriteHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

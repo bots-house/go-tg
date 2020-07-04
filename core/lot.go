@@ -281,6 +281,14 @@ func (lots LotSlice) SortByID(ids []LotID) LotSlice {
 	return result
 }
 
+func (lots LotSlice) IDs() []LotID {
+	ids := make([]LotID, len(lots))
+	for i, lot := range lots {
+		ids[i] = lot.ID
+	}
+	return ids
+}
+
 func NewLot(
 	ownerID UserID,
 	externalID int64,

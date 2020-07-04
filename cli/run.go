@@ -178,6 +178,7 @@ func run(ctx context.Context) error {
 		Storage:  strg,
 		Txier:    pg.Tx,
 		User:     pg.User,
+		Favorite: pg.Favorite,
 	}
 
 	adminSrv := &admin.Service{

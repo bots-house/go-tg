@@ -477,7 +477,10 @@ paths:
           type: integer
           description: максимальное количество объектов, которое может вернуть запрос
 
-      security: []
+      security:
+        - {}
+        - TokenHeader: []
+        - TokenQuery: []
       responses:
         200:
           description: OK
@@ -504,12 +507,41 @@ paths:
       description: Получить лот.
       operationId: getLot
       tags: [catalog]
-      security: []
+      security:
+        - {}
+        - TokenHeader: []
+        - TokenQuery: []
       responses:
         200: 
           description: OK
           schema: 
             $ref: "#/definitions/FullLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /lots/{id}/favorite:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID лота
+    post:
+      summary: Change Favorite Status
+      description: Изменение статуса избранности лота.
+      operationId: toggleLotFavorite
+      tags: [catalog]
+      responses:
+        200: 
+          description: OK
+          schema: 
+            $ref: "#/definitions/LotFavoriteStatus"
         400:
           description: Bad Request
           schema:
@@ -1455,6 +1487,17 @@ definitions:
           - user
           - tgstat_link
           - telemetr_link
+  
+  LotFavoriteStatus:
+    type: object
+    description: Ответ после смены статуса избранности лота.
+    required:
+      - in_favorites
+    properties:
+      in_favorites:
+        type: boolean
+        description: Статус избранности лота.
+
 
           
 

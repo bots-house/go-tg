@@ -9,19 +9,21 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
+
+	"github.com/bots-house/birzzha/api/authz"
 )
 
 // GetLotHandlerFunc turns a function with the right signature into a get lot handler
-type GetLotHandlerFunc func(GetLotParams) middleware.Responder
+type GetLotHandlerFunc func(GetLotParams, *authz.Identity) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn GetLotHandlerFunc) Handle(params GetLotParams) middleware.Responder {
-	return fn(params)
+func (fn GetLotHandlerFunc) Handle(params GetLotParams, principal *authz.Identity) middleware.Responder {
+	return fn(params, principal)
 }
 
 // GetLotHandler interface for that can handle valid get lot params
 type GetLotHandler interface {
-	Handle(GetLotParams) middleware.Responder
+	Handle(GetLotParams, *authz.Identity) middleware.Responder
 }
 
 // NewGetLot creates a new http.Handler for the get lot operation
@@ -48,12 +50,25 @@ func (o *GetLot) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 	var Params = NewGetLotParams()
 
+	uprinc, aCtx, err := o.Context.Authorize(r, route)
+	if err != nil {
+		o.Context.Respond(rw, r, route.Produces, route, err)
+		return
+	}
+	if aCtx != nil {
+		r = aCtx
+	}
+	var principal *authz.Identity
+	if uprinc != nil {
+		principal = uprinc.(*authz.Identity) // this is really a authz.Identity, I promise
+	}
+
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
 		return
 	}
 
-	res := o.Handler.Handle(Params) // actually handle the request
+	res := o.Handler.Handle(Params, principal) // actually handle the request
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 

@@ -90,7 +90,7 @@ func NewItemLot(s storage.Storage, in *catalog.ItemLot) *models.LotListItem {
 		Comment:     swag.String(in.Comment),
 		Metrics:     newLotMetrics(in.Metrics),
 		InFavorites: swag.Bool(false),
-		Topics:      NewTopicIDSlice(in.Topics),
+		Topics:      NewTopicIDSlice(in.TopicIDs),
 		CreatedAt:   timeToUnix(in.CreatedAt),
 	}
 	if in.Avatar.Valid {

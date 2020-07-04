@@ -152,6 +152,18 @@ func (ls LotStatus) String() string {
 	return lotStatusToString[ls]
 }
 
+type LotViews struct {
+	// Views count on Telegram.
+	Telegram int
+
+	// Views count on site.
+	Site int
+}
+
+func (lv LotViews) Total() int {
+	return lv.Site + lv.Telegram
+}
+
 // Lot for sale
 type Lot struct {
 	// Unique ID of lot.
@@ -168,6 +180,9 @@ type Lot struct {
 
 	// Avatar of lot
 	Avatar null.String
+
+	// Views
+	Views LotViews
 
 	// Username of channel
 	Username null.String
@@ -250,6 +265,22 @@ func (lot *Lot) Link() string {
 
 type LotSlice []*Lot
 
+func (lots LotSlice) SortByID(ids []LotID) LotSlice {
+	result := make(LotSlice, 0, len(lots))
+	lm := make(map[LotID]*Lot)
+
+	for _, id := range ids {
+		for _, lot := range lots {
+			_, ok := lm[lot.ID]
+			if id == lot.ID && !ok {
+				result = append(result, lot)
+				lm[id] = lot
+			}
+		}
+	}
+	return result
+}
+
 func NewLot(
 	ownerID UserID,
 	externalID int64,
@@ -311,6 +342,12 @@ type LotStore interface {
 
 	// Get filters min and max values depend of topic.
 	FilterBoundaries(ctx context.Context, query *LotFilterBoundariesQuery) (*LotFilterBoundaries, error)
+
+	// Find similar lot id's.
+	SimilarLotIDs(ctx context.Context, id LotID, limit int, offset int) ([]LotID, error)
+
+	// Find similar lots count.
+	SimilarLotsCount(ctx context.Context, id LotID) (int, error)
 
 	// Complex query for lots
 	Query() LotStoreQuery

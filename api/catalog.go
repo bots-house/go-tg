@@ -131,3 +131,19 @@ func (h *Handler) getLot(params catalogops.GetLotParams) middleware.Responder {
 	}
 	return catalogops.NewGetLotOK().WithPayload(models.NewFullLot(h.Storage, result))
 }
+
+func (h *Handler) getSimilarLots(params catalogops.GetSimilarLotsParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(int(params.ID))
+	limit := int(swag.Int64Value(params.Limit))
+	offset := int(swag.Int64Value(params.Offset))
+
+	result, err := h.Catalog.SimilarLots(ctx, id, limit, offset)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return catalogops.NewGetSimilarLotsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return catalogops.NewGetSimilarLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return catalogops.NewGetSimilarLotsOK().WithPayload(models.NewLotList(h.Storage, result))
+}

@@ -13,7 +13,7 @@ func init() {
             price_current int not null, 
 			price_previous int,
         	price_is_bargain bool not null, 
-			comment text not null, 
+			comment text not null,
 			metrics_members_count int not null, 
 			metrics_daily_coverage int not null, 
 			metrics_monthly_income int,

@@ -215,6 +215,38 @@ func (srv *Service) GetLot(ctx context.Context, id core.LotID) (*FullLot, error)
 			lot.TopicIDs,
 		},
 		User:  user,
-		Views: 0,
+		Views: lot.Views.Total(),
 	}, nil
+}
+
+func (srv *Service) SimilarLots(ctx context.Context, id core.LotID, limit int, offset int) (*LotList, error) {
+	var l int
+	var o int
+
+	if limit == 0 && offset == 0 {
+		l = 10
+		o = 0
+	} else {
+		l = limit
+		o = offset
+	}
+
+	count, err := srv.Lot.SimilarLotsCount(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "similar lots count")
+	}
+
+	ids, err := srv.Lot.SimilarLotIDs(ctx, id, l, o)
+	if err != nil {
+		return nil, errors.Wrap(err, "similar lots")
+	}
+
+	lots, err := srv.Lot.Query().ID(ids...).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lots")
+	}
+
+	sortedLots := lots.SortByID(ids)
+
+	return srv.newLotList(ctx, count, sortedLots)
 }

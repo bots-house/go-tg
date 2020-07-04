@@ -502,6 +502,60 @@ func init() {
         }
       ]
     },
+    "/lots/{id}/similars": {
+      "get": {
+        "security": [],
+        "description": "Получить похожие лоты.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Similar Lots",
+        "operationId": "getSimilarLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "default": 0,
+          "description": "Офсет похожих лотов.",
+          "name": "offset",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "default": 10,
+          "description": "Лимит похожих лотов.",
+          "name": "limit",
+          "in": "query"
+        }
+      ]
+    },
     "/payments/{id}/status": {
       "get": {
         "description": "Получить статус платежа по его ID.\n",
@@ -2478,6 +2532,60 @@ func init() {
           "name": "id",
           "in": "path",
           "required": true
+        }
+      ]
+    },
+    "/lots/{id}/similars": {
+      "get": {
+        "security": [],
+        "description": "Получить похожие лоты.",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Similar Lots",
+        "operationId": "getSimilarLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "default": 0,
+          "description": "Офсет похожих лотов.",
+          "name": "offset",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "default": 10,
+          "description": "Лимит похожих лотов.",
+          "name": "limit",
+          "in": "query"
         }
       ]
     },

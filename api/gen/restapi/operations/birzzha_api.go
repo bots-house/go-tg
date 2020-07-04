@@ -80,6 +80,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		LandingGetReviewsHandler: landing.GetReviewsHandlerFunc(func(params landing.GetReviewsParams) middleware.Responder {
 			return middleware.NotImplemented("operation landing.GetReviews has not yet been implemented")
 		}),
+		CatalogGetSimilarLotsHandler: catalog.GetSimilarLotsHandlerFunc(func(params catalog.GetSimilarLotsParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetSimilarLots has not yet been implemented")
+		}),
 		CatalogGetTopicsHandler: catalog.GetTopicsHandlerFunc(func(params catalog.GetTopicsParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetTopics has not yet been implemented")
 		}),
@@ -179,6 +182,8 @@ type BirzzhaAPI struct {
 	PersonalAreaGetPaymentStatusHandler personal_area.GetPaymentStatusHandler
 	// LandingGetReviewsHandler sets the operation handler for the get reviews operation
 	LandingGetReviewsHandler landing.GetReviewsHandler
+	// CatalogGetSimilarLotsHandler sets the operation handler for the get similar lots operation
+	CatalogGetSimilarLotsHandler catalog.GetSimilarLotsHandler
 	// CatalogGetTopicsHandler sets the operation handler for the get topics operation
 	CatalogGetTopicsHandler catalog.GetTopicsHandler
 	// AuthGetUserHandler sets the operation handler for the get user operation
@@ -298,6 +303,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.LandingGetReviewsHandler == nil {
 		unregistered = append(unregistered, "landing.GetReviewsHandler")
+	}
+	if o.CatalogGetSimilarLotsHandler == nil {
+		unregistered = append(unregistered, "catalog.GetSimilarLotsHandler")
 	}
 	if o.CatalogGetTopicsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetTopicsHandler")
@@ -467,6 +475,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/reviews"] = landing.NewGetReviews(o.context, o.LandingGetReviewsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots/{id}/similars"] = catalog.NewGetSimilarLots(o.context, o.CatalogGetSimilarLotsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

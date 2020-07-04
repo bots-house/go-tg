@@ -20,7 +20,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml309163484 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml445363018 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -107,6 +107,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.LandingGetReviewsHandler == nil {
 		api.LandingGetReviewsHandler = landing.GetReviewsHandlerFunc(func(params landing.GetReviewsParams) middleware.Responder {
 			return middleware.NotImplemented("operation landing.GetReviews has not yet been implemented")
+		})
+	}
+	if api.CatalogGetSimilarLotsHandler == nil {
+		api.CatalogGetSimilarLotsHandler = catalog.GetSimilarLotsHandlerFunc(func(params catalog.GetSimilarLotsParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetSimilarLots has not yet been implemented")
 		})
 	}
 	if api.CatalogGetTopicsHandler == nil {

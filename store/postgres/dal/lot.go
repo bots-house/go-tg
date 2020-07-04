@@ -49,6 +49,8 @@ type Lot struct {
 	Status                string       `boil:"status" json:"status" toml:"status" yaml:"status"`
 	CanceledReasonID      null.Int     `boil:"canceled_reason_id" json:"canceled_reason_id,omitempty" toml:"canceled_reason_id" yaml:"canceled_reason_id,omitempty"`
 	Bio                   null.String  `boil:"bio" json:"bio,omitempty" toml:"bio" yaml:"bio,omitempty"`
+	ViewsTelegram         int          `boil:"views_telegram" json:"views_telegram" toml:"views_telegram" yaml:"views_telegram"`
+	ViewsSite             int          `boil:"views_site" json:"views_site" toml:"views_site" yaml:"views_site"`
 
 	R *lotR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L lotL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -80,6 +82,8 @@ var LotColumns = struct {
 	Status                string
 	CanceledReasonID      string
 	Bio                   string
+	ViewsTelegram         string
+	ViewsSite             string
 }{
 	ID:                    "id",
 	OwnerID:               "owner_id",
@@ -106,6 +110,8 @@ var LotColumns = struct {
 	Status:                "status",
 	CanceledReasonID:      "canceled_reason_id",
 	Bio:                   "bio",
+	ViewsTelegram:         "views_telegram",
+	ViewsSite:             "views_site",
 }
 
 // Generated where
@@ -379,6 +385,8 @@ var LotWhere = struct {
 	Status                whereHelperstring
 	CanceledReasonID      whereHelpernull_Int
 	Bio                   whereHelpernull_String
+	ViewsTelegram         whereHelperint
+	ViewsSite             whereHelperint
 }{
 	ID:                    whereHelperint{field: "\"lot\".\"id\""},
 	OwnerID:               whereHelperint{field: "\"lot\".\"owner_id\""},
@@ -405,6 +413,8 @@ var LotWhere = struct {
 	Status:                whereHelperstring{field: "\"lot\".\"status\""},
 	CanceledReasonID:      whereHelpernull_Int{field: "\"lot\".\"canceled_reason_id\""},
 	Bio:                   whereHelpernull_String{field: "\"lot\".\"bio\""},
+	ViewsTelegram:         whereHelperint{field: "\"lot\".\"views_telegram\""},
+	ViewsSite:             whereHelperint{field: "\"lot\".\"views_site\""},
 }
 
 // LotRels is where relationship names are stored.
@@ -437,9 +447,9 @@ func (*lotR) NewStruct() *lotR {
 type lotL struct{}
 
 var (
-	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio"}
+	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio", "views_telegram", "views_site"}
 	lotColumnsWithoutDefault = []string{"owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio"}
-	lotColumnsWithDefault    = []string{"id"}
+	lotColumnsWithDefault    = []string{"id", "views_telegram", "views_site"}
 	lotPrimaryKeyColumns     = []string{"id"}
 )
 

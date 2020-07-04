@@ -181,6 +181,8 @@ func (store *LotStore) toRow(lot *core.Lot) (*dal.Lot, error) {
 		PaidAt:                lot.PaidAt,
 		ApprovedAt:            lot.ApprovedAt,
 		PublishedAt:           lot.PublishedAt,
+		ViewsTelegram:         lot.Views.Telegram,
+		ViewsSite:             lot.Views.Site,
 	}, nil
 }
 
@@ -233,6 +235,10 @@ func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
 		PaidAt:         row.PaidAt,
 		ApprovedAt:     row.ApprovedAt,
 		PublishedAt:    row.PublishedAt,
+		Views: core.LotViews{
+			Telegram: row.ViewsTelegram,
+			Site:     row.ViewsSite,
+		},
 	}, nil
 }
 
@@ -286,6 +292,115 @@ func (store *LotStore) update(ctx context.Context, lot *core.Lot) error {
 	}
 
 	return nil
+}
+
+func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	rows, err := executor.QueryContext(ctx, `
+		with topics as (
+			select
+				lot_topic.topic_id 
+			from
+				lot 
+				inner join
+					lot_topic 
+					on lot.id = lot_topic.lot_id 
+			where
+				lot.id = $1
+		) select
+			count(lot.id)
+		from
+			lot 
+			inner join
+				lot_topic 
+				on lot.id = lot_topic.lot_id 
+		where
+			lot.id != $1
+			and lot_topic.topic_id in (
+				select
+					* 
+				from
+					topics
+			);
+	`, id)
+	if err != nil {
+		return 0, errors.Wrap(err, "query rows")
+	}
+	defer rows.Close()
+
+	var count int
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&count,
+		); err != nil {
+			return 0, errors.Wrap(err, "scan")
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return 0, errors.Wrap(err, "rows err")
+	}
+	return count, nil
+}
+
+func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit int, offset int) ([]core.LotID, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	rows, err := executor.QueryContext(ctx, `
+		with topics as (
+			select
+				lot_topic.topic_id 
+			from
+				lot 
+				inner join
+					lot_topic 
+					on lot.id = lot_topic.lot_id 
+			where
+				lot.id = $1
+		) select
+			lot.id
+		from
+			lot 
+			inner join
+				lot_topic 
+				on lot.id = lot_topic.lot_id 
+		where
+			lot.id != $1
+			and lot_topic.topic_id in (
+				select
+					* 
+				from
+					topics
+			)
+		group by
+			lot_topic.topic_id,
+			lot.id 
+		order by
+			views_telegram + views_site
+		limit $2
+		offset $3;
+	`, id, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "query rows")
+	}
+	defer rows.Close()
+
+	result := make([]core.LotID, 0)
+	for rows.Next() {
+		item := 0
+
+		if err := rows.Scan(
+			&item,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan")
+		}
+		result = append(result, core.LotID(item))
+	}
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows err")
+	}
+	return result, nil
 }
 
 func (store *LotStore) Query() core.LotStoreQuery {

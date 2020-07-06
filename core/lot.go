@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -161,7 +162,8 @@ type LotViews struct {
 }
 
 func (lv LotViews) Total() int {
-	return lv.Site + lv.Telegram
+	// return lv.Site + lv.Telegram
+	return rand.Intn(500000)
 }
 
 // Lot for sale

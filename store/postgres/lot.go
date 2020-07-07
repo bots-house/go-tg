@@ -550,8 +550,8 @@ func (lsq *LotStoreQuery) TopicIDs(ids ...core.TopicID) core.LotStoreQuery {
 	}
 
 	lsq.mods = append(lsq.mods,
-		qm.InnerJoin("lot_topic on lot.id = lot_topic.id"),
-		qm.WhereIn("lot_topic.topic_id = any(?)", pq.Array(idsInt)),
+		qm.InnerJoin("lot_topic on lot.id = lot_topic.lot_id"),
+		qm.Where("lot_topic.topic_id = any(?)", pq.Array(idsInt)),
 	)
 	return lsq
 }

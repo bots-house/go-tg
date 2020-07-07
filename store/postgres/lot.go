@@ -376,8 +376,6 @@ func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit i
 		group by
 			lot_topic.topic_id,
 			lot.id 
-		order by
-			views_telegram + views_site
 		limit $2
 		offset $3;
 	`, id, limit, offset)

@@ -10,11 +10,12 @@ import (
 )
 
 type Service struct {
-	Lot         core.LotStore
-	Resolver    tg.Resolver
-	Payment     core.PaymentStore
-	Txier       store.Txier
-	AdminNotify *admin.Notifications
+	Lot               core.LotStore
+	Resolver          tg.Resolver
+	Payment           core.PaymentStore
+	Txier             store.Txier
+	AdminNotify       *admin.Notifications
+	LotCanceledReason core.LotCanceledReasonStore
 
 	Storage  storage.Storage
 	Settings core.SettingsStore

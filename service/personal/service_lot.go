@@ -115,3 +115,40 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 
 	return srv.newOwnedLot(ctx, lot)
 }
+
+var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")
+
+func (srv *Service) CancelLot(
+	ctx context.Context,
+	user *core.User,
+	lotID core.LotID,
+	reasonID core.LotCanceledReasonID,
+) error {
+	lot, err := srv.getOwnedLot(ctx, user, lotID)
+	if err != nil {
+		return errors.Wrap(err, "get owned lot")
+	}
+
+	if !lot.CanCancel() {
+		return ErrLotCantBeCanceled
+	}
+
+	reason, err := srv.LotCanceledReason.Query().ID(reasonID).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get lot canceled reason")
+	}
+
+	lot.CanceledReasonID = reason.ID
+	lot.Status = core.LotStatusCanceled
+
+	if err := srv.Lot.Update(ctx, lot.Lot); err != nil {
+		return errors.Wrap(err, "update lot")
+	}
+
+	srv.AdminNotify.Send(&CanceledLotNotification{
+		Lot:    lot.Lot,
+		Reason: reason,
+	})
+
+	return nil
+}

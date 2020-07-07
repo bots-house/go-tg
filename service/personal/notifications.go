@@ -17,7 +17,7 @@ func (n NewLotNotification) NotificationTemplate() string {
 
         <b>Цена:</b> {{ .Lot.Price.Current }} руб.
 
-        #user{{ .User.ID }} #lot{{ .Lot.ID }}
+        #signup #user{{ .User.ID }} #lot{{ .Lot.ID }}
     `
 }
 
@@ -39,6 +39,23 @@ func (n NewPaymentNotification) NotificationTemplate() string {
         <b>Зачислено</b>: {{ .Payment.Received.Display }}
 
 
-        #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
+        #payment #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
+    `
+}
+
+type CanceledLotNotification struct {
+	Lot    *core.Lot
+	Reason *core.LotCanceledReason
+}
+
+func (n CanceledLotNotification) NotificationTemplate() string {
+	return `
+        👋 <b>Лот снят с продажи!</b>
+
+        <b>№{{ .Lot.ID }}</b> <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a>
+
+        <b>Причина</b>: {{ .Reason.Why }}
+
+        #cancel #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
     `
 }

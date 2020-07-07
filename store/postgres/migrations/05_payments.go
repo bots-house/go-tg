@@ -11,12 +11,21 @@ func init() {
 		);
 
 		create table lot_canceled_reason (
-			id serial primary key, 
-			why text not null, 
-			is_public boolean not null, 
+			id serial primary key,
+			why text not null,
+			is_public boolean not null,
 			created_at timestamp with time zone not null,
 			updated_at timestamp with time zone
-		);
+        );
+
+        insert into lot_canceled_reason
+            (why, is_public, created_at)
+        values
+            ('Канал продан с помощью биржи', true, now()),
+            ('Канал продан с помощью других площадок', true, now()),
+            ('Я передумал(-а) продавать канал', true, now()),
+            ('Другое', true, now());
+
 
 		-- create lot status field
 		alter table lot
@@ -26,11 +35,11 @@ func init() {
 
 		-- create lot -> canceled_reason relation;
 		alter table lot
-			add column canceled_reason_id integer 
+			add column canceled_reason_id integer
 			    references lot_canceled_reason(id) on delete set null;
-        
+
         create index lot_status_idx on lot(status);
-        
+
         create type payment_status as enum (
               'created',
               'pending',
@@ -51,14 +60,14 @@ func init() {
         create table payment (
               id serial primary key,
               external_id text,
-              gateway payment_gateway not null, 
+              gateway payment_gateway not null,
               purpose payment_purpose not null,
               payer_id integer not null references "user"(id) on delete set null,
               lot_id integer not null references "lot"(id) on delete set null,
-              status payment_status not null, 
-              requested jsonb not null, 
-              paid jsonb, 
-              received jsonb, 
+              status payment_status not null,
+              requested jsonb not null,
+              paid jsonb,
+              received jsonb,
               metadata jsonb,
               created_at timestamp with time zone not null,
               updated_at timestamp with time zone

@@ -235,7 +235,7 @@ type Lot struct {
 }
 
 func (lot *Lot) CanCancel() bool {
-	return lot.Status == LotStatusPublished
+	return lot.Status == LotStatusPublished || lot.Status == LotStatusPaid
 }
 
 func (lot *Lot) CanChangePriceFree() bool {

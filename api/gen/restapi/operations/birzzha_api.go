@@ -50,6 +50,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		PersonalAreaCancelLotHandler: personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
+		}),
 		PersonalAreaCreateApplicationPaymentHandler: personal_area.CreateApplicationPaymentHandlerFunc(func(params personal_area.CreateApplicationPaymentParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CreateApplicationPayment has not yet been implemented")
 		}),
@@ -70,6 +73,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		CatalogGetLotHandler: catalog.GetLotHandlerFunc(func(params catalog.GetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
+		}),
+		PersonalAreaGetLotCanceledReasonsHandler: personal_area.GetLotCanceledReasonsHandlerFunc(func(params personal_area.GetLotCanceledReasonsParams) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetLotCanceledReasons has not yet been implemented")
 		}),
 		CatalogGetLotsHandler: catalog.GetLotsHandlerFunc(func(params catalog.GetLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLots has not yet been implemented")
@@ -165,6 +171,8 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
+	PersonalAreaCancelLotHandler personal_area.CancelLotHandler
 	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
 	PersonalAreaCreateApplicationPaymentHandler personal_area.CreateApplicationPaymentHandler
 	// PersonalAreaCreateLotHandler sets the operation handler for the create lot operation
@@ -179,6 +187,8 @@ type BirzzhaAPI struct {
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
 	// CatalogGetLotHandler sets the operation handler for the get lot operation
 	CatalogGetLotHandler catalog.GetLotHandler
+	// PersonalAreaGetLotCanceledReasonsHandler sets the operation handler for the get lot canceled reasons operation
+	PersonalAreaGetLotCanceledReasonsHandler personal_area.GetLotCanceledReasonsHandler
 	// CatalogGetLotsHandler sets the operation handler for the get lots operation
 	CatalogGetLotsHandler catalog.GetLotsHandler
 	// PersonalAreaGetPaymentStatusHandler sets the operation handler for the get payment status operation
@@ -279,6 +289,9 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
+	if o.PersonalAreaCancelLotHandler == nil {
+		unregistered = append(unregistered, "personal_area.CancelLotHandler")
+	}
 	if o.PersonalAreaCreateApplicationPaymentHandler == nil {
 		unregistered = append(unregistered, "personal_area.CreateApplicationPaymentHandler")
 	}
@@ -299,6 +312,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogGetLotHandler == nil {
 		unregistered = append(unregistered, "catalog.GetLotHandler")
+	}
+	if o.PersonalAreaGetLotCanceledReasonsHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetLotCanceledReasonsHandler")
 	}
 	if o.CatalogGetLotsHandler == nil {
 		unregistered = append(unregistered, "catalog.GetLotsHandler")
@@ -446,6 +462,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/user/lots/{id}/cancel"] = personal_area.NewCancelLot(o.context, o.PersonalAreaCancelLotHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/lots/{id}/application-payment"] = personal_area.NewCreateApplicationPayment(o.context, o.PersonalAreaCreateApplicationPaymentHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -471,6 +491,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/{id}"] = catalog.NewGetLot(o.context, o.CatalogGetLotHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lot-canceled-reasons"] = personal_area.NewGetLotCanceledReasons(o.context, o.PersonalAreaGetLotCanceledReasonsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

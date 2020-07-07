@@ -6,6 +6,6 @@ func init() {
 		alter table lot add column views_site integer not null default 0;
 	`), query(`
 		alter table lot drop column views_telegram;
-		alter table lot drop column views_site;	
+		alter table lot drop column views_site;
 	`))
 }

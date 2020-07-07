@@ -73,6 +73,11 @@ func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 			CanCancel:          swag.Bool(in.CanCancel()),
 		},
 	}
+
+	if in.CanceledReasonID != 0 {
+		ownedLot.CanceledReasonID = swag.Int64(int64(in.CanceledReasonID))
+	}
+
 	if in.Avatar.Valid {
 		ownedLot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
 	}

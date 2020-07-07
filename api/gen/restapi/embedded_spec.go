@@ -171,6 +171,40 @@ func init() {
         }
       }
     },
+    "/lot-canceled-reasons": {
+      "get": {
+        "security": [],
+        "description": "Возвращает список причин для снятия лота с продажи.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Lot Canceled Reasons",
+        "operationId": "getLotCanceledReasons",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotCanceledReason"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lots": {
       "get": {
         "security": [
@@ -869,6 +903,51 @@ func init() {
         }
       }
     },
+    "/user/lots/{id}/cancel": {
+      "post": {
+        "description": "Снять лот с продажи\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Cancel Lot",
+        "operationId": "cancelLot",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "ID причины снятия лота с продажи.\n",
+            "name": "reason_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/webhooks/gateways/{name}": {
       "post": {
         "security": [],
@@ -1144,6 +1223,31 @@ func init() {
         "to": {
           "description": "to",
           "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "LotCanceledReason": {
+      "type": "object",
+      "required": [
+        "id",
+        "why",
+        "is_public"
+      ],
+      "properties": {
+        "id": {
+          "description": "Уникальный ID",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_public": {
+          "description": "True, если причина будет показана на странице лота (пока не используется)",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "why": {
+          "description": "Причина снятия с продажи",
+          "type": "string",
           "x-order": 1
         }
       }
@@ -1529,6 +1633,7 @@ func init() {
         "price",
         "comment",
         "status",
+        "canceled_reason_id",
         "metrics",
         "topics",
         "extra",
@@ -1559,12 +1664,12 @@ func init() {
               "x-order": 1
             }
           },
-          "x-order": 15
+          "x-order": 16
         },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 13
+          "x-order": 14
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -1577,6 +1682,11 @@ func init() {
           "type": "string",
           "x-order": 6
         },
+        "canceled_reason_id": {
+          "description": "ID причины снятия с продажи",
+          "type": "integer",
+          "x-order": 11
+        },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
@@ -1585,7 +1695,7 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -1597,7 +1707,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 16
+          "x-order": 17
         },
         "id": {
           "description": "ID лота",
@@ -1622,7 +1732,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
         },
         "price": {
           "x-order": 7,
@@ -1631,7 +1741,7 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 17
+          "x-order": 18
         },
         "status": {
           "type": "string",
@@ -1651,7 +1761,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 14
+          "x-order": 15
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -2273,6 +2383,40 @@ func init() {
         }
       }
     },
+    "/lot-canceled-reasons": {
+      "get": {
+        "security": [],
+        "description": "Возвращает список причин для снятия лота с продажи.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Lot Canceled Reasons",
+        "operationId": "getLotCanceledReasons",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LotCanceledReason"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lots": {
       "get": {
         "security": [
@@ -2979,6 +3123,51 @@ func init() {
         }
       }
     },
+    "/user/lots/{id}/cancel": {
+      "post": {
+        "description": "Снять лот с продажи\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Cancel Lot",
+        "operationId": "cancelLot",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "ID причины снятия лота с продажи.\n",
+            "name": "reason_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/webhooks/gateways/{name}": {
       "post": {
         "security": [],
@@ -3273,6 +3462,31 @@ func init() {
         "to": {
           "description": "to",
           "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "LotCanceledReason": {
+      "type": "object",
+      "required": [
+        "id",
+        "why",
+        "is_public"
+      ],
+      "properties": {
+        "id": {
+          "description": "Уникальный ID",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_public": {
+          "description": "True, если причина будет показана на странице лота (пока не используется)",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "why": {
+          "description": "Причина снятия с продажи",
+          "type": "string",
           "x-order": 1
         }
       }
@@ -3658,6 +3872,7 @@ func init() {
         "price",
         "comment",
         "status",
+        "canceled_reason_id",
         "metrics",
         "topics",
         "extra",
@@ -3688,12 +3903,12 @@ func init() {
               "x-order": 1
             }
           },
-          "x-order": 15
+          "x-order": 16
         },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 13
+          "x-order": 14
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -3706,6 +3921,11 @@ func init() {
           "type": "string",
           "x-order": 6
         },
+        "canceled_reason_id": {
+          "description": "ID причины снятия с продажи",
+          "type": "integer",
+          "x-order": 11
+        },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
@@ -3714,7 +3934,7 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -3726,7 +3946,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 16
+          "x-order": 17
         },
         "id": {
           "description": "ID лота",
@@ -3751,7 +3971,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
         },
         "price": {
           "x-order": 7,
@@ -3760,7 +3980,7 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 17
+          "x-order": 18
         },
         "status": {
           "type": "string",
@@ -3780,7 +4000,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 14
+          "x-order": 15
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -3810,7 +4030,7 @@ func init() {
           "x-order": 1
         }
       },
-      "x-order": 15
+      "x-order": 16
     },
     "PaymentForm": {
       "type": "object",

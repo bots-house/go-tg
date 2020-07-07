@@ -20,7 +20,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml464972429 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml274235838 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -59,6 +59,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
+	if api.PersonalAreaCancelLotHandler == nil {
+		api.PersonalAreaCancelLotHandler = personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
+		})
+	}
 	if api.PersonalAreaCreateApplicationPaymentHandler == nil {
 		api.PersonalAreaCreateApplicationPaymentHandler = personal_area.CreateApplicationPaymentHandlerFunc(func(params personal_area.CreateApplicationPaymentParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CreateApplicationPayment has not yet been implemented")
@@ -92,6 +97,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogGetLotHandler == nil {
 		api.CatalogGetLotHandler = catalog.GetLotHandlerFunc(func(params catalog.GetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaGetLotCanceledReasonsHandler == nil {
+		api.PersonalAreaGetLotCanceledReasonsHandler = personal_area.GetLotCanceledReasonsHandlerFunc(func(params personal_area.GetLotCanceledReasonsParams) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetLotCanceledReasons has not yet been implemented")
 		})
 	}
 	if api.CatalogGetLotsHandler == nil {

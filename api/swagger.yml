@@ -512,9 +512,9 @@ paths:
         - TokenHeader: []
         - TokenQuery: []
       responses:
-        200: 
+        200:
           description: OK
-          schema: 
+          schema:
             $ref: "#/definitions/FullLot"
         400:
           description: Bad Request
@@ -538,9 +538,9 @@ paths:
       operationId: toggleLotFavorite
       tags: [catalog]
       responses:
-        200: 
+        200:
           description: OK
-          schema: 
+          schema:
             $ref: "#/definitions/LotFavoriteStatus"
         400:
           description: Bad Request
@@ -550,7 +550,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /lots/{id}/similars:
     parameters:
       - name: id
@@ -588,7 +588,7 @@ paths:
         500:
           description: Internal Server Error
           schema:
-            $ref: "#/definitions/Error"      
+            $ref: "#/definitions/Error"
 
   /lots/filter-boundaries:
     get:
@@ -730,7 +730,81 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /user/lots/{id}/cancel:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID лота
+
+    post:
+      parameters:
+        - name: reason_id
+          in: query
+          type: integer
+          required: true
+          description: |
+            ID причины снятия лота с продажи.
+      summary: Cancel Lot
+      description: |
+        Снять лот с продажи
+      operationId: cancelLot
+      tags: [personal-area]
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /lot-canceled-reasons:
+    get:
+      operationId: getLotCanceledReasons
+      tags: [personal-area]
+      summary: Get Lot Canceled Reasons
+      description: |
+        Возвращает список причин для снятия лота с продажи.
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/LotCanceledReason"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
+  LotCanceledReason:
+    type: object
+    required:
+      - id
+      - why
+      - is_public
+    properties:
+      id:
+        type: integer
+        description: Уникальный ID
+      why:
+        type: string
+        description: Причина снятия с продажи
+      is_public:
+        type: boolean
+        description: True, если причина будет показана на странице лота (пока не используется)
+
   PaymentStatus:
     type: object
     required:
@@ -960,6 +1034,7 @@ definitions:
       - price
       - comment
       - status
+      - canceled_reason_id
       - metrics
       - topics
       - extra
@@ -1006,6 +1081,9 @@ definitions:
           - published
           - declined
           - canceled
+      canceled_reason_id:
+        type: integer
+        description: ID причины снятия с продажи
       created_at:
         type: integer
         description: Дата создания
@@ -1398,7 +1476,7 @@ definitions:
       avatar:
         type: string
         description: Ссылка на аватарку пользователя (может быть null).
-  
+
   Review:
     description: Отзыв.
     required:
@@ -1433,7 +1511,7 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Review"
-  
+
   LotOwner:
     type: object
     description: Информация о создателе лота.
@@ -1455,11 +1533,11 @@ definitions:
         description: Юзернейм пользователя (может быть null).
       avatar:
         type: string
-        description: Ссылка на аватарку пользователя (может быть null).     
+        description: Ссылка на аватарку пользователя (может быть null).
       link:
         type: string
-        description: Ссылка на пользователя в Telegram (может быть null). 
-        
+        description: Ссылка на пользователя в Telegram (может быть null).
+
   FullLot:
     description: Детали лота.
     allOf:
@@ -1487,7 +1565,7 @@ definitions:
           - user
           - tgstat_link
           - telemetr_link
-  
+
   LotFavoriteStatus:
     type: object
     description: Ответ после смены статуса избранности лота.
@@ -1497,14 +1575,3 @@ definitions:
       in_favorites:
         type: boolean
         description: Статус избранности лота.
-
-
-          
-
-          
-
-
-
-
-
-

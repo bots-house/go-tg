@@ -106,3 +106,35 @@ func (h *Handler) getOwnedLots(params personalops.GetUserLotsParams, identity *a
 	return personalops.NewGetUserLotsOK().WithPayload(models.NewOwnedLotSlice(h.Storage, lots))
 
 }
+
+func (h *Handler) getLotCanceledReasons(params personalops.GetLotCanceledReasonsParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	lcrs, err := h.Personal.GetLotCanceledReasons(ctx)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewGetLotCanceledReasonsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewGetLotCanceledReasonsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return personalops.NewGetLotCanceledReasonsOK().WithPayload(models.NewLotCanceledReasonSlice(lcrs))
+}
+
+func (h *Handler) cancelLot(params personalops.CancelLotParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	user := identity.GetUser()
+	lotID := core.LotID(params.ID)
+	reasonID := core.LotCanceledReasonID(params.ReasonID)
+
+	err := h.Personal.CancelLot(ctx, user, lotID, reasonID)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewCancelLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewCancelLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return personalops.NewCancelLotOK()
+}

@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/volatiletech/null/v8"
@@ -26,13 +27,19 @@ type LotCanceledReason struct {
 	UpdatedAt null.Time
 }
 
+var (
+	ErrLotCanceledReasonNotFound = errors.New("canceled reason not found")
+)
+
 type LotCanceledReasonStoreQuery interface {
+	ID(id LotCanceledReasonID) LotCanceledReasonStoreQuery
+
 	One(ctx context.Context) (*LotCanceledReason, error)
 	All(ctx context.Context) ([]*LotCanceledReason, error)
 }
 
 type LotCanceledReasonStore interface {
 	Add(ctx context.Context, reason *LotCanceledReason) error
-	Update(ctx context.Context, reason *LotCanceledReason) error
+	// Update(ctx context.Context, reason *LotCanceledReason) error
 	Query() LotCanceledReasonStoreQuery
 }

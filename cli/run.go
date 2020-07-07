@@ -207,14 +207,15 @@ func run(ctx context.Context) error {
 	gateways := newGatewayRegistry(ctx, cfg)
 
 	personalSrv := &personal.Service{
-		Lot:         pg.Lot,
-		Resolver:    resolver,
-		Payment:     pg.Payment,
-		Txier:       pg.Tx,
-		Storage:     strg,
-		Settings:    pg.Settings,
-		Gateways:    gateways,
-		AdminNotify: notifications,
+		Lot:               pg.Lot,
+		Resolver:          resolver,
+		Payment:           pg.Payment,
+		Txier:             pg.Tx,
+		Storage:           strg,
+		Settings:          pg.Settings,
+		Gateways:          gateways,
+		AdminNotify:       notifications,
+		LotCanceledReason: pg.LotCanceledReason,
 	}
 
 	handler := api.Handler{

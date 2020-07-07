@@ -65,6 +65,10 @@ type OwnedLot struct {
 	// Enum: [created paid published declined canceled]
 	Status *string `json:"status"`
 
+	// ID причины снятия с продажи
+	// Required: true
+	CanceledReasonID *int64 `json:"canceled_reason_id"`
+
 	// Дата создания
 	// Required: true
 	CreatedAt *int64 `json:"created_at"`
@@ -138,6 +142,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateStatus(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCanceledReasonID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -329,6 +337,15 @@ func (m *OwnedLot) validateStatus(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLot) validateCanceledReasonID(formats strfmt.Registry) error {
+
+	if err := validate.Required("canceled_reason_id", "body", m.CanceledReasonID); err != nil {
 		return err
 	}
 

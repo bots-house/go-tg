@@ -1109,44 +1109,118 @@ func init() {
     },
     "FullLot": {
       "description": "Детали лота.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/LotListItem"
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at",
+        "topics",
+        "views",
+        "extra",
+        "user",
+        "tgstat_link",
+        "telemetr_link"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
         },
-        {
-          "type": "object",
-          "required": [
-            "views",
-            "extra",
-            "user",
-            "tgstat_link",
-            "telemetr_link"
-          ],
-          "properties": {
-            "extra": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/LotExtraResource"
-              }
-            },
-            "telemetr_link": {
-              "description": "Ссылка на telemetr.me.",
-              "type": "string"
-            },
-            "tgstat_link": {
-              "description": "Ссылка на tgstat.ru.",
-              "type": "string"
-            },
-            "user": {
-              "$ref": "#/definitions/LotOwner"
-            },
-            "views": {
-              "description": "Количество просмотров.",
-              "type": "integer"
-            }
-          }
+        "bio": {
+          "description": "Описание лота.",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 11
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 13
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 10
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "telemetr_link": {
+          "description": "Ссылка на telemetr.me.",
+          "type": "string",
+          "x-order": 16
+        },
+        "tgstat_link": {
+          "description": "Ссылка на tgstat.ru.",
+          "type": "string",
+          "x-order": 15
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 9
+        },
+        "user": {
+          "x-order": 12,
+          "$ref": "#/definitions/LotOwner"
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
+        },
+        "views": {
+          "description": "Количество просмотров.",
+          "type": "integer",
+          "x-order": 14
         }
-      ]
+      }
     },
     "Identity": {
       "x-go-type": {
@@ -3348,44 +3422,118 @@ func init() {
     },
     "FullLot": {
       "description": "Детали лота.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/LotListItem"
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at",
+        "topics",
+        "views",
+        "extra",
+        "user",
+        "tgstat_link",
+        "telemetr_link"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
         },
-        {
-          "type": "object",
-          "required": [
-            "views",
-            "extra",
-            "user",
-            "tgstat_link",
-            "telemetr_link"
-          ],
-          "properties": {
-            "extra": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/LotExtraResource"
-              }
-            },
-            "telemetr_link": {
-              "description": "Ссылка на telemetr.me.",
-              "type": "string"
-            },
-            "tgstat_link": {
-              "description": "Ссылка на tgstat.ru.",
-              "type": "string"
-            },
-            "user": {
-              "$ref": "#/definitions/LotOwner"
-            },
-            "views": {
-              "description": "Количество просмотров.",
-              "type": "integer"
-            }
-          }
+        "bio": {
+          "description": "Описание лота.",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 11
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 13
+        },
+        "id": {
+          "description": "ID лота",
+          "type": "integer",
+          "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 10
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "telemetr_link": {
+          "description": "Ссылка на telemetr.me.",
+          "type": "string",
+          "x-order": 16
+        },
+        "tgstat_link": {
+          "description": "Ссылка на tgstat.ru.",
+          "type": "string",
+          "x-order": 15
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 9
+        },
+        "user": {
+          "x-order": 12,
+          "$ref": "#/definitions/LotOwner"
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
+        },
+        "views": {
+          "description": "Количество просмотров.",
+          "type": "integer",
+          "x-order": 14
         }
-      ]
+      }
     },
     "Identity": {
       "x-go-type": {

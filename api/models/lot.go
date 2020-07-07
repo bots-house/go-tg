@@ -138,11 +138,21 @@ func newLotOwner(s storage.Storage, user *core.User) *models.LotOwner {
 
 func NewFullLot(s storage.Storage, in *catalog.FullLot) *models.FullLot {
 	return &models.FullLot{
-		LotListItem:  *NewItemLot(s, in.ItemLot),
+		ID:           swag.Int64(int64(in.ID)),
+		Name:         swag.String(in.Name),
+		Username:     nullStringToString(in.Username),
+		Link:         swag.String(in.Link()),
+		Price:        newLotPrice(in.Price),
+		Comment:      swag.String(in.Comment),
+		Metrics:      newLotMetrics(in.Metrics),
+		InFavorites:  nullBoolToBool(in.InFavorites),
+		Topics:       NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:    timeToUnix(in.CreatedAt),
+		Bio:          nullStringToString(in.Bio),
 		User:         newLotOwner(s, in.User),
 		TgstatLink:   swag.String(in.TgstatLink()),
 		TelemetrLink: swag.String(in.TelemetrLink()),
 		Views:        swag.Int64(int64(in.Views)),
-		Extra:        newLotExtraResourceSlice(in.ItemLot.ExtraResources),
+		Extra:        newLotExtraResourceSlice(in.ExtraResources),
 	}
 }

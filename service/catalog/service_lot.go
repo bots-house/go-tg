@@ -195,24 +195,25 @@ func (srv *Service) GetLots(ctx context.Context, user *core.User, query *LotsQue
 }
 
 type FullLot struct {
-	ItemLot *ItemLot
-	User    *core.User
-	Views   int
+	*core.Lot
+	InFavorites null.Bool
+	User        *core.User
+	Views       int
 }
 
 func (fl *FullLot) TgstatLink() string {
-	if fl.ItemLot.Username.Valid {
-		return fmt.Sprintf("https://tgstat.ru/channel/@%s", fl.ItemLot.Username.String)
+	if fl.Username.Valid {
+		return fmt.Sprintf("https://tgstat.ru/channel/@%s", fl.Username.String)
 	}
-	_, value := tg.ParseResolveQuery(fl.ItemLot.JoinLink.String)
+	_, value := tg.ParseResolveQuery(fl.JoinLink.String)
 	return fmt.Sprintf("https://tgstat.ru/channel/%s", value)
 }
 
 func (fl *FullLot) TelemetrLink() string {
-	if fl.ItemLot.Username.Valid {
-		return fmt.Sprintf("https://telemetr.me/@%s", fl.ItemLot.Username.String)
+	if fl.Username.Valid {
+		return fmt.Sprintf("https://telemetr.me/@%s", fl.Username.String)
 	}
-	_, value := tg.ParseResolveQuery(fl.ItemLot.JoinLink.String)
+	_, value := tg.ParseResolveQuery(fl.JoinLink.String)
 	return fmt.Sprintf("https://telemetr.me/joinchat/%s", value)
 }
 
@@ -228,9 +229,7 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 	}
 
 	fullLot := &FullLot{
-		ItemLot: &ItemLot{
-			Lot: lot,
-		},
+		Lot:   lot,
 		User:  usr,
 		Views: lot.Views.Total(),
 	}
@@ -243,7 +242,7 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 		}
 
 		if favorite != nil {
-			fullLot.ItemLot.InFavorites = null.BoolFrom(true)
+			fullLot.InFavorites = null.BoolFrom(true)
 		}
 
 	}

@@ -137,7 +137,7 @@ func newLotOwner(s storage.Storage, user *core.User) *models.LotOwner {
 }
 
 func NewFullLot(s storage.Storage, in *catalog.FullLot) *models.FullLot {
-	return &models.FullLot{
+	lot := &models.FullLot{
 		ID:           swag.Int64(int64(in.ID)),
 		Name:         swag.String(in.Name),
 		Username:     nullStringToString(in.Username),
@@ -155,4 +155,9 @@ func NewFullLot(s storage.Storage, in *catalog.FullLot) *models.FullLot {
 		Views:        swag.Int64(int64(in.Views)),
 		Extra:        newLotExtraResourceSlice(in.ExtraResources),
 	}
+
+	if in.Avatar.Valid {
+		lot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+	return lot
 }

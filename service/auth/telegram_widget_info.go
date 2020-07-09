@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -33,6 +34,36 @@ type TelegramWidgetInfo struct {
 
 	// Signature of data
 	Hash string
+}
+
+func (twi *TelegramWidgetInfo) Encode(botTokenHash []byte) url.Values {
+	vs := url.Values{}
+
+	vs.Set("id", strconv.Itoa(twi.ID))
+
+	vs.Set("first_name", twi.FirstName)
+
+	if twi.LastName != "" {
+		vs.Set("last_name", twi.LastName)
+	}
+
+	if twi.Username != "" {
+		vs.Set("username", twi.Username)
+	}
+
+	if twi.PhotoURL != "" {
+		vs.Set("photo_url", twi.PhotoURL)
+	}
+
+	vs.Set("auth_date", strconv.FormatInt(twi.AuthDate, 10))
+
+	mac := hmac.New(sha256.New, botTokenHash)
+	_, _ = mac.Write(twi.getCheckString())
+	hash := mac.Sum(nil)
+
+	vs.Set("hash", hex.EncodeToString(hash))
+
+	return vs
 }
 
 func (twi *TelegramWidgetInfo) getCheckString() []byte {
@@ -72,7 +103,7 @@ func (twi *TelegramWidgetInfo) getCheckString() []byte {
 
 func (twi *TelegramWidgetInfo) Check(botTokenHash []byte) (bool, error) {
 	mac := hmac.New(sha256.New, botTokenHash)
-	mac.Write(twi.getCheckString())
+	_, _ = mac.Write(twi.getCheckString())
 	exceptedMAC := mac.Sum(nil)
 
 	actualMAC, err := hex.DecodeString(twi.Hash)

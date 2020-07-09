@@ -2,12 +2,14 @@ package bot
 
 import (
 	"context"
+	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
 
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 
+	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/service/auth"
 )
 
@@ -83,5 +85,47 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 		),
 	)
 
-	return bot.send(ctx, answ)
+	if err := bot.send(ctx, answ); err != nil {
+		if isBotDomainInvalidError(err) {
+			log.Warn(ctx, "user fallback for domain invalid", "callback_url", info.CallbackURL)
+			callbackURL, err := url.Parse(info.CallbackURL)
+			if err != nil {
+				return errors.Wrap(err, "parse callback url")
+			}
+
+			query := callbackURL.Query()
+			user := getUserCtx(ctx)
+
+			vs := bot.authSrv.GetLoginWidgetInfo(ctx, user)
+
+			for k := range vs {
+				query.Set(k, vs.Get(k))
+			}
+
+			callbackURL.RawQuery = query.Encode()
+
+			cb := callbackURL.String()
+
+			answ := bot.newAnswerMsg(ctx, msg, textStartLogin)
+			answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.InlineKeyboardButton{
+						Text: "🔓 Авторизоватся",
+						URL:  &cb,
+					},
+				),
+			)
+
+			return bot.send(ctx, answ)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func isBotDomainInvalidError(err error) bool {
+	tgerr, ok := err.(*tgbotapi.Error)
+	return ok && strings.Contains(tgerr.Message, "BOT_DOMAIN_INVALID")
 }

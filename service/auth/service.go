@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 	"sync"
 	"time"
@@ -105,6 +106,22 @@ func (srv *Service) newToken(user *core.User) (*Token, error) {
 		User:  user,
 		Token: string(tkn.Raw()),
 	}, nil
+}
+
+func (srv *Service) GetLoginWidgetInfo(ctx context.Context, user *core.User) url.Values {
+	lwi := &TelegramWidgetInfo{
+		ID:        user.Telegram.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName.String,
+		Username:  user.Telegram.Username.String,
+		AuthDate:  time.Now().Unix(),
+	}
+
+	if user.Avatar.Valid {
+		lwi.PhotoURL = srv.Storage.PublicURL(user.Avatar.String)
+	}
+
+	return lwi.Encode(srv.Config.getBotTokenHash())
 }
 
 func (srv *Service) CreateToken(ctx context.Context, info *TelegramWidgetInfo) (*Token, error) {

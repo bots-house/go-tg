@@ -309,7 +309,7 @@ func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int
 			where
 				lot.id = $1
 		) select
-			count(lot.id)
+			count(distinct(lot.id))
 		from
 			lot 
 			inner join

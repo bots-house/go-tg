@@ -22,6 +22,11 @@ func (h *Handler) createLot(params personalops.CreateLotParams, identity *authz.
 		topics[i] = core.TopicID(v)
 	}
 
+	files := make([]core.LotFileID, len(payload.Files))
+	for i, v := range payload.Files {
+		files[i] = core.LotFileID(v)
+	}
+
 	in := &personal.LotInput{
 		Query:         swag.StringValue(payload.Query),
 		TelegramID:    swag.Int64Value(payload.TelegramID),
@@ -31,6 +36,7 @@ func (h *Handler) createLot(params personalops.CreateLotParams, identity *authz.
 		MonthlyIncome: int(swag.Int64Value(payload.MonthlyIncome)),
 		Comment:       swag.StringValue(payload.Comment),
 		Extra:         payload.Extra,
+		Files:         files,
 	}
 
 	lot, err := h.Personal.AddLot(ctx, identity.User, in)
@@ -137,4 +143,24 @@ func (h *Handler) cancelLot(params personalops.CancelLotParams, identity *authz.
 	}
 
 	return personalops.NewCancelLotOK()
+}
+
+func (h *Handler) uploadLotFile(params personalops.UploadLotFileParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	defer params.File.Close()
+	result, err := h.Personal.UploadLotFile(
+		ctx,
+		params.File,
+		params.HTTPRequest.MultipartForm.File["file"][0].Filename,
+		params.HTTPRequest.MultipartForm.File["file"][0].Size,
+		params.HTTPRequest.MultipartForm.File["file"][0].Header["Content-Type"][0],
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewUploadLotFileBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewUploadLotFileInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return personalops.NewUploadLotFileCreated().WithPayload(models.NewUploadedLotFile(h.Storage, result))
 }

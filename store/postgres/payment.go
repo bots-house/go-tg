@@ -183,9 +183,7 @@ func (psq *PaymentStoreQuery) All(ctx context.Context) ([]*core.Payment, error) 
 	executor := shared.GetExecutorOrDefault(ctx, psq.store.ContextExecutor)
 
 	rows, err := dal.Payments(psq.mods...).All(ctx, executor)
-	if err == sql.ErrNoRows {
-		return nil, core.ErrPaymentNotFound
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 

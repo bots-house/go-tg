@@ -45,8 +45,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		APIKeyAuthenticator: security.APIKeyAuth,
 		BearerAuthenticator: security.BearerAuth,
 
-		JSONConsumer:    runtime.JSONConsumer(),
-		UrlformConsumer: runtime.DiscardConsumer,
+		JSONConsumer:          runtime.JSONConsumer(),
+		MultipartformConsumer: runtime.DiscardConsumer,
+		UrlformConsumer:       runtime.DiscardConsumer,
 
 		JSONProducer: runtime.JSONProducer(),
 
@@ -113,6 +114,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		CatalogToggleLotFavoriteHandler: catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
 		}),
+		PersonalAreaUploadLotFileHandler: personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.UploadLotFile has not yet been implemented")
+		}),
 
 		// Applies when the "X-Token" header is set
 		TokenHeaderAuth: func(token string) (*authz.Identity, error) {
@@ -152,6 +156,9 @@ type BirzzhaAPI struct {
 	// JSONConsumer registers a consumer for the following mime types:
 	//   - application/json
 	JSONConsumer runtime.Consumer
+	// MultipartformConsumer registers a consumer for the following mime types:
+	//   - multipart/form-data
+	MultipartformConsumer runtime.Consumer
 	// UrlformConsumer registers a consumer for the following mime types:
 	//   - application/x-www-form-urlencoded
 	UrlformConsumer runtime.Consumer
@@ -213,6 +220,8 @@ type BirzzhaAPI struct {
 	CatalogResolveTelegramHandler catalog.ResolveTelegramHandler
 	// CatalogToggleLotFavoriteHandler sets the operation handler for the toggle lot favorite operation
 	CatalogToggleLotFavoriteHandler catalog.ToggleLotFavoriteHandler
+	// PersonalAreaUploadLotFileHandler sets the operation handler for the upload lot file operation
+	PersonalAreaUploadLotFileHandler personal_area.UploadLotFileHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -273,6 +282,9 @@ func (o *BirzzhaAPI) Validate() error {
 
 	if o.JSONConsumer == nil {
 		unregistered = append(unregistered, "JSONConsumer")
+	}
+	if o.MultipartformConsumer == nil {
+		unregistered = append(unregistered, "MultipartformConsumer")
 	}
 	if o.UrlformConsumer == nil {
 		unregistered = append(unregistered, "UrlformConsumer")
@@ -352,6 +364,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.CatalogToggleLotFavoriteHandler == nil {
 		unregistered = append(unregistered, "catalog.ToggleLotFavoriteHandler")
 	}
+	if o.PersonalAreaUploadLotFileHandler == nil {
+		unregistered = append(unregistered, "personal_area.UploadLotFileHandler")
+	}
 
 	if len(unregistered) > 0 {
 		return fmt.Errorf("missing registration: %s", strings.Join(unregistered, ", "))
@@ -400,6 +415,8 @@ func (o *BirzzhaAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consum
 		switch mt {
 		case "application/json":
 			result["application/json"] = o.JSONConsumer
+		case "multipart/form-data":
+			result["multipart/form-data"] = o.MultipartformConsumer
 		case "application/x-www-form-urlencoded":
 			result["application/x-www-form-urlencoded"] = o.UrlformConsumer
 		}
@@ -543,6 +560,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/lots/{id}/favorite"] = catalog.NewToggleLotFavorite(o.context, o.CatalogToggleLotFavoriteHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/lots/file"] = personal_area.NewUploadLotFile(o.context, o.PersonalAreaUploadLotFileHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

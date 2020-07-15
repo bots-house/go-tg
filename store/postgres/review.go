@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store/postgres/dal"
@@ -96,9 +95,7 @@ func (query *ReviewStoreQuery) All(ctx context.Context) (core.ReviewSlice, error
 	rows, err := dal.Reviews(query.mods...).All(ctx,
 		shared.GetExecutorOrDefault(ctx, query.store.ContextExecutor),
 	)
-	if err == sql.ErrNoRows {
-		return nil, core.ErrReviewNotFound
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 

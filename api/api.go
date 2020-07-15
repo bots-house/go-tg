@@ -97,6 +97,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.PersonalAreaGetUserLotsHandler = personalops.GetUserLotsHandlerFunc(h.getOwnedLots)
 	api.PersonalAreaGetLotCanceledReasonsHandler = personalops.GetLotCanceledReasonsHandlerFunc(h.getLotCanceledReasons)
 	api.PersonalAreaCancelLotHandler = personalops.CancelLotHandlerFunc(h.cancelLot)
+	api.PersonalAreaUploadLotFileHandler = personalops.UploadLotFileHandlerFunc(h.uploadLotFile)
 
 	// webhook
 	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handleGatewayNotification)

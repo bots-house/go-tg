@@ -599,9 +599,7 @@ func (lsq *LotStoreQuery) All(ctx context.Context) (core.LotSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
 
 	rows, err := dal.Lots(lsq.mods...).All(ctx, executor)
-	if err == sql.ErrNoRows {
-		return nil, core.ErrTopicNotFound
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 

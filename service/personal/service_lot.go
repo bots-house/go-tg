@@ -2,6 +2,9 @@ package personal
 
 import (
 	"context"
+	"io"
+	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
@@ -18,10 +21,34 @@ type LotInput struct {
 	MonthlyIncome int
 	Comment       string
 	Extra         []string
+	Files         []core.LotFileID
 }
 
 type OwnedLot struct {
 	*core.Lot
+	Files []*OwnedLotUploadedFile
+}
+
+type OwnedLotUploadedFile struct {
+	Path string
+	Name string
+	Size int
+}
+
+func newOwnedLotUploadedFile(lf *core.LotFile) *OwnedLotUploadedFile {
+	return &OwnedLotUploadedFile{
+		Path: lf.Path,
+		Name: lf.Name,
+		Size: lf.Size,
+	}
+}
+
+func NewOwnedLotUploadedFileSlice(files core.LotFileSlice) []*OwnedLotUploadedFile {
+	result := make([]*OwnedLotUploadedFile, len(files))
+	for i, file := range files {
+		result[i] = newOwnedLotUploadedFile(file)
+	}
+	return result
 }
 
 var (
@@ -29,19 +56,36 @@ var (
 		"lot_is_not_channel",
 		"lot is not channel, only channels is supported",
 	)
+	ErrLotFileSizeIsLarge = core.NewError(
+		"lot_file_size_is_large",
+		"lot file size is large (6MB max)",
+	)
+
+	ErrLotFileExtensionIsWrong = core.NewError(
+		"lot_file_extension_is_wrong",
+		"lot file extension is wrong (pdf, png, jpeg)",
+	)
 )
 
-func (srv *Service) newOwnedLot(lot *core.Lot) (*OwnedLot, error) {
-	return &OwnedLot{
-		Lot: lot,
-	}, nil
+const (
+	uploadLotFileMaxSizeInBytes = 6 * 1024 * 1024
+	lotDir                      = "lot"
+)
+
+func (srv *Service) newOwnedLot(lot *core.Lot, files []*OwnedLotUploadedFile) (*OwnedLot, error) {
+	olot := &OwnedLot{
+		Lot:   lot,
+		Files: files,
+	}
+
+	return olot, nil
 }
 
 func (srv *Service) newOwnedLotSlice(lots []*core.Lot) ([]*OwnedLot, error) {
 	result := make([]*OwnedLot, len(lots))
 	for i, lot := range lots {
 		var err error
-		result[i], err = srv.newOwnedLot(lot)
+		result[i], err = srv.newOwnedLot(lot, nil)
 		if err != nil {
 			return nil, errors.Wrap(err, "new owned lot")
 		}
@@ -90,7 +134,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		lot.Username = null.NewString(info.Username, info.Username != "")
 	}
 	if info.Avatar != "" {
-		avatar, err := srv.Storage.AddByURL(ctx, "lot", info.Avatar)
+		avatar, err := srv.Storage.AddByURL(ctx, lotDir, info.Avatar)
 		if err != nil {
 			return nil, errors.Wrap(err, "add by url")
 		}
@@ -104,8 +148,28 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 
 	lot.TopicIDs = in.TopicIDs
 
-	if err := srv.Lot.Add(ctx, lot); err != nil {
-		return nil, errors.Wrap(err, "add lot to store")
+	var files core.LotFileSlice
+
+	if err := srv.Txier(ctx, func(ctx context.Context) error {
+		if err := srv.Lot.Add(ctx, lot); err != nil {
+			return errors.Wrap(err, "add lot to store")
+		}
+		if len(in.Files) != 0 {
+			files, err = srv.LotFile.Query().ID(in.Files...).All(ctx)
+			if err != nil {
+				return errors.Wrap(err, "find lot files")
+			}
+
+			for _, file := range files {
+				file.LotID = lot.ID
+				if err := srv.LotFile.Update(ctx, file); err != nil {
+					return errors.Wrap(err, "update file")
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 
 	srv.AdminNotify.Send(&NewLotNotification{
@@ -113,7 +177,9 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		Lot:  lot,
 	})
 
-	return srv.newOwnedLot(lot)
+	olufs := NewOwnedLotUploadedFileSlice(files)
+
+	return srv.newOwnedLot(lot, olufs)
 }
 
 var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")
@@ -151,4 +217,48 @@ func (srv *Service) CancelLot(
 	})
 
 	return nil
+}
+
+type LotUploadedFile struct {
+	ID   core.LotFileID
+	Name string
+	Path string
+	Size int
+}
+
+func (srv *Service) UploadLotFile(
+	ctx context.Context,
+	body io.Reader,
+	filename string,
+	size int64,
+	mimeType string,
+) (*LotUploadedFile, error) {
+	if size > uploadLotFileMaxSizeInBytes {
+		return nil, ErrLotFileSizeIsLarge
+	}
+
+	ext := filepath.Ext(filename)
+	ext = strings.TrimPrefix(ext, ".")
+
+	if ext != "png" && ext != "pdf" && ext != "jpeg" {
+		return nil, ErrLotFileExtensionIsWrong
+	}
+
+	path, err := srv.Storage.Add(ctx, lotDir, body, ext)
+	if err != nil {
+		return nil, errors.Wrap(err, "upload lot file")
+	}
+
+	lotFile := core.NewLotFile(filename, int(size), mimeType, path)
+
+	if err := srv.LotFile.Add(ctx, lotFile); err != nil {
+		return nil, errors.Wrap(err, "add lot file")
+	}
+
+	return &LotUploadedFile{
+		ID:   lotFile.ID,
+		Path: path,
+		Name: filename,
+		Size: int(size),
+	}, nil
 }

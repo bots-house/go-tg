@@ -50,6 +50,10 @@ type LotInput struct {
 	// Список ссылок на дополнительные ресурсы
 	// Required: true
 	Extra []string `json:"extra"`
+
+	// Список ID файлов.
+	// Required: true
+	Files []int64 `json:"files"`
 }
 
 // Validate validates this lot input
@@ -85,6 +89,10 @@ func (m *LotInput) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateExtra(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFiles(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -173,6 +181,27 @@ func (m *LotInput) validateExtra(formats strfmt.Registry) error {
 
 	if err := validate.Required("extra", "body", m.Extra); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *LotInput) validateFiles(formats strfmt.Registry) error {
+
+	if err := validate.Required("files", "body", m.Files); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Files); i++ {
+
+		if err := validate.MinLength("files"+"."+strconv.Itoa(i), "body", string(m.Files[i]), 1); err != nil {
+			return err
+		}
+
+		if err := validate.MaxLength("files"+"."+strconv.Itoa(i), "body", string(m.Files[i]), 3); err != nil {
+			return err
+		}
+
 	}
 
 	return nil

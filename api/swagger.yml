@@ -524,6 +524,43 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /lots/file:
+    post:
+      summary: Upload File
+      tags: ["personal-area"]
+      description: | 
+        Загрузка файла для лота.
+
+        Возможные ошибки:
+          - `lot_file_size_is_large` - Размер файла превышает 6MB;
+          - `lot_file_extension_is_wrong` - Расширение файла не входит в список доступных (pdf, png, jpeg);
+          
+      operationId: uploadLotFile
+
+      consumes:
+        - multipart/form-data
+      
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+          description: Загрузка файла.
+
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/LotUploadedFile"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
 
   /lots/{id}/favorite:
     parameters:
@@ -1042,6 +1079,7 @@ definitions:
       - paid_at
       - approved_at
       - published_at
+      - files
     properties:
       id:
         type: integer
@@ -1119,6 +1157,10 @@ definitions:
       published_at:
         type: integer
         description: Дата публикации в канале
+      files:
+        type: array
+        items:
+          $ref: "#/definitions/OwnedLotUploadedFile"
 
   LotExtraResource:
     type: object
@@ -1185,6 +1227,7 @@ definitions:
       - monthly_income
       - comment
       - extra
+      - files
     properties:
       query:
         type: string
@@ -1229,6 +1272,13 @@ definitions:
         example:
           - https://t.me/channely_bot
           - https://t.me/channely_chat
+      files:
+        type: array
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+        description: Список ID файлов.
 
   TelegramResolveResult:
     type: object
@@ -1559,6 +1609,7 @@ definitions:
       - user
       - tgstat_link
       - telemetr_link
+      - files
     properties:
       id:
         type: integer
@@ -1614,6 +1665,10 @@ definitions:
       telemetr_link:
         type: string
         description: Ссылка на telemetr.me.
+      files:
+        type: array
+        items:
+          $ref: "#/definitions/OwnedLotUploadedFile"
 
   
   LotFavoriteStatus:
@@ -1625,3 +1680,45 @@ definitions:
       in_favorites:
         type: boolean
         description: Статус избранности лота.
+
+  
+  LotUploadedFile:
+    type: object
+    description: Ответ после загрузки файла для лота.
+    required:
+      - id
+      - url
+      - name
+      - size
+    properties:
+      id:
+        type: integer
+        description: ID файла
+      url:
+        type: string
+        description: Ссылка на файл.
+      name:
+        type: string
+        description: Название файла.
+      size:
+        type: integer
+        description: Размер файла в байтах.
+  
+  OwnedLotUploadedFile:
+    type: object
+    description: Файл созданного лота.
+    required:
+      - url
+      - name
+      - size
+    properties:
+      url:
+        type: string
+        description: Ссылка на файл.
+      name:
+        type: string
+        description: Название файла.
+      size:
+        type: integer
+        description: Размер файла в байтах.
+  

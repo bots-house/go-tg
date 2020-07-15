@@ -185,6 +185,7 @@ func run(ctx context.Context) error {
 		Txier:    pg.Tx,
 		User:     pg.User,
 		Favorite: pg.Favorite,
+		LotFile:  pg.LotFile,
 	}
 
 	adminSrv := &admin.Service{
@@ -222,6 +223,7 @@ func run(ctx context.Context) error {
 		Gateways:          gateways,
 		AdminNotify:       notifications,
 		LotCanceledReason: pg.LotCanceledReason,
+		LotFile:           pg.LotFile,
 	}
 
 	handler := api.Handler{

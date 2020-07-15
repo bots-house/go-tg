@@ -86,6 +86,10 @@ type FullLot struct {
 	// Ссылка на telemetr.me.
 	// Required: true
 	TelemetrLink *string `json:"telemetr_link"`
+
+	// files
+	// Required: true
+	Files []*OwnedLotUploadedFile `json:"files"`
 }
 
 // Validate validates this full lot
@@ -157,6 +161,10 @@ func (m *FullLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateTelemetrLink(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFiles(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -369,6 +377,31 @@ func (m *FullLot) validateTelemetrLink(formats strfmt.Registry) error {
 
 	if err := validate.Required("telemetr_link", "body", m.TelemetrLink); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *FullLot) validateFiles(formats strfmt.Registry) error {
+
+	if err := validate.Required("files", "body", m.Files); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Files); i++ {
+		if swag.IsZero(m.Files[i]) { // not required
+			continue
+		}
+
+		if m.Files[i] != nil {
+			if err := m.Files[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("files" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

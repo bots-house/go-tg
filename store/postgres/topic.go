@@ -91,9 +91,7 @@ func (usq *TopicStoreQuery) All(ctx context.Context) (core.TopicSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, usq.store.ContextExecutor)
 
 	rows, err := dal.Topics(usq.mods...).All(ctx, executor)
-	if err == sql.ErrNoRows {
-		return nil, core.ErrTopicNotFound
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 

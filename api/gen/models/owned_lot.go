@@ -93,6 +93,10 @@ type OwnedLot struct {
 	// Required: true
 	PublishedAt *int64 `json:"published_at"`
 
+	// files
+	// Required: true
+	Files []*OwnedLotUploadedFile `json:"files"`
+
 	// actions
 	Actions *OwnedLotActions `json:"actions,omitempty"`
 }
@@ -170,6 +174,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePublishedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFiles(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -429,6 +437,31 @@ func (m *OwnedLot) validatePublishedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLot) validateFiles(formats strfmt.Registry) error {
+
+	if err := validate.Required("files", "body", m.Files); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Files); i++ {
+		if swag.IsZero(m.Files[i]) { // not required
+			continue
+		}
+
+		if m.Files[i] != nil {
+			if err := m.Files[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("files" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

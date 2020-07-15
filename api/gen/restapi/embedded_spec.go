@@ -378,6 +378,48 @@ func init() {
         }
       }
     },
+    "/lots/file": {
+      "post": {
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n  \n",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Upload File",
+        "operationId": "uploadLotFile",
+        "parameters": [
+          {
+            "type": "file",
+            "description": "Загрузка файла.",
+            "name": "file",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotUploadedFile"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lots/filter-boundaries": {
       "get": {
         "security": [],
@@ -1127,7 +1169,8 @@ func init() {
         "extra",
         "user",
         "tgstat_link",
-        "telemetr_link"
+        "telemetr_link",
+        "files"
       ],
       "properties": {
         "avatar": {
@@ -1157,6 +1200,13 @@ func init() {
             "$ref": "#/definitions/LotExtraResource"
           },
           "x-order": 13
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OwnedLotUploadedFile"
+          },
+          "x-order": 17
         },
         "id": {
           "description": "ID лота",
@@ -1403,7 +1453,8 @@ func init() {
         "is_bargain",
         "monthly_income",
         "comment",
-        "extra"
+        "extra",
+        "files"
       ],
       "properties": {
         "comment": {
@@ -1423,6 +1474,16 @@ func init() {
             "https://t.me/channely_bot",
             "https://t.me/channely_chat"
           ]
+        },
+        "files": {
+          "description": "Список ID файлов.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 8
         },
         "is_bargain": {
           "description": "Возможен ли торг?",
@@ -1674,6 +1735,38 @@ func init() {
         }
       }
     },
+    "LotUploadedFile": {
+      "description": "Ответ после загрузки файла для лота.",
+      "type": "object",
+      "required": [
+        "id",
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "id": {
+          "description": "ID файла",
+          "type": "integer",
+          "x-order": 0
+        },
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 2
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "Money": {
       "type": "object",
       "required": [
@@ -1714,7 +1807,8 @@ func init() {
         "created_at",
         "paid_at",
         "approved_at",
-        "published_at"
+        "published_at",
+        "files"
       ],
       "properties": {
         "actions": {
@@ -1783,6 +1877,13 @@ func init() {
           },
           "x-order": 17
         },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OwnedLotUploadedFile"
+          },
+          "x-order": 19
+        },
         "id": {
           "description": "ID лота",
           "type": "integer",
@@ -1841,6 +1942,32 @@ func init() {
           "description": "@username канала (может быть null)",
           "type": "string",
           "x-order": 4
+        }
+      }
+    },
+    "OwnedLotUploadedFile": {
+      "description": "Файл созданного лота.",
+      "type": "object",
+      "required": [
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 1
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 0
         }
       }
     },
@@ -2664,6 +2791,48 @@ func init() {
         }
       }
     },
+    "/lots/file": {
+      "post": {
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n  \n",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Upload File",
+        "operationId": "uploadLotFile",
+        "parameters": [
+          {
+            "type": "file",
+            "description": "Загрузка файла.",
+            "name": "file",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotUploadedFile"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lots/filter-boundaries": {
       "get": {
         "security": [],
@@ -3440,7 +3609,8 @@ func init() {
         "extra",
         "user",
         "tgstat_link",
-        "telemetr_link"
+        "telemetr_link",
+        "files"
       ],
       "properties": {
         "avatar": {
@@ -3470,6 +3640,13 @@ func init() {
             "$ref": "#/definitions/LotExtraResource"
           },
           "x-order": 13
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OwnedLotUploadedFile"
+          },
+          "x-order": 17
         },
         "id": {
           "description": "ID лота",
@@ -3716,7 +3893,8 @@ func init() {
         "is_bargain",
         "monthly_income",
         "comment",
-        "extra"
+        "extra",
+        "files"
       ],
       "properties": {
         "comment": {
@@ -3736,6 +3914,16 @@ func init() {
             "https://t.me/channely_bot",
             "https://t.me/channely_chat"
           ]
+        },
+        "files": {
+          "description": "Список ID файлов.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 8
         },
         "is_bargain": {
           "description": "Возможен ли торг?",
@@ -3987,6 +4175,38 @@ func init() {
         }
       }
     },
+    "LotUploadedFile": {
+      "description": "Ответ после загрузки файла для лота.",
+      "type": "object",
+      "required": [
+        "id",
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "id": {
+          "description": "ID файла",
+          "type": "integer",
+          "x-order": 0
+        },
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 2
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "Money": {
       "type": "object",
       "required": [
@@ -4027,7 +4247,8 @@ func init() {
         "created_at",
         "paid_at",
         "approved_at",
-        "published_at"
+        "published_at",
+        "files"
       ],
       "properties": {
         "actions": {
@@ -4095,6 +4316,13 @@ func init() {
             "$ref": "#/definitions/LotExtraResource"
           },
           "x-order": 17
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OwnedLotUploadedFile"
+          },
+          "x-order": 19
         },
         "id": {
           "description": "ID лота",
@@ -4179,6 +4407,32 @@ func init() {
         }
       },
       "x-order": 16
+    },
+    "OwnedLotUploadedFile": {
+      "description": "Файл созданного лота.",
+      "type": "object",
+      "required": [
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 1
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
     },
     "PaymentForm": {
       "type": "object",

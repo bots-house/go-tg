@@ -16,6 +16,7 @@ type Service struct {
 	Txier             store.Txier
 	AdminNotify       *admin.Notifications
 	LotCanceledReason core.LotCanceledReasonStore
+	LotFile           core.LotFileStore
 
 	Storage  storage.Storage
 	Settings core.SettingsStore

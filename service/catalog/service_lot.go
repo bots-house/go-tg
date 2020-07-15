@@ -9,6 +9,7 @@ import (
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/personal"
 	"github.com/bots-house/birzzha/store"
 )
 
@@ -193,6 +194,7 @@ type FullLot struct {
 	InFavorites null.Bool
 	User        *core.User
 	Views       int
+	Files       []*personal.OwnedLotUploadedFile
 }
 
 func (fl *FullLot) TgstatLink() string {
@@ -222,10 +224,16 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 		return nil, errors.Wrap(err, "get user")
 	}
 
+	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot files")
+	}
+
 	fullLot := &FullLot{
 		Lot:   lot,
 		User:  usr,
 		Views: lot.Views.Total(),
+		Files: personal.NewOwnedLotUploadedFileSlice(files),
 	}
 
 	if user != nil {

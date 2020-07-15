@@ -378,12 +378,14 @@ var LotRels = struct {
 	CanceledReason string
 	Owner          string
 	Favorites      string
+	LotFiles       string
 	LotTopics      string
 	Payments       string
 }{
 	CanceledReason: "CanceledReason",
 	Owner:          "Owner",
 	Favorites:      "Favorites",
+	LotFiles:       "LotFiles",
 	LotTopics:      "LotTopics",
 	Payments:       "Payments",
 }
@@ -393,6 +395,7 @@ type lotR struct {
 	CanceledReason *LotCanceledReason `boil:"CanceledReason" json:"CanceledReason" toml:"CanceledReason" yaml:"CanceledReason"`
 	Owner          *User              `boil:"Owner" json:"Owner" toml:"Owner" yaml:"Owner"`
 	Favorites      FavoriteSlice      `boil:"Favorites" json:"Favorites" toml:"Favorites" yaml:"Favorites"`
+	LotFiles       LotFileSlice       `boil:"LotFiles" json:"LotFiles" toml:"LotFiles" yaml:"LotFiles"`
 	LotTopics      LotTopicSlice      `boil:"LotTopics" json:"LotTopics" toml:"LotTopics" yaml:"LotTopics"`
 	Payments       PaymentSlice       `boil:"Payments" json:"Payments" toml:"Payments" yaml:"Payments"`
 }
@@ -547,6 +550,27 @@ func (o *Lot) Favorites(mods ...qm.QueryMod) favoriteQuery {
 
 	if len(queries.GetSelect(query.Query)) == 0 {
 		queries.SetSelect(query.Query, []string{"\"favorite\".*"})
+	}
+
+	return query
+}
+
+// LotFiles retrieves all the lot_file's LotFiles with an executor.
+func (o *Lot) LotFiles(mods ...qm.QueryMod) lotFileQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"lot_file\".\"lot_id\"=?", o.ID),
+	)
+
+	query := LotFiles(queryMods...)
+	queries.SetFrom(query.Query, "\"lot_file\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"lot_file\".*"})
 	}
 
 	return query
@@ -871,6 +895,97 @@ func (lotL) LoadFavorites(ctx context.Context, e boil.ContextExecutor, singular 
 				local.R.Favorites = append(local.R.Favorites, foreign)
 				if foreign.R == nil {
 					foreign.R = &favoriteR{}
+				}
+				foreign.R.Lot = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadLotFiles allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (lotL) LoadLotFiles(ctx context.Context, e boil.ContextExecutor, singular bool, maybeLot interface{}, mods queries.Applicator) error {
+	var slice []*Lot
+	var object *Lot
+
+	if singular {
+		object = maybeLot.(*Lot)
+	} else {
+		slice = *maybeLot.(*[]*Lot)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &lotR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &lotR{}
+			}
+
+			for _, a := range args {
+				if queries.Equal(a, obj.ID) {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`lot_file`),
+		qm.WhereIn(`lot_file.lot_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load lot_file")
+	}
+
+	var resultSlice []*LotFile
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice lot_file")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on lot_file")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for lot_file")
+	}
+
+	if singular {
+		object.R.LotFiles = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &lotFileR{}
+			}
+			foreign.R.Lot = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if queries.Equal(local.ID, foreign.LotID) {
+				local.R.LotFiles = append(local.R.LotFiles, foreign)
+				if foreign.R == nil {
+					foreign.R = &lotFileR{}
 				}
 				foreign.R.Lot = local
 				break
@@ -1240,6 +1355,129 @@ func (o *Lot) AddFavorites(ctx context.Context, exec boil.ContextExecutor, inser
 			rel.R.Lot = o
 		}
 	}
+	return nil
+}
+
+// AddLotFiles adds the given related objects to the existing relationships
+// of the lot, optionally inserting them as new records.
+// Appends related to o.R.LotFiles.
+// Sets related.R.Lot appropriately.
+func (o *Lot) AddLotFiles(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*LotFile) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			queries.Assign(&rel.LotID, o.ID)
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"lot_file\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"lot_id"}),
+				strmangle.WhereClause("\"", "\"", 2, lotFilePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			queries.Assign(&rel.LotID, o.ID)
+		}
+	}
+
+	if o.R == nil {
+		o.R = &lotR{
+			LotFiles: related,
+		}
+	} else {
+		o.R.LotFiles = append(o.R.LotFiles, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &lotFileR{
+				Lot: o,
+			}
+		} else {
+			rel.R.Lot = o
+		}
+	}
+	return nil
+}
+
+// SetLotFiles removes all previously related items of the
+// lot replacing them completely with the passed
+// in related items, optionally inserting them as new records.
+// Sets o.R.Lot's LotFiles accordingly.
+// Replaces o.R.LotFiles with related.
+// Sets related.R.Lot's LotFiles accordingly.
+func (o *Lot) SetLotFiles(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*LotFile) error {
+	query := "update \"lot_file\" set \"lot_id\" = null where \"lot_id\" = $1"
+	values := []interface{}{o.ID}
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, query)
+		fmt.Fprintln(writer, values)
+	}
+	_, err := exec.ExecContext(ctx, query, values...)
+	if err != nil {
+		return errors.Wrap(err, "failed to remove relationships before set")
+	}
+
+	if o.R != nil {
+		for _, rel := range o.R.LotFiles {
+			queries.SetScanner(&rel.LotID, nil)
+			if rel.R == nil {
+				continue
+			}
+
+			rel.R.Lot = nil
+		}
+
+		o.R.LotFiles = nil
+	}
+	return o.AddLotFiles(ctx, exec, insert, related...)
+}
+
+// RemoveLotFiles relationships from objects passed in.
+// Removes related items from R.LotFiles (uses pointer comparison, removal does not keep order)
+// Sets related.R.Lot.
+func (o *Lot) RemoveLotFiles(ctx context.Context, exec boil.ContextExecutor, related ...*LotFile) error {
+	var err error
+	for _, rel := range related {
+		queries.SetScanner(&rel.LotID, nil)
+		if rel.R != nil {
+			rel.R.Lot = nil
+		}
+		if _, err = rel.Update(ctx, exec, boil.Whitelist("lot_id")); err != nil {
+			return err
+		}
+	}
+	if o.R == nil {
+		return nil
+	}
+
+	for _, rel := range related {
+		for i, ri := range o.R.LotFiles {
+			if rel != ri {
+				continue
+			}
+
+			ln := len(o.R.LotFiles)
+			if ln > 1 && i < ln-1 {
+				o.R.LotFiles[i] = o.R.LotFiles[ln-1]
+			}
+			o.R.LotFiles = o.R.LotFiles[:ln-1]
+			break
+		}
+	}
+
 	return nil
 }
 

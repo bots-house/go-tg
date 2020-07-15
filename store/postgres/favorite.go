@@ -112,9 +112,7 @@ func (fsq *FavoriteStoreQuery) All(ctx context.Context) (core.FavoriteSlice, err
 	executor := shared.GetExecutorOrDefault(ctx, fsq.store.ContextExecutor)
 
 	rows, err := dal.Favorites(fsq.mods...).All(ctx, executor)
-	if err == sql.ErrNoRows {
-		return nil, core.ErrFavoriteNotFound
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 	return fsq.store.fromRowSlice(rows), nil

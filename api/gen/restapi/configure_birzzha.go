@@ -20,7 +20,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml831550593 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml419555789 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -37,6 +37,7 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	// api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
+	api.MultipartformConsumer = runtime.DiscardConsumer
 	api.UrlformConsumer = runtime.DiscardConsumer
 
 	api.JSONProducer = runtime.JSONProducer()
@@ -162,6 +163,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogToggleLotFavoriteHandler == nil {
 		api.CatalogToggleLotFavoriteHandler = catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaUploadLotFileHandler == nil {
+		api.PersonalAreaUploadLotFileHandler = personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.UploadLotFile has not yet been implemented")
 		})
 	}
 

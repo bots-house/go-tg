@@ -23,7 +23,14 @@ func (srv *Service) getOwnedLot(ctx context.Context, user *core.User, id core.Lo
 		return nil, err
 	}
 
-	return &OwnedLot{lot}, nil
+	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	olufs := NewOwnedLotUploadedFileSlice(files)
+
+	return &OwnedLot{Lot: lot, Files: olufs}, nil
 }
 
 func (srv *Service) GetApplicationInvoice(

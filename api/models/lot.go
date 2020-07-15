@@ -72,6 +72,7 @@ func NewOwnedLot(s storage.Storage, in *personal.OwnedLot) *models.OwnedLot {
 			CanChangePriceFree: swag.Bool(in.CanChangePriceFree()),
 			CanCancel:          swag.Bool(in.CanCancel()),
 		},
+		Files: NewOwnedLotUploadedFileSlice(s, in.Files),
 	}
 
 	if in.CanceledReasonID != 0 {
@@ -154,10 +155,36 @@ func NewFullLot(s storage.Storage, in *catalog.FullLot) *models.FullLot {
 		TelemetrLink: swag.String(in.TelemetrLink()),
 		Views:        swag.Int64(int64(in.Views)),
 		Extra:        newLotExtraResourceSlice(in.ExtraResources),
+		Files:        NewOwnedLotUploadedFileSlice(s, in.Files),
 	}
 
 	if in.Avatar.Valid {
 		lot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
 	}
 	return lot
+}
+
+func NewUploadedLotFile(s storage.Storage, in *personal.LotUploadedFile) *models.LotUploadedFile {
+	return &models.LotUploadedFile{
+		ID:   swag.Int64(int64(in.ID)),
+		URL:  swag.String(s.PublicURL(in.Path)),
+		Name: swag.String(in.Name),
+		Size: swag.Int64(int64(in.Size)),
+	}
+}
+
+func newOwnedLotUploadedFile(s storage.Storage, in *personal.OwnedLotUploadedFile) *models.OwnedLotUploadedFile {
+	return &models.OwnedLotUploadedFile{
+		URL:  swag.String(s.PublicURL(in.Path)),
+		Name: swag.String(in.Name),
+		Size: swag.Int64(int64(in.Size)),
+	}
+}
+
+func NewOwnedLotUploadedFileSlice(s storage.Storage, in []*personal.OwnedLotUploadedFile) []*models.OwnedLotUploadedFile {
+	result := make([]*models.OwnedLotUploadedFile, len(in))
+	for i, v := range in {
+		result[i] = newOwnedLotUploadedFile(s, v)
+	}
+	return result
 }

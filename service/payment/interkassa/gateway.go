@@ -141,7 +141,7 @@ func (gw *Gateway) NewPayment(ctx context.Context, payer *core.User, pm *core.Pa
 func (gw *Gateway) signature(vs url.Values, secretKey string) (string, error) {
 
 	// sort keys
-	var keys []string
+	keys := make([]string, 0, len(vs))
 	for key := range vs {
 		keys = append(keys, key)
 	}

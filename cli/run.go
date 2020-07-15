@@ -47,21 +47,24 @@ func Run(ctx context.Context) {
 	}
 }
 
-func newStorage(cfg Config) *storage.Space {
+func newStorage(cfg Config) (*storage.Space, error) {
 	s3Config := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(cfg.S3AccessKey, cfg.S3SecretKey, ""),
 		Endpoint:    aws.String(cfg.S3Endpoint),
 		Region:      aws.String("us-east-1"),
 	}
 
-	newSession := session.New(s3Config)
+	newSession, err := session.NewSession(s3Config)
+	if err != nil {
+		return nil, err
+	}
 	s3Client := s3.New(newSession)
 
 	return &storage.Space{
 		Client:       s3Client,
 		Bucket:       cfg.S3Bucket,
 		PublicPrefix: cfg.S3PublicPrefix,
-	}
+	}, nil
 }
 
 func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistry {
@@ -98,7 +101,7 @@ func run(ctx context.Context) error {
 	var cfg Config
 
 	if err := envconfig.Process(envPrefix, &cfg); err != nil {
-		envconfig.Usage(envPrefix, &cfg)
+		_ = envconfig.Usage(envPrefix, &cfg)
 		return errors.Wrap(err, "parse config from env")
 	}
 
@@ -127,7 +130,10 @@ func run(ctx context.Context) error {
 		return errors.Wrap(err, "migrate db")
 	}
 
-	strg := newStorage(cfg)
+	strg, err := newStorage(cfg)
+	if err != nil {
+		return errors.Wrap(err, "init file storage")
+	}
 
 	tgClient, err := tgbotapi.NewBotAPI(cfg.BotToken)
 	if err != nil {

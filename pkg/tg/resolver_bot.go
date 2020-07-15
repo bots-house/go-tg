@@ -101,7 +101,7 @@ func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResul
 }
 
 func (r *BotResolver) ResolveByID(ctx context.Context, id int64) (*ResolveResult, error) {
-	chat, err := r.getChat(ctx, tgbotapi.ChatConfig{
+	chat, err := r.getChat(tgbotapi.ChatConfig{
 		ChatID: id,
 	})
 
@@ -112,7 +112,7 @@ func (r *BotResolver) ResolveByID(ctx context.Context, id int64) (*ResolveResult
 	return r.getResolveResultByChat(chat)
 }
 
-func (r *BotResolver) getChat(ctx context.Context, config tgbotapi.ChatConfig) (*tgbotapi.Chat, error) {
+func (r *BotResolver) getChat(config tgbotapi.ChatConfig) (*tgbotapi.Chat, error) {
 	chat, err := r.Client.GetChat(config)
 	if err != nil {
 		if err2, ok := err.(*tgbotapi.Error); ok && strings.Contains(err2.Message, "Bad Request: chat not found") {
@@ -123,8 +123,8 @@ func (r *BotResolver) getChat(ctx context.Context, config tgbotapi.ChatConfig) (
 	return &chat, nil
 }
 
-func (r *BotResolver) resolveUsername(ctx context.Context, username string) (*ResolveResult, error) {
-	chat, err := r.getChat(ctx, tgbotapi.ChatConfig{
+func (r *BotResolver) resolveUsername(_ context.Context, username string) (*ResolveResult, error) {
+	chat, err := r.getChat(tgbotapi.ChatConfig{
 		SuperGroupUsername: "@" + username,
 	})
 

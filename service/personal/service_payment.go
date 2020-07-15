@@ -157,8 +157,7 @@ func (srv *Service) processGatewayNotification(ctx context.Context, notify *paym
 	}
 
 	if payment.Status == core.PaymentStatusSuccess {
-		switch payment.Purpose {
-		case core.PaymentPurposeApplication:
+		if payment.Purpose == core.PaymentPurposeApplication {
 			return srv.onPaymentApplication(ctx, payment)
 		}
 	}

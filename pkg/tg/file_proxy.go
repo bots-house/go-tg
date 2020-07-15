@@ -31,7 +31,7 @@ func NewFileProxy(path string, client *tgbotapi.BotAPI) (*FileProxy, error) {
 
 func (fp *FileProxy) getHash(id string) string {
 	hash := sha256.New()
-	hash.Write([]byte(id))
+	_, _ = hash.Write([]byte(id))
 	return hex.EncodeToString(hash.Sum(nil))
 }
 

@@ -107,7 +107,7 @@ type UserStoreQuery interface {
 	One(ctx context.Context) (*User, error)
 }
 
-// UserStore persistance interface for user.
+// UserStore persistence interface for user.
 type UserStore interface {
 	// Add user to store. Also updates ID.
 	Add(ctx context.Context, user *User) error

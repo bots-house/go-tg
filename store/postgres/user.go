@@ -84,7 +84,7 @@ type userStoreQuery struct {
 }
 
 func (usq *userStoreQuery) TelegramID(id int) core.UserStoreQuery {
-	usq.mods = append(usq.mods, dal.UserWhere.TelegramID.EQ(int(id)))
+	usq.mods = append(usq.mods, dal.UserWhere.TelegramID.EQ(id))
 	return usq
 }
 

@@ -43,25 +43,22 @@ type ItemLot struct {
 	InFavorites null.Bool
 }
 
-func (srv *Service) newItemLotSlice(ctx context.Context, lots core.LotSlice, favorites core.FavoriteSlice) ([]*ItemLot, error) {
+func (srv *Service) newItemLotSlice(lots core.LotSlice, favorites core.FavoriteSlice) []*ItemLot {
 	result := make([]*ItemLot, len(lots))
 
 	for i, v := range lots {
-		result[i] = &ItemLot{Lot: v}
+		result[i] = &ItemLot{
+			Lot: v,
+		}
+		if favorites != nil {
+			result[i].InFavorites = null.BoolFrom(favorites.HasLot(v.ID))
+		}
 	}
 
-	if favorites == nil {
-		return result, nil
-	}
-
-	for _, v := range result {
-		v.InFavorites = null.BoolFrom(favorites.HasLot(v.ID))
-	}
-
-	return result, nil
+	return result
 }
 
-func (srv *Service) newListLotsQuery(ctx context.Context, query *LotsQuery, qry core.LotStoreQuery) core.LotStoreQuery {
+func (srv *Service) newListLotsQuery(query *LotsQuery, qry core.LotStoreQuery) core.LotStoreQuery {
 	if query != nil {
 
 		if query.SortBy != 0 {
@@ -80,7 +77,7 @@ func (srv *Service) newListLotsQuery(ctx context.Context, query *LotsQuery, qry 
 	return qry
 }
 
-func (srv *Service) newBaseLotsQuery(ctx context.Context, query *LotsQuery) core.LotStoreQuery {
+func (srv *Service) newBaseLotsQuery(query *LotsQuery) core.LotStoreQuery {
 	qry := srv.Lot.Query()
 
 	if query != nil {
@@ -153,11 +150,8 @@ type LotList struct {
 	Items []*ItemLot
 }
 
-func (srv *Service) newLotList(ctx context.Context, total int, lots core.LotSlice, favorites core.FavoriteSlice) (*LotList, error) {
-	items, err := srv.newItemLotSlice(ctx, lots, favorites)
-	if err != nil {
-		return nil, errors.Wrap(err, "to item lot")
-	}
+func (srv *Service) newLotList(total int, lots core.LotSlice, favorites core.FavoriteSlice) (*LotList, error) {
+	items := srv.newItemLotSlice(lots, favorites)
 
 	return &LotList{
 		Items: items,
@@ -167,7 +161,7 @@ func (srv *Service) newLotList(ctx context.Context, total int, lots core.LotSlic
 
 func (srv *Service) GetLots(ctx context.Context, user *core.User, query *LotsQuery) (*LotList, error) {
 	qry := srv.
-		newBaseLotsQuery(ctx, query).
+		newBaseLotsQuery(query).
 		Statuses(core.ShowLotStatus...)
 
 	total, err := qry.Count(ctx)
@@ -175,7 +169,7 @@ func (srv *Service) GetLots(ctx context.Context, user *core.User, query *LotsQue
 		return nil, errors.Wrap(err, "get total")
 	}
 
-	qry = srv.newListLotsQuery(ctx, query, qry)
+	qry = srv.newListLotsQuery(query, qry)
 
 	lots, err := qry.All(ctx)
 	if err != nil {
@@ -191,7 +185,7 @@ func (srv *Service) GetLots(ctx context.Context, user *core.User, query *LotsQue
 		}
 	}
 
-	return srv.newLotList(ctx, total, lots, favorites)
+	return srv.newLotList(total, lots, favorites)
 }
 
 type FullLot struct {
@@ -279,7 +273,7 @@ func (srv *Service) SimilarLots(ctx context.Context, id core.LotID, limit int, o
 
 	sortedLots := lots.SortByID(ids)
 
-	return srv.newLotList(ctx, count, sortedLots, nil)
+	return srv.newLotList(count, sortedLots, nil)
 }
 
 func (srv *Service) ToggleLotFavorite(ctx context.Context, user *core.User, id core.LotID) (bool, error) {

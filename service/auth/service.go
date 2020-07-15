@@ -226,7 +226,7 @@ type LoginViaBotInfo struct {
 	createdAt time.Time
 }
 
-func (srv *Service) saveLoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
+func (srv *Service) saveLoginViaBot(info *LoginViaBotInfo) string {
 	id := xid.New().String()
 
 	info.createdAt = time.Now()
@@ -238,14 +238,11 @@ func (srv *Service) saveLoginViaBot(ctx context.Context, info *LoginViaBotInfo) 
 	srv.botLogins[id] = info
 	srv.botLoginsLock.Unlock()
 
-	return id, nil
+	return id
 }
 
 func (srv *Service) LoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
-	id, err := srv.saveLoginViaBot(ctx, info)
-	if err != nil {
-		return "", errors.Wrap(err, "save login via bot")
-	}
+	id := srv.saveLoginViaBot(info)
 	url := fmt.Sprintf("https://t.me/%s?start=login_%s", srv.Bot.Self.UserName, id)
 
 	return url, nil

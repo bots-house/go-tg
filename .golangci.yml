@@ -1,0 +1,45 @@
+linters-settings:
+  goimports:
+    local-prefixies: github.com/bots-house/birzzha
+
+output:
+  format: tab
+  
+  
+linters:
+  enable:
+    - misspell
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - unconvert
+    - megacheck
+    - gas
+    - gocyclo
+    - dupl
+    - unparam
+    - bodyclose
+    - gosec
+    - goconst
+    - gofmt
+    - goimports
+    - prealloc
+    - scopelint
+    - gocritic
+    - goprintffuncname
+    - rowserrcheck
+    - scopelint
+    - stylecheck
+    # - wsl
+    # - interfacer
+    # - gomnd
+    # - goerr113
+    # - maligned
+    # - nestif

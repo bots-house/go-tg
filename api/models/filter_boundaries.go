@@ -34,8 +34,8 @@ func NewFilterBoundaries(in *core.LotFilterBoundaries) *models.LotFilterBoundari
 			To:   swag.Int64(int64(in.MonthlyIncomeMax)),
 		},
 		PaybackPeriod: &models.FloatBoundaries{
-			From: swag.Float64(float64(in.PaybackPeriodMin)),
-			To:   swag.Float64(float64(in.PaybackPeriodMax)),
+			From: swag.Float64(in.PaybackPeriodMin),
+			To:   swag.Float64(in.PaybackPeriodMax),
 		},
 	}
 }

@@ -31,17 +31,17 @@ var (
 	)
 )
 
-func (srv *Service) newOwnedLot(ctx context.Context, lot *core.Lot) (*OwnedLot, error) {
+func (srv *Service) newOwnedLot(lot *core.Lot) (*OwnedLot, error) {
 	return &OwnedLot{
 		Lot: lot,
 	}, nil
 }
 
-func (srv *Service) newOwnedLotSlice(ctx context.Context, lots []*core.Lot) ([]*OwnedLot, error) {
+func (srv *Service) newOwnedLotSlice(lots []*core.Lot) ([]*OwnedLot, error) {
 	result := make([]*OwnedLot, len(lots))
 	for i, lot := range lots {
 		var err error
-		result[i], err = srv.newOwnedLot(ctx, lot)
+		result[i], err = srv.newOwnedLot(lot)
 		if err != nil {
 			return nil, errors.Wrap(err, "new owned lot")
 		}
@@ -54,7 +54,7 @@ func (srv *Service) GetLots(ctx context.Context, user *core.User) ([]*OwnedLot, 
 	if err != nil {
 		return nil, errors.Wrap(err, "get lots")
 	}
-	return srv.newOwnedLotSlice(ctx, lots)
+	return srv.newOwnedLotSlice(lots)
 }
 
 func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (*OwnedLot, error) {
@@ -113,7 +113,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		Lot:  lot,
 	})
 
-	return srv.newOwnedLot(ctx, lot)
+	return srv.newOwnedLot(lot)
 }
 
 var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")

@@ -32,7 +32,7 @@ func (bot *Bot) onStart(ctx context.Context, msg *tgbotapi.Message) error {
 		return bot.onStartLogin(ctx, msg)
 	}
 
-	answ := bot.newAnswerMsg(ctx, msg, textStart)
+	answ := bot.newAnswerMsg(msg, textStart)
 	answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.InlineKeyboardButton{
@@ -60,7 +60,7 @@ func (bot *Bot) onStart(ctx context.Context, msg *tgbotapi.Message) error {
 		),
 	)
 
-	return bot.send(ctx, answ)
+	return bot.send(answ)
 }
 
 func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
@@ -68,12 +68,12 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 
 	info, err := bot.authSrv.PopLoginViaBot(ctx, id)
 	if err == auth.ErrBotLoginNotFound {
-		return bot.send(ctx, bot.newAnswerMsg(ctx, msg, textStartNotFound))
+		return bot.send(bot.newAnswerMsg(msg, textStartNotFound))
 	} else if err != nil {
 		return errors.Wrap(err, "pop login via bot")
 	}
 
-	answ := bot.newAnswerMsg(ctx, msg, textStartLogin)
+	answ := bot.newAnswerMsg(msg, textStartLogin)
 	answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.InlineKeyboardButton{
@@ -85,7 +85,7 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 		),
 	)
 
-	if err := bot.send(ctx, answ); err != nil {
+	if err := bot.send(answ); err != nil {
 		if isBotDomainInvalidError(err) {
 			log.Warn(ctx, "user fallback for domain invalid", "callback_url", info.CallbackURL)
 			callbackURL, err := url.Parse(info.CallbackURL)
@@ -106,7 +106,7 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 
 			cb := callbackURL.String()
 
-			answ := bot.newAnswerMsg(ctx, msg, textStartLogin)
+			answ := bot.newAnswerMsg(msg, textStartLogin)
 			answ.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.InlineKeyboardButton{
@@ -116,7 +116,7 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 				),
 			)
 
-			return bot.send(ctx, answ)
+			return bot.send(answ)
 		}
 
 		return err

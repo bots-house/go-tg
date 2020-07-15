@@ -23,6 +23,10 @@ type Space struct {
 	PublicPrefix string
 }
 
+var (
+	ErrInvalidStatusCode = errors.New("invalid status code")
+)
+
 func (s *Space) Add(
 	ctx context.Context,
 	dir string,

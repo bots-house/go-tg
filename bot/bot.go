@@ -89,8 +89,7 @@ func isForward(msg *tgbotapi.Message) bool {
 func (bot *Bot) onUpdate(ctx context.Context, update *tgbotapi.Update) error {
 
 	if msg := update.Message; msg != nil {
-		switch msg.Command() {
-		case "start":
+		if msg.Command() == "start" {
 			return bot.onStart(ctx, msg)
 		}
 		if isForward(msg) {

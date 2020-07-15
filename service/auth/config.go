@@ -19,7 +19,7 @@ type Config struct {
 func (cfg *Config) getBotTokenHash() []byte {
 	cfg.botTokenOnce.Do(func() {
 		hsh := sha256.New()
-		hsh.Write([]byte(cfg.BotToken))
+		_, _ = hsh.Write([]byte(cfg.BotToken))
 		cfg.botTokenHash = hsh.Sum(nil)
 	})
 

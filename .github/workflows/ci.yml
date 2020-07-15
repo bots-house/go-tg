@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v1
+        with:
+          version: v1.27
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    # services:
+    #   postgres:
+    #     image: postgres:12
+
+    #     env:
+    #       POSTGRES_USER: brz
+    #       POSTGRES_PASSWORD: brz
+    #       POSTGRES_DB: brz
+    #     ports:
+    #       - 5432/tcp
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "1.14.2"
+
+      - uses: actions/cache@v1
+        name: Caching
+        id: cache
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Download modules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: go mod download
+
+      - name: Try to build
+        run: go build
+        # - name: Try to run
+        # run: ./birzzha
+        # env:
+        #   BRZ_DATABASE: postgres://brz:brz@localhost:${{ job.services.postgres.ports[5432] }}/brz?sslmode=disable
+
+        #   BRZ_DATABASE_MAX_OPEN_CONNS: 10
+        #   BRZ_DATABASE_MAX_IDLE_CONNS: 0
+    
+        #   BRZ_TOKEN_SECRET: very-secret
+        #   BRZ_TOKEN_LIFE_TIME: 24h
+    
+        #   BRZ_BOT_TOKEN: 
+        #   BRZ_BOT_WEBHOOK_DOMAIN: 
+        #   BRZ_BOT_WEBHOOK_PATH: /v1/bot
+        #   BRZ_BOT_WIDGET_AUTH_LIFE_TIME: 1m
+    
+        #   BRZ_S3_ENDPOINT: ams3.digitaloceanspaces.com
+        #   BRZ_S3_ACCESS_KEY: 
+        #   BRZ_S3_SECRET_KEY: 
+        #   BRZ_S3_BUCKET: birzzha
+        #   BRZ_S3_SECURE: true
+        #   BRZ_S3_PUBLIC_PREFIX:
+    
+        #   BRZ_ADMIN_NOTIFICATIONS_CHANNEL_ID: 
+        #   BRZ_SITE: https://dev.birzzha.me
+        #   BRZ_SITE_PATH_SELL_CHANNEL: /channels/sell
+        #   BRZ_SITE_PATH_LIST_CHANNEL: /channels
+    
+        #   BRZ_ADDR: :8000
+        #   BRZ_WEBHOOK_PATH: 
+    

@@ -229,8 +229,8 @@ func run(ctx context.Context) error {
 
 	handler := api.Handler{
 		Auth:         authSrv,
-		Bot:          bot,
 		Admin:        adminSrv,
+		Bot:          bot,
 		BotFileProxy: tgFileProxy,
 		Personal:     personalSrv,
 		Catalog:      catalogSrv,

@@ -10,6 +10,7 @@ import (
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	personalops "github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
+
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
@@ -35,9 +36,9 @@ import (
 
 type Handler struct {
 	Auth         *auth.Service
+	Admin        *admin.Service
 	Catalog      *catalog.Service
 	Personal     *personal.Service
-	Admin        *admin.Service
 	Bot          *bot.Bot
 	BotFileProxy *tg.FileProxy
 	Storage      storage.Storage
@@ -106,7 +107,11 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	// webhook
 	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handleGatewayNotification)
 
-	// admin
+	//admin
+	api.AdminAdminDeleteReviewHandler = adminops.AdminDeleteReviewHandlerFunc(h.adminDeleteReview)
+	api.AdminAdminUpdateReviewHandler = adminops.AdminUpdateReviewHandlerFunc(h.adminUpdateReview)
+	api.AdminAdminGetReviewsHandler = adminops.AdminGetReviewsHandlerFunc(h.adminGetReviews)
+
 	api.AdminAdminGetUsersHandler = adminops.AdminGetUsersHandlerFunc(h.adminGetUsers)
 	api.AdminToggleUserAdminHandler = adminops.ToggleUserAdminHandlerFunc(h.toggleUserAdmin)
 }

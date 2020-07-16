@@ -75,8 +75,10 @@ type ReviewStoreQuery interface {
 	Offset(offset int) ReviewStoreQuery
 	Limit(limit int) ReviewStoreQuery
 	OrderByCreatedAt() ReviewStoreQuery
+	ID(ids ...ReviewID) ReviewStoreQuery
 	All(ctx context.Context) (ReviewSlice, error)
 	Count(ctx context.Context) (int, error)
+	One(ctx context.Context) (*Review, error)
 }
 
 var (
@@ -85,5 +87,7 @@ var (
 
 type ReviewStore interface {
 	Add(ctx context.Context, review *Review) error
+	Update(ctx context.Context, review *Review) error
+	Delete(ctx context.Context, id ReviewID) error
 	Query() ReviewStoreQuery
 }

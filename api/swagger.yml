@@ -261,6 +261,89 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   
+  /admin/reviews:
+    get:
+      summary: Get Reviews
+      operationId: adminGetReviews
+      description: Получить список отзывов.
+      tags: [admin]
+      parameters:
+        - in: query
+          name: offset
+          type: integer
+          required: false
+          description: Офсет отзывов.
+        - in: query
+          name: limit
+          type: integer
+          required: false
+          description: Лимит отзывов.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ReviewList"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/reviews/{id}:
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: ID отзыва
+    
+    delete:
+      summary: Delete Review
+      operationId: adminDeleteReview
+      description: Удалить отзыв.
+      tags: [admin]
+      responses:
+        204:
+          description: No content
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      summary: Update Review
+      operationId: adminUpdateReview
+      description: Обновить отзыв.
+      tags: [admin]
+
+      parameters:
+        - in: body
+          name: body
+          schema: 
+            $ref: "#/definitions/ReviewUpdate"
+          required: true
+          description: Отредактированный отзыв.
+      
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Review"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /tg/resolve:
     get:
       summary: Resolve Telegram Identity
@@ -1804,6 +1887,14 @@ definitions:
         description: Дата обновления данных пользователя.
         
 
+  ReviewUpdate:
+    description: Отзыв для обновления.
+    required:
+      - text
+    properties:
+      text:
+        type: string
+        description: Текст отзыва.
   
   LotUploadedFile:
     type: object

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store/postgres/dal"
@@ -60,6 +61,32 @@ func (store *ReviewStore) Add(ctx context.Context, review *core.Review) error {
 	return nil
 }
 
+func (store *ReviewStore) Delete(ctx context.Context, id core.ReviewID) error {
+	rows, err := (&dal.Review{ID: int(id)}).Delete(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor))
+	if err != nil {
+		return errors.Wrap(err, "delete query")
+	}
+
+	if rows == 0 {
+		return core.ErrReviewNotFound
+	}
+	return nil
+}
+
+func (store *ReviewStore) Update(ctx context.Context, review *core.Review) error {
+	row := store.toRow(review)
+	n, err := row.Update(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor), boil.Infer())
+	if err != nil {
+		return errors.Wrap(err, "update query")
+	}
+
+	if n == 0 {
+		return core.ErrReviewNotFound
+	}
+
+	return nil
+}
+
 type ReviewStoreQuery struct {
 	mods  []qm.QueryMod
 	store *ReviewStore
@@ -84,6 +111,16 @@ func (query *ReviewStoreQuery) OrderByCreatedAt() core.ReviewStoreQuery {
 	return query
 }
 
+func (query *ReviewStoreQuery) ID(ids ...core.ReviewID) core.ReviewStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, v := range ids {
+		idsInt[i] = int(v)
+	}
+
+	query.mods = append(query.mods, dal.ReviewWhere.ID.IN(idsInt))
+	return query
+}
+
 func (query *ReviewStoreQuery) Count(ctx context.Context) (int, error) {
 	count, err := dal.
 		Reviews(query.mods...).
@@ -100,4 +137,17 @@ func (query *ReviewStoreQuery) All(ctx context.Context) (core.ReviewSlice, error
 	}
 
 	return query.store.fromRowSlice(rows), nil
+}
+
+func (query *ReviewStoreQuery) One(ctx context.Context) (*core.Review, error) {
+	row, err := dal.Reviews(query.mods...).One(ctx,
+		shared.GetExecutorOrDefault(ctx, query.store.ContextExecutor),
+	)
+	if err == sql.ErrNoRows {
+		return nil, core.ErrReviewNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	return query.store.fromRow(row), nil
 }

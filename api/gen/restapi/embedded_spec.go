@@ -35,6 +35,125 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/reviews": {
+      "get": {
+        "description": "Получить список отзывов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Reviews",
+        "operationId": "adminGetReviews",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет отзывов.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит отзывов.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReviewList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/reviews/{id}": {
+      "put": {
+        "description": "Обновить отзыв.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Review",
+        "operationId": "adminUpdateReview",
+        "parameters": [
+          {
+            "description": "Отредактированный отзыв.",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReviewUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удалить отзыв.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Review",
+        "operationId": "adminDeleteReview",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID отзыва",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/users": {
       "get": {
         "description": "Получить список пользователей.",
@@ -2277,6 +2396,19 @@ func init() {
         }
       }
     },
+    "ReviewUpdate": {
+      "description": "Отзыв для обновления.",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "description": "Текст отзыва.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
     "ReviewUser": {
       "description": "Пользователь который оставил отзыв.",
       "required": [
@@ -2615,6 +2747,125 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/reviews": {
+      "get": {
+        "description": "Получить список отзывов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Reviews",
+        "operationId": "adminGetReviews",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет отзывов.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит отзывов.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReviewList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/reviews/{id}": {
+      "put": {
+        "description": "Обновить отзыв.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Review",
+        "operationId": "adminUpdateReview",
+        "parameters": [
+          {
+            "description": "Отредактированный отзыв.",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReviewUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удалить отзыв.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Review",
+        "operationId": "adminDeleteReview",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID отзыва",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/users": {
       "get": {
         "description": "Получить список пользователей.",
@@ -4918,6 +5169,19 @@ func init() {
         "total": {
           "description": "Общее количество отзывов.",
           "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "ReviewUpdate": {
+      "description": "Отзыв для обновления.",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "description": "Текст отзыва.",
+          "type": "string",
           "x-order": 0
         }
       }

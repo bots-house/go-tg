@@ -52,8 +52,17 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		AdminAdminDeleteReviewHandler: admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
+		}),
+		AdminAdminGetReviewsHandler: admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
+		}),
 		AdminAdminGetUsersHandler: admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		}),
+		AdminAdminUpdateReviewHandler: admin.AdminUpdateReviewHandlerFunc(func(params admin.AdminUpdateReviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateReview has not yet been implemented")
 		}),
 		PersonalAreaCancelLotHandler: personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
@@ -185,8 +194,14 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// AdminAdminDeleteReviewHandler sets the operation handler for the admin delete review operation
+	AdminAdminDeleteReviewHandler admin.AdminDeleteReviewHandler
+	// AdminAdminGetReviewsHandler sets the operation handler for the admin get reviews operation
+	AdminAdminGetReviewsHandler admin.AdminGetReviewsHandler
 	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
 	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
+	// AdminAdminUpdateReviewHandler sets the operation handler for the admin update review operation
+	AdminAdminUpdateReviewHandler admin.AdminUpdateReviewHandler
 	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
 	PersonalAreaCancelLotHandler personal_area.CancelLotHandler
 	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
@@ -312,8 +327,17 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
+	if o.AdminAdminDeleteReviewHandler == nil {
+		unregistered = append(unregistered, "admin.AdminDeleteReviewHandler")
+	}
+	if o.AdminAdminGetReviewsHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetReviewsHandler")
+	}
 	if o.AdminAdminGetUsersHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetUsersHandler")
+	}
+	if o.AdminAdminUpdateReviewHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateReviewHandler")
 	}
 	if o.PersonalAreaCancelLotHandler == nil {
 		unregistered = append(unregistered, "personal_area.CancelLotHandler")
@@ -493,10 +517,22 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/admin/reviews/{id}"] = admin.NewAdminDeleteReview(o.context, o.AdminAdminDeleteReviewHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/reviews"] = admin.NewAdminGetReviews(o.context, o.AdminAdminGetReviewsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/users"] = admin.NewAdminGetUsers(o.context, o.AdminAdminGetUsersHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/reviews/{id}"] = admin.NewAdminUpdateReview(o.context, o.AdminAdminUpdateReviewHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

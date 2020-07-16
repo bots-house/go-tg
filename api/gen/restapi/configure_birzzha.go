@@ -21,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml159149520 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml423665008 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -61,9 +61,24 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
+	if api.AdminAdminDeleteReviewHandler == nil {
+		api.AdminAdminDeleteReviewHandler = admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
+		})
+	}
+	if api.AdminAdminGetReviewsHandler == nil {
+		api.AdminAdminGetReviewsHandler = admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
+		})
+	}
 	if api.AdminAdminGetUsersHandler == nil {
 		api.AdminAdminGetUsersHandler = admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		})
+	}
+	if api.AdminAdminUpdateReviewHandler == nil {
+		api.AdminAdminUpdateReviewHandler = admin.AdminUpdateReviewHandlerFunc(func(params admin.AdminUpdateReviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateReview has not yet been implemented")
 		})
 	}
 	if api.PersonalAreaCancelLotHandler == nil {

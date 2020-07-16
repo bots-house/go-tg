@@ -191,6 +191,7 @@ func run(ctx context.Context) error {
 	adminSrv := &admin.Service{
 		Review:  pg.Review,
 		User:    pg.User,
+		Lot:     pg.Lot,
 		Storage: strg,
 		AvatarResolver: tg.AvatarResolver{
 			Client: &http.Client{},
@@ -229,6 +230,7 @@ func run(ctx context.Context) error {
 	handler := api.Handler{
 		Auth:         authSrv,
 		Bot:          bot,
+		Admin:        adminSrv,
 		BotFileProxy: tgFileProxy,
 		Personal:     personalSrv,
 		Catalog:      catalogSrv,

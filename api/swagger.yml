@@ -57,6 +57,10 @@ tags:
   - name: webhook
     description: |
       Содержит методы для обработки уведомлений от сторонних сервисов.
+  
+  - name: admin
+    description: |
+      Содержит методы для работы с админкой.
 
 consumes:
   - application/json
@@ -256,7 +260,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-
+  
   /tg/resolve:
     get:
       summary: Resolve Telegram Identity
@@ -815,6 +819,63 @@ paths:
             type: array
             items:
               $ref: "#/definitions/LotCanceledReason"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/users:
+    get:
+      summary: Get Users
+      operationId: adminGetUsers
+      description: Получить список пользователей.
+      tags: [admin]
+      parameters:
+        - in: query
+          name: offset
+          type: integer
+          required: false
+          description: Офсет пользователей.
+        - in: query
+          name: limit
+          type: integer
+          required: false
+          description: Лимит пользователей.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminFullUserList"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/users/{id}/admin:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID пользователя
+    post:
+      summary: Change Admin Rights
+      description: Изменение админ прав пользователя.
+      operationId: toggleUserAdmin
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminFullUser"
         400:
           description: Bad Request
           schema:
@@ -1547,6 +1608,7 @@ definitions:
         type: integer
         format: int64
         description: Дата создания отзыва.
+  
 
   ReviewList:
     description: Отзывы и их количетсво.
@@ -1680,6 +1742,67 @@ definitions:
       in_favorites:
         type: boolean
         description: Статус избранности лота.
+  
+  AdminFullUserList:
+    type: object
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: Общее количетсво пользователей.
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/AdminFullUser"
+
+  AdminFullUser:
+    type: object
+    required:
+      - id
+      - telegram_id
+      - avatar
+      - full_name
+      - username
+      - lots
+      - is_admin
+      - joined_from
+      - joined_at
+      - updated_at
+    properties:
+      id: 
+        type: integer
+        description: ID пользователя.
+      telegram_id:
+        type: integer
+        description: Telegram ID пользователя.
+      avatar:
+        type: string
+        description: Ссылка на аватарку пользователя.
+      full_name:
+        type: string
+        description: Полное имя пользователя.
+      username:
+        type: string
+        description: Юзернейм пользователя.
+      lots:
+        type: integer
+        description: Количество лотов пользователя.
+      is_admin:
+        type: boolean
+        description: Админ ли пользователь.
+      joined_from:
+        type: string
+        enum: [site, bot]
+        description: Метод регистрации пользователя.
+      joined_at:
+        type: integer
+        description: Дата регистрации пользователя.
+      updated_at:
+        type: integer
+        description: Дата обновления данных пользователя.
+        
 
   
   LotUploadedFile:

@@ -115,5 +115,6 @@ func (fsq *FavoriteStoreQuery) All(ctx context.Context) (core.FavoriteSlice, err
 	if err != nil {
 		return nil, err
 	}
+
 	return fsq.store.fromRowSlice(rows), nil
 }

@@ -9,6 +9,7 @@ import (
 type Service struct {
 	Review         core.ReviewStore
 	User           core.UserStore
+	Lot            core.LotStore
 	Storage        storage.Storage
 	AvatarResolver tg.AvatarResolver
 }

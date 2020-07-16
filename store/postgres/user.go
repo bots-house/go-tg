@@ -53,6 +53,14 @@ func (store *UserStore) fromRow(row *dal.User) *core.User {
 	}
 }
 
+func (store *UserStore) fromRowSlice(rows dal.UserSlice) core.UserSlice {
+	result := make(core.UserSlice, len(rows))
+	for i, row := range rows {
+		result[i] = store.fromRow(row)
+	}
+	return result
+}
+
 func (store *UserStore) Add(ctx context.Context, user *core.User) error {
 	row := store.toRow(user)
 	if err := row.Insert(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor), boil.Infer()); err != nil {
@@ -88,6 +96,21 @@ func (usq *userStoreQuery) TelegramID(id int) core.UserStoreQuery {
 	return usq
 }
 
+func (usq *userStoreQuery) Limit(limit int) core.UserStoreQuery {
+	usq.mods = append(usq.mods, qm.Limit(limit))
+	return usq
+}
+
+func (usq *userStoreQuery) Offset(offset int) core.UserStoreQuery {
+	usq.mods = append(usq.mods, qm.Offset(offset))
+	return usq
+}
+
+func (usq *userStoreQuery) OrderByJoinedAt() core.UserStoreQuery {
+	usq.mods = append(usq.mods, qm.OrderBy("joined_at DESC"))
+	return usq
+}
+
 func (usq *userStoreQuery) ID(id core.UserID) core.UserStoreQuery {
 	usq.mods = append(usq.mods, dal.UserWhere.ID.EQ(int(id)))
 	return usq
@@ -104,4 +127,22 @@ func (usq *userStoreQuery) One(ctx context.Context) (*core.User, error) {
 	}
 
 	return usq.store.fromRow(row), nil
+}
+
+func (usq *userStoreQuery) Count(ctx context.Context) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, usq.store.ContextExecutor)
+
+	count, err := dal.Users(usq.mods...).Count(ctx, executor)
+
+	return int(count), err
+}
+
+func (usq *userStoreQuery) All(ctx context.Context) (core.UserSlice, error) {
+	executor := shared.GetExecutorOrDefault(ctx, usq.store.ContextExecutor)
+	rows, err := dal.Users(usq.mods...).All(ctx, executor)
+	if err == nil {
+		return nil, err
+	}
+
+	return usq.store.fromRowSlice(rows), nil
 }

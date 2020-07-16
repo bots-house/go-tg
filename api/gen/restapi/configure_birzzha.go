@@ -12,6 +12,7 @@ import (
 
 	"github.com/bots-house/birzzha/api/authz"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
@@ -20,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml419555789 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml159149520 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -60,6 +61,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
+	if api.AdminAdminGetUsersHandler == nil {
+		api.AdminAdminGetUsersHandler = admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		})
+	}
 	if api.PersonalAreaCancelLotHandler == nil {
 		api.PersonalAreaCancelLotHandler = personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
@@ -163,6 +169,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogToggleLotFavoriteHandler == nil {
 		api.CatalogToggleLotFavoriteHandler = catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
+		})
+	}
+	if api.AdminToggleUserAdminHandler == nil {
+		api.AdminToggleUserAdminHandler = admin.ToggleUserAdminHandlerFunc(func(params admin.ToggleUserAdminParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.ToggleUserAdmin has not yet been implemented")
 		})
 	}
 	if api.PersonalAreaUploadLotFileHandler == nil {

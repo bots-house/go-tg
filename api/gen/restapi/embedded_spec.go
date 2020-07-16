@@ -35,6 +35,89 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/users": {
+      "get": {
+        "description": "Получить список пользователей.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Users",
+        "operationId": "adminGetUsers",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет пользователей.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит пользователей.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullUserList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{id}/admin": {
+      "post": {
+        "description": "Изменение админ прав пользователя.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Change Admin Rights",
+        "operationId": "toggleUserAdmin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullUser"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID пользователя",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/auth": {
       "post": {
         "security": [],
@@ -1034,6 +1117,98 @@ func init() {
     }
   },
   "definitions": {
+    "AdminFullUser": {
+      "type": "object",
+      "required": [
+        "id",
+        "telegram_id",
+        "avatar",
+        "full_name",
+        "username",
+        "lots",
+        "is_admin",
+        "joined_from",
+        "joined_at",
+        "updated_at"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя.",
+          "type": "string",
+          "x-order": 2
+        },
+        "full_name": {
+          "description": "Полное имя пользователя.",
+          "type": "string",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID пользователя.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_admin": {
+          "description": "Админ ли пользователь.",
+          "type": "boolean",
+          "x-order": 6
+        },
+        "joined_at": {
+          "description": "Дата регистрации пользователя.",
+          "type": "integer",
+          "x-order": 8
+        },
+        "joined_from": {
+          "description": "Метод регистрации пользователя.",
+          "type": "string",
+          "enum": [
+            "site",
+            "bot"
+          ],
+          "x-order": 7
+        },
+        "lots": {
+          "description": "Количество лотов пользователя.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "telegram_id": {
+          "description": "Telegram ID пользователя.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "updated_at": {
+          "description": "Дата обновления данных пользователя.",
+          "type": "integer",
+          "x-order": 9
+        },
+        "username": {
+          "description": "Юзернейм пользователя.",
+          "type": "string",
+          "x-order": 4
+        }
+      }
+    },
+    "AdminFullUserList": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminFullUser"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количетсво пользователей.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "ApplicationInvoice": {
       "type": "object",
       "required": [
@@ -2415,6 +2590,10 @@ func init() {
     {
       "description": "Содержит методы для обработки уведомлений от сторонних сервисов.\n",
       "name": "webhook"
+    },
+    {
+      "description": "Содержит методы для работы с админкой.\n",
+      "name": "admin"
     }
   ]
 }`))
@@ -2436,6 +2615,89 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/users": {
+      "get": {
+        "description": "Получить список пользователей.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Users",
+        "operationId": "adminGetUsers",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Офсет пользователей.",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит пользователей.",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullUserList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{id}/admin": {
+      "post": {
+        "description": "Изменение админ прав пользователя.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Change Admin Rights",
+        "operationId": "toggleUserAdmin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullUser"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID пользователя",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/auth": {
       "post": {
         "security": [],
@@ -3455,6 +3717,98 @@ func init() {
     }
   },
   "definitions": {
+    "AdminFullUser": {
+      "type": "object",
+      "required": [
+        "id",
+        "telegram_id",
+        "avatar",
+        "full_name",
+        "username",
+        "lots",
+        "is_admin",
+        "joined_from",
+        "joined_at",
+        "updated_at"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку пользователя.",
+          "type": "string",
+          "x-order": 2
+        },
+        "full_name": {
+          "description": "Полное имя пользователя.",
+          "type": "string",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID пользователя.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "is_admin": {
+          "description": "Админ ли пользователь.",
+          "type": "boolean",
+          "x-order": 6
+        },
+        "joined_at": {
+          "description": "Дата регистрации пользователя.",
+          "type": "integer",
+          "x-order": 8
+        },
+        "joined_from": {
+          "description": "Метод регистрации пользователя.",
+          "type": "string",
+          "enum": [
+            "site",
+            "bot"
+          ],
+          "x-order": 7
+        },
+        "lots": {
+          "description": "Количество лотов пользователя.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "telegram_id": {
+          "description": "Telegram ID пользователя.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "updated_at": {
+          "description": "Дата обновления данных пользователя.",
+          "type": "integer",
+          "x-order": 9
+        },
+        "username": {
+          "description": "Юзернейм пользователя.",
+          "type": "string",
+          "x-order": 4
+        }
+      }
+    },
+    "AdminFullUserList": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminFullUser"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количетсво пользователей.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "ApplicationInvoice": {
       "type": "object",
       "required": [
@@ -4999,6 +5353,10 @@ func init() {
     {
       "description": "Содержит методы для обработки уведомлений от сторонних сервисов.\n",
       "name": "webhook"
+    },
+    {
+      "description": "Содержит методы для работы с админкой.\n",
+      "name": "admin"
     }
   ]
 }`))

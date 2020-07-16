@@ -57,6 +57,8 @@ type User struct {
 	UpdatedAt null.Time
 }
 
+type UserSlice []*User
+
 // Name returns user full name.
 func (user *User) Name() string {
 	name := user.FirstName
@@ -103,8 +105,14 @@ type UserStoreQuery interface {
 	// Filter by User.Telegram.ID
 	TelegramID(id int) UserStoreQuery
 
+	Limit(limit int) UserStoreQuery
+	Offset(offset int) UserStoreQuery
+	OrderByJoinedAt() UserStoreQuery
+
 	// Query only one item from store.
 	One(ctx context.Context) (*User, error)
+	Count(ctx context.Context) (int, error)
+	All(ctx context.Context) (UserSlice, error)
 }
 
 // UserStore persistence interface for user.

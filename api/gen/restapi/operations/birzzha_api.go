@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/bots-house/birzzha/api/authz"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
@@ -51,6 +52,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		AdminAdminGetUsersHandler: admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		}),
 		PersonalAreaCancelLotHandler: personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
 		}),
@@ -113,6 +117,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		CatalogToggleLotFavoriteHandler: catalog.ToggleLotFavoriteHandlerFunc(func(params catalog.ToggleLotFavoriteParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.ToggleLotFavorite has not yet been implemented")
+		}),
+		AdminToggleUserAdminHandler: admin.ToggleUserAdminHandlerFunc(func(params admin.ToggleUserAdminParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.ToggleUserAdmin has not yet been implemented")
 		}),
 		PersonalAreaUploadLotFileHandler: personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.UploadLotFile has not yet been implemented")
@@ -178,6 +185,8 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
+	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
 	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
 	PersonalAreaCancelLotHandler personal_area.CancelLotHandler
 	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
@@ -220,6 +229,8 @@ type BirzzhaAPI struct {
 	CatalogResolveTelegramHandler catalog.ResolveTelegramHandler
 	// CatalogToggleLotFavoriteHandler sets the operation handler for the toggle lot favorite operation
 	CatalogToggleLotFavoriteHandler catalog.ToggleLotFavoriteHandler
+	// AdminToggleUserAdminHandler sets the operation handler for the toggle user admin operation
+	AdminToggleUserAdminHandler admin.ToggleUserAdminHandler
 	// PersonalAreaUploadLotFileHandler sets the operation handler for the upload lot file operation
 	PersonalAreaUploadLotFileHandler personal_area.UploadLotFileHandler
 	// ServeError is called when an error is received, there is a default handler
@@ -301,6 +312,9 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
+	if o.AdminAdminGetUsersHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetUsersHandler")
+	}
 	if o.PersonalAreaCancelLotHandler == nil {
 		unregistered = append(unregistered, "personal_area.CancelLotHandler")
 	}
@@ -363,6 +377,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogToggleLotFavoriteHandler == nil {
 		unregistered = append(unregistered, "catalog.ToggleLotFavoriteHandler")
+	}
+	if o.AdminToggleUserAdminHandler == nil {
+		unregistered = append(unregistered, "admin.ToggleUserAdminHandler")
 	}
 	if o.PersonalAreaUploadLotFileHandler == nil {
 		unregistered = append(unregistered, "personal_area.UploadLotFileHandler")
@@ -476,6 +493,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/users"] = admin.NewAdminGetUsers(o.context, o.AdminAdminGetUsersHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -560,6 +581,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/lots/{id}/favorite"] = catalog.NewToggleLotFavorite(o.context, o.CatalogToggleLotFavoriteHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/admin/users/{id}/admin"] = admin.NewToggleUserAdmin(o.context, o.AdminToggleUserAdminHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

@@ -294,6 +294,39 @@ func (store *LotStore) update(ctx context.Context, lot *core.Lot) error {
 	return nil
 }
 
+func (store *LotStore) CountByUser(ctx context.Context, ids ...core.UserID) (core.LotsCountByUserSlice, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+
+	rows, err := executor.QueryContext(ctx, `
+		select lot.owner_id, count(lot.id) from lot where owner_id = any($1) group by lot.owner_id
+	`, pq.Array(idsInt))
+	if err != nil {
+		return nil, errors.Wrap(err, "query rows")
+	}
+	defer rows.Close()
+
+	var ownerIDLots []*core.LotsCountByUser
+
+	for rows.Next() {
+		item := &core.LotsCountByUser{}
+		if err := rows.Scan(
+			&item.OwnerID,
+			&item.Lots,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan")
+		}
+		ownerIDLots = append(ownerIDLots, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows err")
+	}
+	return ownerIDLots, nil
+}
+
 func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int, error) {
 	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
 

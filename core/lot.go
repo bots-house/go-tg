@@ -267,6 +267,22 @@ func (lot *Lot) Link() string {
 
 type LotSlice []*Lot
 
+type LotsCountByUser struct {
+	OwnerID UserID
+	Lots    int
+}
+
+type LotsCountByUserSlice []*LotsCountByUser
+
+func (oils LotsCountByUserSlice) Find(id UserID) *LotsCountByUser {
+	for _, v := range oils {
+		if v.OwnerID == id {
+			return v
+		}
+	}
+	return nil
+}
+
 func (lots LotSlice) SortByID(ids []LotID) LotSlice {
 	result := make(LotSlice, 0, len(lots))
 	lm := make(map[LotID]*Lot)
@@ -361,6 +377,9 @@ type LotStore interface {
 
 	// Complex query for lots
 	Query() LotStoreQuery
+
+	// Get lots by user id's
+	CountByUser(ctx context.Context, ids ...UserID) (LotsCountByUserSlice, error)
 }
 
 type LotField int8

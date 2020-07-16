@@ -6,6 +6,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/go-openapi/swag"
 	"github.com/volatiletech/null/v8"
 )
@@ -70,4 +71,38 @@ func NewUser(s storage.Storage, user *core.User) *models.User {
 	}
 
 	return result
+}
+
+func NewAdminFullUser(s storage.Storage, user *admin.FullUser) *models.AdminFullUser {
+	fullUser := &models.AdminFullUser{
+		ID:         swag.Int64(int64(user.ID)),
+		TelegramID: swag.Int64(int64(user.Telegram.ID)),
+		FullName:   swag.String(user.Name()),
+		Lots:       swag.Int64(int64(user.Lots)),
+		IsAdmin:    swag.Bool(user.IsAdmin),
+		JoinedFrom: swag.String(user.JoinedFrom.String()),
+		JoinedAt:   timeToUnix(user.JoinedAt),
+		Username:   nullStringToString(user.Telegram.Username),
+		UpdatedAt:  nullTimeToUnix(user.UpdatedAt),
+	}
+
+	if user.Avatar.Valid {
+		fullUser.Avatar = swag.String(s.PublicURL(user.Avatar.String))
+	}
+	return fullUser
+}
+
+func newAdminFullUserSlice(s storage.Storage, users []*admin.FullUser) []*models.AdminFullUser {
+	result := make([]*models.AdminFullUser, len(users))
+	for i, user := range users {
+		result[i] = NewAdminFullUser(s, user)
+	}
+	return result
+}
+
+func NewAdminFullUserList(s storage.Storage, in *admin.FullUserList) *models.AdminFullUserList {
+	return &models.AdminFullUserList{
+		Total: swag.Int64(int64(in.Total)),
+		Items: newAdminFullUserSlice(s, in.Items),
+	}
 }

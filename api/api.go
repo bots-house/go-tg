@@ -12,11 +12,14 @@ import (
 	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/landing"
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/personal"
 
+	adminops "github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+
 	landingops "github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	kitlog "github.com/go-kit/kit/log"
 
@@ -34,6 +37,7 @@ type Handler struct {
 	Auth         *auth.Service
 	Catalog      *catalog.Service
 	Personal     *personal.Service
+	Admin        *admin.Service
 	Bot          *bot.Bot
 	BotFileProxy *tg.FileProxy
 	Storage      storage.Storage
@@ -101,6 +105,10 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 
 	// webhook
 	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handleGatewayNotification)
+
+	// admin
+	api.AdminAdminGetUsersHandler = adminops.AdminGetUsersHandlerFunc(h.adminGetUsers)
+	api.AdminToggleUserAdminHandler = adminops.ToggleUserAdminHandlerFunc(h.toggleUserAdmin)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

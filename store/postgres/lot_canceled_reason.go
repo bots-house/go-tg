@@ -45,6 +45,29 @@ func (store *LotCanceledReasonStore) Add(ctx context.Context, lcr *core.LotCance
 	return nil
 }
 
+func (store *LotCanceledReasonStore) Update(ctx context.Context, reason *core.LotCanceledReason) error {
+	row := store.toRow(reason)
+	n, err := row.Update(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor), boil.Infer())
+	if err != nil {
+		return errors.Wrap(err, "update query")
+	}
+	if n == 0 {
+		return core.ErrLotCanceledReasonNotFound
+	}
+	return nil
+}
+
+func (store *LotCanceledReasonStore) Delete(ctx context.Context, id core.LotCanceledReasonID) error {
+	rows, err := (&dal.LotCanceledReason{ID: int(id)}).Delete(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor))
+	if err != nil {
+		return errors.Wrap(err, "delete query")
+	}
+	if rows == 0 {
+		return core.ErrLotCanceledReasonNotFound
+	}
+	return nil
+}
+
 type LotCanceledReasonStoreQuery struct {
 	mods  []qm.QueryMod
 	store *LotCanceledReasonStore

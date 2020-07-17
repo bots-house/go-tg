@@ -116,6 +116,17 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminToggleUserAdminHandler = adminops.ToggleUserAdminHandlerFunc(h.toggleUserAdmin)
 	api.AdminAdminGetLotStatusesHandler = adminops.AdminGetLotStatusesHandlerFunc(h.adminGetLotStatuses)
 	api.AdminAdminGetLotsHandler = adminops.AdminGetLotsHandlerFunc(h.adminGetLots)
+
+	api.AdminAdminGetSettingsHandler = adminops.AdminGetSettingsHandlerFunc(h.adminGetSettings)
+	api.AdminAdminUpdateSettingsPricesHandler = adminops.AdminUpdateSettingsPricesHandlerFunc(h.adminUpdateSettingsPrices)
+
+	api.AdminAdminCreateTopicHandler = adminops.AdminCreateTopicHandlerFunc(h.adminCreateTopic)
+	api.AdminAdminUpdateTopicHandler = adminops.AdminUpdateTopicHandlerFunc(h.adminUpdateTopic)
+	api.AdminAdminDeleteTopicHandler = adminops.AdminDeleteTopicHandlerFunc(h.adminDeleteTopic)
+
+	api.AdminAdminCreateLotCanceledReasonHandler = adminops.AdminCreateLotCanceledReasonHandlerFunc(h.adminCreateLotCanceledReason)
+	api.AdminAdminUpdateLotCanceledReasonHandler = adminops.AdminUpdateLotCanceledReasonHandlerFunc(h.adminUpdateLotCanceledReason)
+	api.AdminAdminDeleteLotCanceledReasonHandler = adminops.AdminDeleteLotCanceledReasonHandlerFunc(h.adminDeleteLotCanceledReason)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

@@ -255,6 +255,309 @@ func init() {
         }
       ]
     },
+    "/admin/settings": {
+      "get": {
+        "description": "Получение настроек.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Settings",
+        "operationId": "adminGetSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/lot-canceled-reasons": {
+      "post": {
+        "description": "Создание причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Lot Canceled Reason",
+        "operationId": "adminCreateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/lot_canceled_reasons/{id}": {
+      "put": {
+        "description": "Обновление причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Lot Canceled Reason",
+        "operationId": "adminUpdateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Lot Canceled Reason",
+        "operationId": "adminDeleteLotCanceledReason",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID причины отмены лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/settings/prices": {
+      "put": {
+        "description": "Обновление цен в настройках.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Prices",
+        "operationId": "adminUpdateSettingsPrices",
+        "parameters": [
+          {
+            "description": "Настройки цены.",
+            "name": "prices",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminSettingsPrices"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/topics": {
+      "post": {
+        "description": "Создание категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Topic",
+        "operationId": "adminCreateTopic",
+        "parameters": [
+          {
+            "description": "Категория.",
+            "name": "topic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputTopic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Topic"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/topics/{id}": {
+      "put": {
+        "description": "Обновление категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Topic",
+        "operationId": "adminUpdateTopic",
+        "parameters": [
+          {
+            "description": "Категория.",
+            "name": "topic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputTopic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Topic"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Topic",
+        "operationId": "adminDeleteTopic",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID категории.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/users": {
       "get": {
         "description": "Получить список пользователей.",
@@ -1591,6 +1894,87 @@ func init() {
         }
       }
     },
+    "AdminSettings": {
+      "type": "object",
+      "required": [
+        "prices",
+        "channel",
+        "topics",
+        "lot_canceled_reasons"
+      ],
+      "properties": {
+        "channel": {
+          "x-order": 1,
+          "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "lot_canceled_reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotCanceledReason"
+          },
+          "x-order": 3
+        },
+        "prices": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsPrices"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsChannel": {
+      "type": "object",
+      "required": [
+        "id",
+        "join_link",
+        "public_username"
+      ],
+      "properties": {
+        "id": {
+          "description": "ID канала.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Ссылка на канал.",
+          "type": "string",
+          "x-order": 1
+        },
+        "public_username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsPrices": {
+      "type": "object",
+      "required": [
+        "application",
+        "change",
+        "cashier"
+      ],
+      "properties": {
+        "application": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        },
+        "cashier": {
+          "description": "Юзернейм кассы.",
+          "type": "string",
+          "x-order": 2
+        },
+        "change": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "ApplicationInvoice": {
       "type": "object",
       "required": [
@@ -1838,6 +2222,23 @@ func init() {
         "type": "Identity"
       }
     },
+    "InputAdminSettingsPrices": {
+      "type": "object",
+      "required": [
+        "application",
+        "change"
+      ],
+      "properties": {
+        "application": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        },
+        "change": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "InputAuth": {
       "description": "Данный полученные с [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).",
       "required": [
@@ -1886,6 +2287,39 @@ func init() {
           "description": "Username пользователя в Telegram",
           "type": "string",
           "x-order": 3
+        }
+      }
+    },
+    "InputLotCanceledReason": {
+      "type": "object",
+      "required": [
+        "why",
+        "is_public"
+      ],
+      "properties": {
+        "is_public": {
+          "description": "True, если причина будет показана на странице лота (пока не используется)",
+          "type": "boolean",
+          "x-order": 1
+        },
+        "why": {
+          "description": "Причина снятия с продажи",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "InputTopic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 0
         }
       }
     },
@@ -3268,6 +3702,309 @@ func init() {
         }
       ]
     },
+    "/admin/settings": {
+      "get": {
+        "description": "Получение настроек.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Settings",
+        "operationId": "adminGetSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/lot-canceled-reasons": {
+      "post": {
+        "description": "Создание причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Lot Canceled Reason",
+        "operationId": "adminCreateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/lot_canceled_reasons/{id}": {
+      "put": {
+        "description": "Обновление причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Lot Canceled Reason",
+        "operationId": "adminUpdateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Lot Canceled Reason",
+        "operationId": "adminDeleteLotCanceledReason",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID причины отмены лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/settings/prices": {
+      "put": {
+        "description": "Обновление цен в настройках.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Prices",
+        "operationId": "adminUpdateSettingsPrices",
+        "parameters": [
+          {
+            "description": "Настройки цены.",
+            "name": "prices",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminSettingsPrices"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/topics": {
+      "post": {
+        "description": "Создание категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Topic",
+        "operationId": "adminCreateTopic",
+        "parameters": [
+          {
+            "description": "Категория.",
+            "name": "topic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputTopic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Topic"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings/topics/{id}": {
+      "put": {
+        "description": "Обновление категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Topic",
+        "operationId": "adminUpdateTopic",
+        "parameters": [
+          {
+            "description": "Категория.",
+            "name": "topic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputTopic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Topic"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление категории.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Topic",
+        "operationId": "adminDeleteTopic",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID категории.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/users": {
       "get": {
         "description": "Получить список пользователей.",
@@ -4624,6 +5361,87 @@ func init() {
         }
       }
     },
+    "AdminSettings": {
+      "type": "object",
+      "required": [
+        "prices",
+        "channel",
+        "topics",
+        "lot_canceled_reasons"
+      ],
+      "properties": {
+        "channel": {
+          "x-order": 1,
+          "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "lot_canceled_reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotCanceledReason"
+          },
+          "x-order": 3
+        },
+        "prices": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsPrices"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsChannel": {
+      "type": "object",
+      "required": [
+        "id",
+        "join_link",
+        "public_username"
+      ],
+      "properties": {
+        "id": {
+          "description": "ID канала.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Ссылка на канал.",
+          "type": "string",
+          "x-order": 1
+        },
+        "public_username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsPrices": {
+      "type": "object",
+      "required": [
+        "application",
+        "change",
+        "cashier"
+      ],
+      "properties": {
+        "application": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        },
+        "cashier": {
+          "description": "Юзернейм кассы.",
+          "type": "string",
+          "x-order": 2
+        },
+        "change": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "ApplicationInvoice": {
       "type": "object",
       "required": [
@@ -4890,6 +5708,23 @@ func init() {
         "type": "Identity"
       }
     },
+    "InputAdminSettingsPrices": {
+      "type": "object",
+      "required": [
+        "application",
+        "change"
+      ],
+      "properties": {
+        "application": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        },
+        "change": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "InputAuth": {
       "description": "Данный полученные с [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).",
       "required": [
@@ -4938,6 +5773,39 @@ func init() {
           "description": "Username пользователя в Telegram",
           "type": "string",
           "x-order": 3
+        }
+      }
+    },
+    "InputLotCanceledReason": {
+      "type": "object",
+      "required": [
+        "why",
+        "is_public"
+      ],
+      "properties": {
+        "is_public": {
+          "description": "True, если причина будет показана на странице лота (пока не используется)",
+          "type": "boolean",
+          "x-order": 1
+        },
+        "why": {
+          "description": "Причина снятия с продажи",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "InputTopic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 0
         }
       }
     },

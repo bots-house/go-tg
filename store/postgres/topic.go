@@ -55,6 +55,17 @@ func (store *TopicStore) Update(ctx context.Context, topic *core.Topic) error {
 	return nil
 }
 
+func (store *TopicStore) Delete(ctx context.Context, id core.TopicID) error {
+	rows, err := (&dal.Topic{ID: int(id)}).Delete(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor))
+	if err != nil {
+		return errors.Wrap(err, "delete query")
+	}
+	if rows == 0 {
+		return core.ErrTopicNotFound
+	}
+	return nil
+}
+
 func (store *TopicStore) Query() core.TopicStoreQuery {
 	return &TopicStoreQuery{store: store}
 }

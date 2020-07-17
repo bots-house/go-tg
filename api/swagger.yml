@@ -1045,6 +1045,217 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+
+  /admin/settings:
+    get:
+      summary: Get Settings
+      description: Получение настроек.
+      operationId: adminGetSettings
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminSettings"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /admin/settings/prices:
+    put:
+      parameters:
+        - in: body
+          required: true
+          name: prices
+          description: Настройки цены.
+          schema:
+            $ref: "#/definitions/InputAdminSettingsPrices"
+
+      summary: Update Settings Prices
+      description: Обновление цен в настройках.
+      operationId: adminUpdateSettingsPrices
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminSettings"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /admin/settings/topics:
+    post:
+      parameters:
+        - in: body
+          required: true
+          name: topic
+          description: Категория.
+          schema:
+            $ref: "#/definitions/InputTopic"
+
+      summary: Create Topic
+      description: Создание категории.
+      operationId: adminCreateTopic
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Topic"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"  
+
+  /admin/settings/topics/{id}:
+    parameters:
+      - in: path
+        required: true
+        name: id
+        type: integer
+        description: ID категории.
+
+    put:
+      parameters:
+        - in: body
+          required: true
+          name: topic
+          description: Категория.
+          schema:
+            $ref: "#/definitions/InputTopic"
+
+      summary: Update Topic
+      description: Обновление категории.
+      operationId: adminUpdateTopic
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Topic"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"  
+
+    delete:
+      summary: Delete Topic
+      description: Удаление категории.
+      operationId: adminDeleteTopic
+      tags: [admin]
+      responses:
+        204:
+          description: No content
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+
+
+  /admin/settings/lot-canceled-reasons:
+    post:
+      parameters:
+        - in: body
+          required: true
+          name: reason
+          description: Причина отмены лота.
+          schema:
+            $ref: "#/definitions/InputLotCanceledReason"
+
+      summary: Create Lot Canceled Reason
+      description: Создание причины отмены лота.
+      operationId: adminCreateLotCanceledReason
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LotCanceledReason"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"  
+
+  /admin/settings/lot_canceled_reasons/{id}:
+    parameters:
+      - in: path
+        required: true
+        name: id
+        type: integer
+        description: ID причины отмены лота.
+
+    put:
+      parameters:
+        - in: body
+          required: true
+          name: reason
+          description: Причина отмены лота.
+          schema:
+            $ref: "#/definitions/InputLotCanceledReason"
+
+      summary: Update Lot Canceled Reason
+      description: Обновление причины отмены лота.
+      operationId: adminUpdateLotCanceledReason
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LotCanceledReason"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"  
+
+    delete:
+      summary: Delete Lot Canceled Reason
+      description: Удаление причины отмены лота.
+      operationId: adminDeleteLotCanceledReason
+      tags: [admin]
+      responses:
+        204:
+          description: No content
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   LotCanceledReason:
     type: object
@@ -2148,3 +2359,94 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/AdminLotUploadedFile"
+
+  InputTopic:
+    type: object
+    description: Категория лота
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: Название категории на русском.
+
+
+  InputLotCanceledReason:
+    type: object
+    required:
+      - why
+      - is_public
+    properties:
+      why:
+        type: string
+        description: Причина снятия с продажи
+      is_public:
+        type: boolean
+        description: True, если причина будет показана на странице лота (пока не используется)
+
+
+  InputAdminSettingsPrices:
+    type: object
+    required:
+      - application
+      - change
+    properties:
+      application:
+        $ref: "#/definitions/Money"
+      change:
+        $ref: "#/definitions/Money"
+
+  AdminSettingsPrices:
+    type: object
+    required:
+      - application
+      - change
+      - cashier
+    properties:
+      application:
+        $ref: "#/definitions/Money"
+      change:
+        $ref: "#/definitions/Money"
+      cashier:
+        type: string
+        description: Юзернейм кассы.
+
+  AdminSettingsChannel:
+    type: object
+    required:
+      - id
+      - join_link
+      - public_username
+    properties:
+      id:
+        type: integer
+        description: ID канала.
+      join_link:
+        type: string
+        description: Ссылка на канал.
+      public_username:
+        type: string
+        description: Юзернейм канала.
+
+  AdminSettings:
+    type: object
+    required:
+      - prices
+      - channel
+      - topics
+      - lot_canceled_reasons
+    properties:
+      prices:
+        $ref: "#/definitions/AdminSettingsPrices"
+      channel:
+        $ref: "#/definitions/AdminSettingsChannel"
+      topics:
+        type: array
+        items:
+          $ref: "#/definitions/Topic"
+      lot_canceled_reasons:
+        type: array
+        items:
+          $ref: "#/definitions/LotCanceledReason"
+
+        

@@ -50,5 +50,6 @@ var (
 type TopicStore interface {
 	Add(ctx context.Context, topic *Topic) error
 	Update(ctx context.Context, topic *Topic) error
+	Delete(ctx context.Context, id TopicID) error
 	Query() TopicStoreQuery
 }

@@ -5,6 +5,7 @@ import (
 	adminops "github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
@@ -105,4 +106,125 @@ func (h *Handler) adminGetLots(params adminops.AdminGetLotsParams, identity *aut
 		return adminops.NewAdminGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 	return adminops.NewAdminGetLotsOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
+}
+
+func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.GetSettings(ctx, identity.User)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetSettingsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetSettingsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminGetSettingsOK().WithPayload(models.NewSettings(result))
+}
+
+func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsPricesParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateSettingsPrice(ctx,
+		identity.User,
+		&admin.SettingsPriceInput{
+			Application: models.ToMoney(params.Prices.Application),
+			Change:      models.ToMoney(params.Prices.Change),
+		},
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateSettingsPricesBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdateSettingsPricesOK().WithPayload(models.NewSettings(result))
+}
+
+func (h *Handler) adminCreateTopic(params adminops.AdminCreateTopicParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.CreateTopic(ctx, identity.User, swag.StringValue(params.Topic.Name))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminCreateTopicBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminCreateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminCreateTopicOK().WithPayload(models.NewTopic(result))
+}
+
+func (h *Handler) adminUpdateTopic(params adminops.AdminUpdateTopicParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateTopic(ctx, identity.User, core.TopicID(int(params.ID)), swag.StringValue(params.Topic.Name))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateTopicBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdateTopicOK().WithPayload(models.NewTopic(result))
+}
+
+func (h *Handler) adminDeleteTopic(params adminops.AdminDeleteTopicParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	if err := h.Admin.DeleteTopic(ctx, identity.User, core.TopicID(int(params.ID))); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminDeleteTopicBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminDeleteTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminDeleteTopicNoContent()
+}
+
+func (h *Handler) adminCreateLotCanceledReason(params adminops.AdminCreateLotCanceledReasonParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.CreateLotCanceledReason(ctx,
+		identity.User,
+		&admin.LotCanceledReasonInput{
+			Why:      swag.StringValue(params.Reason.Why),
+			IsPublic: swag.BoolValue(params.Reason.IsPublic),
+		},
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminCreateLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminCreateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminCreateLotCanceledReasonOK().WithPayload(models.NewLotCanceledReason(result))
+}
+
+func (h *Handler) adminUpdateLotCanceledReason(params adminops.AdminUpdateLotCanceledReasonParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateLotCanceledReason(ctx,
+		identity.User,
+		core.LotCanceledReasonID(int(params.ID)),
+		&admin.LotCanceledReasonInput{
+			Why:      swag.StringValue(params.Reason.Why),
+			IsPublic: swag.BoolValue(params.Reason.IsPublic),
+		},
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdateLotCanceledReasonOK().WithPayload(models.NewLotCanceledReason(result))
+}
+
+func (h *Handler) adminDeleteLotCanceledReason(params adminops.AdminDeleteLotCanceledReasonParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	if err := h.Admin.DeleteLotCanceledReason(ctx, identity.User, core.LotCanceledReasonID(int(params.ID))); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminDeleteLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminDeleteLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminDeleteLotCanceledReasonNoContent()
 }

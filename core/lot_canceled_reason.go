@@ -27,6 +27,17 @@ type LotCanceledReason struct {
 	UpdatedAt null.Time
 }
 
+func NewLotCanceledReason(
+	why string,
+	isPublic bool,
+) *LotCanceledReason {
+	return &LotCanceledReason{
+		Why:       why,
+		IsPublic:  isPublic,
+		CreatedAt: time.Now(),
+	}
+}
+
 type LotCanceledReasonSlice []*LotCanceledReason
 
 func (lcrs LotCanceledReasonSlice) Find(id LotCanceledReasonID) *LotCanceledReason {
@@ -51,5 +62,7 @@ type LotCanceledReasonStoreQuery interface {
 type LotCanceledReasonStore interface {
 	Add(ctx context.Context, reason *LotCanceledReason) error
 	// Update(ctx context.Context, reason *LotCanceledReason) error
+	Update(ctx context.Context, reason *LotCanceledReason) error
+	Delete(ctx context.Context, id LotCanceledReasonID) error
 	Query() LotCanceledReasonStoreQuery
 }

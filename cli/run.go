@@ -190,6 +190,8 @@ func run(ctx context.Context) error {
 
 	adminSrv := &admin.Service{
 		Review:            pg.Review,
+		Settings:          pg.Settings,
+		LotTopic:          pg.Topic,
 		User:              pg.User,
 		Lot:               pg.Lot,
 		LotFile:           pg.LotFile,

@@ -10,6 +10,8 @@ type Service struct {
 	Review            core.ReviewStore
 	User              core.UserStore
 	Lot               core.LotStore
+	Settings          core.SettingsStore
+	LotTopic          core.TopicStore
 	LotFile           core.LotFileStore
 	LotCanceledReason core.LotCanceledReasonStore
 	Storage           storage.Storage

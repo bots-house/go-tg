@@ -114,6 +114,8 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 
 	api.AdminAdminGetUsersHandler = adminops.AdminGetUsersHandlerFunc(h.adminGetUsers)
 	api.AdminToggleUserAdminHandler = adminops.ToggleUserAdminHandlerFunc(h.toggleUserAdmin)
+	api.AdminAdminGetLotStatusesHandler = adminops.AdminGetLotStatusesHandlerFunc(h.adminGetLotStatuses)
+	api.AdminAdminGetLotsHandler = adminops.AdminGetLotsHandlerFunc(h.adminGetLots)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

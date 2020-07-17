@@ -75,3 +75,34 @@ func (h *Handler) toggleUserAdmin(params adminops.ToggleUserAdminParams, identit
 	return adminops.NewToggleUserAdminOK().WithPayload(models.NewAdminFullUser(h.Storage, user))
 
 }
+
+func (h *Handler) adminGetLotStatuses(params adminops.AdminGetLotStatusesParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.GetLotStatusesCount(ctx, identity.User, core.UserID(int(swag.Int64Value(params.UserID))))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetLotStatusesBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminGetLotStatusesOK().WithPayload(models.NewLotStatusesCount(result))
+
+}
+
+func (h *Handler) adminGetLots(params adminops.AdminGetLotsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	userID := core.UserID(int(swag.Int64Value(params.UserID)))
+	status := swag.StringValue(params.Status)
+	limit := int(swag.Int64Value(params.Limit))
+	offset := int(swag.Int64Value(params.Offset))
+
+	result, err := h.Admin.GetLots(ctx, identity.User, userID, status, limit, offset)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetLotsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminGetLotsOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
+}

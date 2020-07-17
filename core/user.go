@@ -59,6 +59,15 @@ type User struct {
 
 type UserSlice []*User
 
+func (us UserSlice) Find(id UserID) *User {
+	for _, u := range us {
+		if u.ID == id {
+			return u
+		}
+	}
+	return nil
+}
+
 // Name returns user full name.
 func (user *User) Name() string {
 	name := user.FirstName
@@ -100,7 +109,7 @@ var (
 // UserStoreQuery define complex ops with store.
 type UserStoreQuery interface {
 	// Filter by User.ID
-	ID(id UserID) UserStoreQuery
+	ID(ids ...UserID) UserStoreQuery
 
 	// Filter by User.Telegram.ID
 	TelegramID(id int) UserStoreQuery

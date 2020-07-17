@@ -327,6 +327,49 @@ func (store *LotStore) CountByUser(ctx context.Context, ids ...core.UserID) (cor
 	return ownerIDLots, nil
 }
 
+func (store *LotStore) LotsCountByStatus(ctx context.Context, filter *core.LotsCountByStatusFilter) (core.LotsCountByStatusSlice, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	var rows *sql.Rows
+	var err error
+
+	if filter != nil && filter.UserID != 0 {
+		rows, err = executor.QueryContext(ctx, `
+			select lot.status, count(lot.id) from lot where owner_id = $1 group by lot.status;`,
+			int(filter.UserID),
+		)
+		if rowsErr := rows.Err(); rowsErr != nil {
+			return nil, errors.Wrap(rowsErr, "rows err")
+		}
+	} else {
+		rows, err = executor.QueryContext(ctx, `
+			select lot.status, count(lot.id) from lot group by lot.status;
+		`)
+		if rowsErr := rows.Err(); rowsErr != nil {
+			return nil, errors.Wrap(rowsErr, "rows err")
+		}
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "query rows")
+	}
+
+	defer rows.Close()
+	var lotsCountByStatusSlice core.LotsCountByStatusSlice
+
+	for rows.Next() {
+		item := &core.LotsCountByStatus{}
+		if err := rows.Scan(
+			&item.Status,
+			&item.Count,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan")
+		}
+		lotsCountByStatusSlice = append(lotsCountByStatusSlice, item)
+	}
+
+	return lotsCountByStatusSlice, nil
+}
+
 func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int, error) {
 	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
 
@@ -628,7 +671,6 @@ func (lsq *LotStoreQuery) Count(ctx context.Context) (int, error) {
 
 func (lsq *LotStoreQuery) All(ctx context.Context) (core.LotSlice, error) {
 	lsq.eager()
-
 	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
 
 	rows, err := dal.Lots(lsq.mods...).All(ctx, executor)

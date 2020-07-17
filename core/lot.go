@@ -267,6 +267,33 @@ func (lot *Lot) Link() string {
 
 type LotSlice []*Lot
 
+func (lots LotSlice) OwnerIDs() []UserID {
+	result := make([]UserID, len(lots))
+	for i, lot := range lots {
+		result[i] = lot.OwnerID
+	}
+	return result
+}
+
+func (lots LotSlice) CanceledReasonIDs() []LotCanceledReasonID {
+	result := make([]LotCanceledReasonID, len(lots))
+	for i, lot := range lots {
+		result[i] = lot.CanceledReasonID
+	}
+	return result
+}
+
+type LotsCountByStatus struct {
+	Status string
+	Count  int
+}
+
+type LotsCountByStatusSlice []*LotsCountByStatus
+
+type LotsCountByStatusFilter struct {
+	UserID UserID
+}
+
 type LotsCountByUser struct {
 	OwnerID UserID
 	Lots    int
@@ -380,6 +407,9 @@ type LotStore interface {
 
 	// Get lots by user id's
 	CountByUser(ctx context.Context, ids ...UserID) (LotsCountByUserSlice, error)
+
+	// Get lots count group by statuses.
+	LotsCountByStatus(ctx context.Context, filter *LotsCountByStatusFilter) (LotsCountByStatusSlice, error)
 }
 
 type LotField int8

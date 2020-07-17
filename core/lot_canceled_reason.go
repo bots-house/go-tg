@@ -27,15 +27,25 @@ type LotCanceledReason struct {
 	UpdatedAt null.Time
 }
 
+type LotCanceledReasonSlice []*LotCanceledReason
+
+func (lcrs LotCanceledReasonSlice) Find(id LotCanceledReasonID) *LotCanceledReason {
+	for _, lcr := range lcrs {
+		if lcr.ID == id {
+			return lcr
+		}
+	}
+	return nil
+}
+
 var (
 	ErrLotCanceledReasonNotFound = errors.New("canceled reason not found")
 )
 
 type LotCanceledReasonStoreQuery interface {
-	ID(id LotCanceledReasonID) LotCanceledReasonStoreQuery
-
+	ID(ids ...LotCanceledReasonID) LotCanceledReasonStoreQuery
 	One(ctx context.Context) (*LotCanceledReason, error)
-	All(ctx context.Context) ([]*LotCanceledReason, error)
+	All(ctx context.Context) (LotCanceledReasonSlice, error)
 }
 
 type LotCanceledReasonStore interface {

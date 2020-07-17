@@ -35,6 +35,107 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/lot/statuses": {
+      "get": {
+        "description": "Получить статусы лотов и количество лотов по ним.\nВ случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.\n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lot Statuses",
+        "operationId": "adminGetLotStatuses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotStatusesCount"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID пользователя.",
+          "name": "user_id",
+          "in": "query"
+        }
+      ]
+    },
+    "/admin/lots": {
+      "get": {
+        "description": "Получить лоты.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lots",
+        "operationId": "adminGetLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "type": "string",
+          "description": "Статус лота.",
+          "name": "status",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "Лимит лотов.",
+          "name": "limit",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "Офсет лотов.",
+          "name": "offset",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "ID пользователя.",
+          "name": "user_id",
+          "in": "query"
+        }
+      ]
+    },
     "/admin/reviews": {
       "get": {
         "description": "Получить список отзывов.",
@@ -1236,6 +1337,28 @@ func init() {
     }
   },
   "definitions": {
+    "AdminFullLot": {
+      "description": "Список лотов.",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLot"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество лотов в соответствии с фильтрами.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "AdminFullUser": {
       "type": "object",
       "required": [
@@ -1324,6 +1447,146 @@ func init() {
         "total": {
           "description": "Общее количетсво пользователей.",
           "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "AdminLot": {
+      "description": "Лот.",
+      "type": "object",
+      "required": [
+        "id",
+        "user",
+        "external_id",
+        "name",
+        "avatar",
+        "username",
+        "join_link",
+        "status",
+        "canceled_reason",
+        "price",
+        "topics",
+        "created_at",
+        "paid_at",
+        "approved_at",
+        "published_at",
+        "files"
+      ],
+      "properties": {
+        "approved_at": {
+          "description": "Дата одобрения.",
+          "type": "integer",
+          "x-order": 13
+        },
+        "avatar": {
+          "description": "Ссылка на аватарку.",
+          "type": "string",
+          "x-order": 4
+        },
+        "canceled_reason": {
+          "description": "Текст причины снятия лота.",
+          "type": "string",
+          "x-order": 8
+        },
+        "created_at": {
+          "description": "Дата создания.",
+          "type": "integer",
+          "x-order": 11
+        },
+        "external_id": {
+          "description": "Внешний ID.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLotUploadedFile"
+          },
+          "x-order": 15
+        },
+        "id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Приватная ссылка на канал.",
+          "type": "string",
+          "x-order": 6
+        },
+        "name": {
+          "description": "Название лота.",
+          "type": "string",
+          "x-order": 3
+        },
+        "paid_at": {
+          "description": "Дата оплаты.",
+          "type": "integer",
+          "x-order": 12
+        },
+        "price": {
+          "x-order": 9,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 14
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "x-order": 7
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 10
+        },
+        "user": {
+          "x-order": 1,
+          "$ref": "#/definitions/User"
+        },
+        "username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 5
+        }
+      }
+    },
+    "AdminLotUploadedFile": {
+      "description": "Файл созданного лота.",
+      "type": "object",
+      "required": [
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 1
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
           "x-order": 0
         }
       }
@@ -2026,6 +2289,44 @@ func init() {
           "description": "Предыдущая цена канала",
           "type": "integer",
           "x-order": 1
+        }
+      }
+    },
+    "LotStatusesCount": {
+      "description": "Статусы лотов и количество лотов по ним.",
+      "type": "object",
+      "required": [
+        "created",
+        "paid",
+        "published",
+        "declined",
+        "canceled"
+      ],
+      "properties": {
+        "canceled": {
+          "description": "Количество отмененных лотов.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "created": {
+          "description": "Количество созданых лотов.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "declined": {
+          "description": "Количество отвергнутых лотов.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "paid": {
+          "description": "Количество оплаченых лотов.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "published": {
+          "description": "Количество опубликованых лотов.",
+          "type": "integer",
+          "x-order": 2
         }
       }
     },
@@ -2747,6 +3048,107 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/lot/statuses": {
+      "get": {
+        "description": "Получить статусы лотов и количество лотов по ним.\nВ случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.\n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lot Statuses",
+        "operationId": "adminGetLotStatuses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotStatusesCount"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID пользователя.",
+          "name": "user_id",
+          "in": "query"
+        }
+      ]
+    },
+    "/admin/lots": {
+      "get": {
+        "description": "Получить лоты.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lots",
+        "operationId": "adminGetLots",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "type": "string",
+          "description": "Статус лота.",
+          "name": "status",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "Лимит лотов.",
+          "name": "limit",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "Офсет лотов.",
+          "name": "offset",
+          "in": "query"
+        },
+        {
+          "type": "integer",
+          "description": "ID пользователя.",
+          "name": "user_id",
+          "in": "query"
+        }
+      ]
+    },
     "/admin/reviews": {
       "get": {
         "description": "Получить список отзывов.",
@@ -3968,6 +4370,28 @@ func init() {
     }
   },
   "definitions": {
+    "AdminFullLot": {
+      "description": "Список лотов.",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLot"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество лотов в соответствии с фильтрами.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "AdminFullUser": {
       "type": "object",
       "required": [
@@ -4056,6 +4480,146 @@ func init() {
         "total": {
           "description": "Общее количетсво пользователей.",
           "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "AdminLot": {
+      "description": "Лот.",
+      "type": "object",
+      "required": [
+        "id",
+        "user",
+        "external_id",
+        "name",
+        "avatar",
+        "username",
+        "join_link",
+        "status",
+        "canceled_reason",
+        "price",
+        "topics",
+        "created_at",
+        "paid_at",
+        "approved_at",
+        "published_at",
+        "files"
+      ],
+      "properties": {
+        "approved_at": {
+          "description": "Дата одобрения.",
+          "type": "integer",
+          "x-order": 13
+        },
+        "avatar": {
+          "description": "Ссылка на аватарку.",
+          "type": "string",
+          "x-order": 4
+        },
+        "canceled_reason": {
+          "description": "Текст причины снятия лота.",
+          "type": "string",
+          "x-order": 8
+        },
+        "created_at": {
+          "description": "Дата создания.",
+          "type": "integer",
+          "x-order": 11
+        },
+        "external_id": {
+          "description": "Внешний ID.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLotUploadedFile"
+          },
+          "x-order": 15
+        },
+        "id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Приватная ссылка на канал.",
+          "type": "string",
+          "x-order": 6
+        },
+        "name": {
+          "description": "Название лота.",
+          "type": "string",
+          "x-order": 3
+        },
+        "paid_at": {
+          "description": "Дата оплаты.",
+          "type": "integer",
+          "x-order": 12
+        },
+        "price": {
+          "x-order": 9,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 14
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "created",
+            "paid",
+            "published",
+            "declined",
+            "canceled"
+          ],
+          "x-order": 7
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 10
+        },
+        "user": {
+          "x-order": 1,
+          "$ref": "#/definitions/User"
+        },
+        "username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 5
+        }
+      }
+    },
+    "AdminLotUploadedFile": {
+      "description": "Файл созданного лота.",
+      "type": "object",
+      "required": [
+        "url",
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "description": "Название файла.",
+          "type": "string",
+          "x-order": 1
+        },
+        "size": {
+          "description": "Размер файла в байтах.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "url": {
+          "description": "Ссылка на файл.",
+          "type": "string",
           "x-order": 0
         }
       }
@@ -4777,6 +5341,44 @@ func init() {
           "description": "Предыдущая цена канала",
           "type": "integer",
           "x-order": 1
+        }
+      }
+    },
+    "LotStatusesCount": {
+      "description": "Статусы лотов и количество лотов по ним.",
+      "type": "object",
+      "required": [
+        "created",
+        "paid",
+        "published",
+        "declined",
+        "canceled"
+      ],
+      "properties": {
+        "canceled": {
+          "description": "Количество отмененных лотов.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "created": {
+          "description": "Количество созданых лотов.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "declined": {
+          "description": "Количество отвергнутых лотов.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "paid": {
+          "description": "Количество оплаченых лотов.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "published": {
+          "description": "Количество опубликованых лотов.",
+          "type": "integer",
+          "x-order": 2
         }
       }
     },

@@ -111,8 +111,13 @@ func (usq *userStoreQuery) OrderByJoinedAt() core.UserStoreQuery {
 	return usq
 }
 
-func (usq *userStoreQuery) ID(id core.UserID) core.UserStoreQuery {
-	usq.mods = append(usq.mods, dal.UserWhere.ID.EQ(int(id)))
+func (usq *userStoreQuery) ID(ids ...core.UserID) core.UserStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+
+	usq.mods = append(usq.mods, dal.UserWhere.ID.IN(idsInt))
 	return usq
 }
 
@@ -140,7 +145,7 @@ func (usq *userStoreQuery) Count(ctx context.Context) (int, error) {
 func (usq *userStoreQuery) All(ctx context.Context) (core.UserSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, usq.store.ContextExecutor)
 	rows, err := dal.Users(usq.mods...).All(ctx, executor)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 

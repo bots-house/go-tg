@@ -55,6 +55,12 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminDeleteReviewHandler: admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
 		}),
+		AdminAdminGetLotStatusesHandler: admin.AdminGetLotStatusesHandlerFunc(func(params admin.AdminGetLotStatusesParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetLotStatuses has not yet been implemented")
+		}),
+		AdminAdminGetLotsHandler: admin.AdminGetLotsHandlerFunc(func(params admin.AdminGetLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetLots has not yet been implemented")
+		}),
 		AdminAdminGetReviewsHandler: admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
 		}),
@@ -196,6 +202,10 @@ type BirzzhaAPI struct {
 
 	// AdminAdminDeleteReviewHandler sets the operation handler for the admin delete review operation
 	AdminAdminDeleteReviewHandler admin.AdminDeleteReviewHandler
+	// AdminAdminGetLotStatusesHandler sets the operation handler for the admin get lot statuses operation
+	AdminAdminGetLotStatusesHandler admin.AdminGetLotStatusesHandler
+	// AdminAdminGetLotsHandler sets the operation handler for the admin get lots operation
+	AdminAdminGetLotsHandler admin.AdminGetLotsHandler
 	// AdminAdminGetReviewsHandler sets the operation handler for the admin get reviews operation
 	AdminAdminGetReviewsHandler admin.AdminGetReviewsHandler
 	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
@@ -329,6 +339,12 @@ func (o *BirzzhaAPI) Validate() error {
 
 	if o.AdminAdminDeleteReviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteReviewHandler")
+	}
+	if o.AdminAdminGetLotStatusesHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetLotStatusesHandler")
+	}
+	if o.AdminAdminGetLotsHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetLotsHandler")
 	}
 	if o.AdminAdminGetReviewsHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetReviewsHandler")
@@ -521,6 +537,14 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/admin/reviews/{id}"] = admin.NewAdminDeleteReview(o.context, o.AdminAdminDeleteReviewHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/lot/statuses"] = admin.NewAdminGetLotStatuses(o.context, o.AdminAdminGetLotStatusesHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/lots"] = admin.NewAdminGetLots(o.context, o.AdminAdminGetLotsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

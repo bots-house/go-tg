@@ -6,6 +6,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/bots-house/birzzha/service/personal"
 )
@@ -187,4 +188,73 @@ func NewOwnedLotUploadedFileSlice(s storage.Storage, in []*personal.OwnedLotUplo
 		result[i] = newOwnedLotUploadedFile(s, v)
 	}
 	return result
+}
+
+func NewLotStatusesCount(in *admin.LotStatusesCount) *models.LotStatusesCount {
+	return &models.LotStatusesCount{
+		Created:   swag.Int64(int64(in.Created)),
+		Paid:      swag.Int64(int64(in.Paid)),
+		Published: swag.Int64(int64(in.Published)),
+		Declined:  swag.Int64(int64(in.Declined)),
+		Canceled:  swag.Int64(int64(in.Canceled)),
+	}
+}
+
+func newAdminLotUploadedFile(s storage.Storage, in *core.LotFile) *models.AdminLotUploadedFile {
+	return &models.AdminLotUploadedFile{
+		URL:  swag.String(s.PublicURL(in.Path)),
+		Name: swag.String(in.Name),
+		Size: swag.Int64(int64(in.Size)),
+	}
+}
+
+func newAdminLotUploadedFileSlice(s storage.Storage, in core.LotFileSlice) []*models.AdminLotUploadedFile {
+	result := make([]*models.AdminLotUploadedFile, len(in))
+	for i, v := range in {
+		result[i] = newAdminLotUploadedFile(s, v)
+	}
+	return result
+}
+
+func newAdminLot(s storage.Storage, in *admin.LotItem) *models.AdminLot {
+	adminLot := &models.AdminLot{
+		ID:          swag.Int64(int64(in.ID)),
+		ExternalID:  swag.Int64(int64(in.ID)),
+		Name:        swag.String(in.Name),
+		Status:      swag.String(in.Status.String()),
+		Price:       newLotPrice(in.Price),
+		Topics:      NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:   timeToUnix(in.CreatedAt),
+		PaidAt:      nullTimeToUnix(in.PaidAt),
+		ApprovedAt:  nullTimeToUnix(in.ApprovedAt),
+		PublishedAt: nullTimeToUnix(in.PublishedAt),
+		Files:       newAdminLotUploadedFileSlice(s, in.Files),
+		User:        NewUser(s, in.Owner),
+		Username:    nullStringToString(in.Username),
+		JoinLink:    swag.String(in.Link()),
+	}
+	if in.Avatar.Valid {
+		adminLot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+
+	if in.CanceledReason != nil {
+		adminLot.CanceledReason = swag.String(in.CanceledReason.Why)
+	}
+
+	return adminLot
+}
+
+func newAdminLotSlice(s storage.Storage, in []*admin.LotItem) []*models.AdminLot {
+	out := make([]*models.AdminLot, len(in))
+	for i, v := range in {
+		out[i] = newAdminLot(s, v)
+	}
+	return out
+}
+
+func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot {
+	return &models.AdminFullLot{
+		Total: swag.Int64(int64(in.Total)),
+		Items: newAdminLotSlice(s, in.Items),
+	}
 }

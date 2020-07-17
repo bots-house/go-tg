@@ -967,6 +967,83 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /admin/lot/statuses:
+    parameters:
+      - name: user_id
+        in: query
+        type: integer
+        required: false
+        description: ID пользователя.
+    get:
+      summary: Get Lot Statuses
+      description: |
+        Получить статусы лотов и количество лотов по ним.
+        В случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.
+        
+      operationId: adminGetLotStatuses
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LotStatusesCount"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/lots:
+    parameters:
+      - name: status
+        in: query
+        type: string
+        required: false
+        description: Статус лота.
+        enum:
+          - created
+          - paid
+          - published
+          - declined
+          - canceled
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: Лимит лотов.
+      - name: offset
+        in: query
+        type: integer
+        required: false
+        description: Офсет лотов.
+      - name: user_id
+        in: query
+        type: integer
+        required: false
+        description: ID пользователя.
+    
+    get:
+      summary: Get Lots
+      description: Получить лоты.
+      operationId: adminGetLots
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminFullLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
 
 definitions:
   LotCanceledReason:
@@ -1936,3 +2013,138 @@ definitions:
         type: integer
         description: Размер файла в байтах.
   
+  LotStatusesCount:
+    type: object
+    description: Статусы лотов и количество лотов по ним.
+    required:
+      - created
+      - paid
+      - published
+      - declined
+      - canceled
+    properties:
+      created:
+        type: integer
+        description: Количество созданых лотов.
+      paid:
+        type: integer
+        description: Количество оплаченых лотов.
+      published:
+        type: integer
+        description: Количество опубликованых лотов.
+      declined:
+        type: integer
+        description: Количество отвергнутых лотов.
+      canceled:
+        type: integer
+        description: Количество отмененных лотов.
+
+  AdminLotUploadedFile:
+    type: object
+    description: Файл созданного лота.
+    required:
+      - url
+      - name
+      - size
+    properties:
+      url:
+        type: string
+        description: Ссылка на файл.
+      name:
+        type: string
+        description: Название файла.
+      size:
+        type: integer
+        description: Размер файла в байтах.
+  
+  AdminFullLot:
+    type: object
+    description: Список лотов.
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: Общее количество лотов в соответствии с фильтрами.
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/AdminLot"
+  
+  AdminLot:
+    type: object
+    description: Лот.
+    required:
+      - id
+      - user
+      - external_id
+      - name
+      - avatar
+      - username
+      - join_link
+      - status
+      - canceled_reason
+      - price
+      - topics
+      - created_at
+      - paid_at
+      - approved_at
+      - published_at
+      - files
+    properties:
+      id:
+        type: integer
+        description: ID лота.
+      user:
+        $ref: "#/definitions/User"
+      external_id:
+        type: integer
+        description: Внешний ID.
+      name:
+        type: string
+        description: Название лота.
+      avatar:
+        type: string
+        description: Ссылка на аватарку.
+      username:
+        type: string
+        description: Юзернейм канала.
+      join_link:
+        type: string
+        description: Приватная ссылка на канал.
+      status:
+        type: string
+        enum:
+          - created
+          - paid
+          - published
+          - declined
+          - canceled
+      canceled_reason:
+        type: string
+        description: Текст причины снятия лота.
+      price:
+        $ref: "#/definitions/LotPrice"
+      topics:
+        type: array
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+      created_at:
+        type: integer
+        description: Дата создания.
+      paid_at:
+        type: integer
+        description: Дата оплаты.
+      approved_at:
+        type: integer
+        description: Дата одобрения.
+      published_at:
+        type: integer
+        description: Дата публикации.
+      files:
+        type: array
+        items:
+          $ref: "#/definitions/AdminLotUploadedFile"

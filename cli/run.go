@@ -189,10 +189,12 @@ func run(ctx context.Context) error {
 	}
 
 	adminSrv := &admin.Service{
-		Review:  pg.Review,
-		User:    pg.User,
-		Lot:     pg.Lot,
-		Storage: strg,
+		Review:            pg.Review,
+		User:              pg.User,
+		Lot:               pg.Lot,
+		LotFile:           pg.LotFile,
+		LotCanceledReason: pg.LotCanceledReason,
+		Storage:           strg,
 		AvatarResolver: tg.AvatarResolver{
 			Client: &http.Client{},
 		},

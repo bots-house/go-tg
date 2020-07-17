@@ -21,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml423665008 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml943507723 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -64,6 +64,16 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminDeleteReviewHandler == nil {
 		api.AdminAdminDeleteReviewHandler = admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
+		})
+	}
+	if api.AdminAdminGetLotStatusesHandler == nil {
+		api.AdminAdminGetLotStatusesHandler = admin.AdminGetLotStatusesHandlerFunc(func(params admin.AdminGetLotStatusesParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetLotStatuses has not yet been implemented")
+		})
+	}
+	if api.AdminAdminGetLotsHandler == nil {
+		api.AdminAdminGetLotsHandler = admin.AdminGetLotsHandlerFunc(func(params admin.AdminGetLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetLots has not yet been implemented")
 		})
 	}
 	if api.AdminAdminGetReviewsHandler == nil {

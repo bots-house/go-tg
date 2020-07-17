@@ -6,6 +6,7 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store/postgres/dal"
 	"github.com/bots-house/birzzha/store/postgres/shared"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -99,8 +100,14 @@ func (lfsq *LotFileStoreQuery) ID(ids ...core.LotFileID) core.LotFileStoreQuery 
 	return lfsq
 }
 
-func (lfsq *LotFileStoreQuery) LotID(id core.LotID) core.LotFileStoreQuery {
-	lfsq.mods = append(lfsq.mods, dal.LotFileWhere.LotID.EQ(shared.ToNullInt(int(id))))
+func (lfsq *LotFileStoreQuery) LotID(ids ...core.LotID) core.LotFileStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+	lfsq.mods = append(lfsq.mods,
+		qm.Where("lot_file.lot_id = any(?)", pq.Array(idsInt)),
+	)
 	return lfsq
 }
 

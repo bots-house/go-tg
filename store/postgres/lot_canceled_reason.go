@@ -54,8 +54,12 @@ func (store *LotCanceledReasonStore) Query() core.LotCanceledReasonStoreQuery {
 	return &LotCanceledReasonStoreQuery{store: store}
 }
 
-func (query *LotCanceledReasonStoreQuery) ID(id core.LotCanceledReasonID) core.LotCanceledReasonStoreQuery {
-	query.mods = append(query.mods, dal.LotCanceledReasonWhere.ID.EQ(int(id)))
+func (query *LotCanceledReasonStoreQuery) ID(ids ...core.LotCanceledReasonID) core.LotCanceledReasonStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+	query.mods = append(query.mods, dal.LotCanceledReasonWhere.ID.IN(idsInt))
 	return query
 }
 
@@ -72,7 +76,7 @@ func (query *LotCanceledReasonStoreQuery) One(ctx context.Context) (*core.LotCan
 	return query.store.fromRow(row), nil
 }
 
-func (query *LotCanceledReasonStoreQuery) All(ctx context.Context) ([]*core.LotCanceledReason, error) {
+func (query *LotCanceledReasonStoreQuery) All(ctx context.Context) (core.LotCanceledReasonSlice, error) {
 	rows, err := dal.LotCanceledReasons(query.mods...).All(ctx,
 		shared.GetExecutorOrDefault(ctx, query.store.ContextExecutor),
 	)

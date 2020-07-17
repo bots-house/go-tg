@@ -32,6 +32,16 @@ type LotFile struct {
 
 type LotFileSlice []*LotFile
 
+func (lfs LotFileSlice) FindByLotID(id LotID) LotFileSlice {
+	result := make([]*LotFile, 0, len(lfs))
+	for _, lf := range lfs {
+		if lf.LotID == id {
+			result = append(result, lf)
+		}
+	}
+	return result
+}
+
 func NewLotFile(
 	name string,
 	size int,
@@ -51,7 +61,7 @@ var ErrLotFileNotFound = NewError("lot_file_not_found", "lot file not found")
 
 type LotFileStoreQuery interface {
 	ID(ids ...LotFileID) LotFileStoreQuery
-	LotID(id LotID) LotFileStoreQuery
+	LotID(ids ...LotID) LotFileStoreQuery
 	All(ctx context.Context) (LotFileSlice, error)
 }
 

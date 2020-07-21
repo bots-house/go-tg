@@ -2152,6 +2152,7 @@ definitions:
       - avatar
       - full_name
       - username
+      - link
       - lots
       - is_admin
       - joined_from
@@ -2173,6 +2174,14 @@ definitions:
       username:
         type: string
         description: Юзернейм пользователя.
+      link:
+        type: string
+        format: url
+        description: |
+          Ссылка на профиль пользователя в Telegram.
+          В случае если нет username, пользователя сначала перенаправит в бота,
+          а бот уже даст специальную ссылку которая работает только в Telegram.
+
       lots:
         type: integer
         description: Количество лотов пользователя.

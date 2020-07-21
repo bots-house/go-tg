@@ -80,6 +80,7 @@ func NewAdminFullUser(s storage.Storage, user *admin.FullUser) *models.AdminFull
 		FullName:   swag.String(user.Name()),
 		Lots:       swag.Int64(int64(user.Lots)),
 		IsAdmin:    swag.Bool(user.IsAdmin),
+		Link:       swag.String(user.Link),
 		JoinedFrom: swag.String(user.JoinedFrom.String()),
 		JoinedAt:   timeToUnix(user.JoinedAt),
 		Username:   nullStringToString(user.Telegram.Username),

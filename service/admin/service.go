@@ -14,8 +14,10 @@ type Service struct {
 	LotTopic          core.TopicStore
 	LotFile           core.LotFileStore
 	LotCanceledReason core.LotCanceledReasonStore
-	Storage           storage.Storage
-	AvatarResolver    tg.AvatarResolver
+	BotLinkBuilder    *core.BotLinkBuilder
+
+	Storage        storage.Storage
+	AvatarResolver tg.AvatarResolver
 }
 
 var (

@@ -17,15 +17,15 @@ import (
 // swagger:model LandingStats
 type LandingStats struct {
 
-	// Кол-во уникальных посетителей сайта.
+	// Кол-во уникальных посетителей сайта (пока случайное число от 0-10k)
 	// Required: true
 	UniqueVisitorsPerMonth *int64 `json:"unique_visitors_per_month"`
 
-	// Cредний охват одного обьявления на сайте
+	// Cредний охват одного обьявления на сайте (пока случайное число от 0-10k)
 	// Required: true
 	AvgLotSiteReach *int64 `json:"avg_lot_site_reach"`
 
-	// Cредний охват одного обьявления в телеграм канале
+	// Cредний охват одного обьявления в телеграм канале (пока случайное число от 0-10k)
 	// Required: true
 	AvgLotChannelReach *int64 `json:"avg_lot_channel_reach"`
 }

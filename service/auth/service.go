@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"strconv"
 	"sync"
@@ -15,7 +14,6 @@ import (
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/service/admin"
 
-	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/cristalhq/jwt"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
@@ -27,12 +25,12 @@ const (
 )
 
 type Service struct {
-	UserStore     core.UserStore
-	Config        Config
-	Clock         clock.Clock
-	Storage       storage.Storage
-	Bot           *tgbotapi.BotAPI
-	Notifications *admin.Notifications
+	UserStore      core.UserStore
+	Config         Config
+	Clock          clock.Clock
+	Storage        storage.Storage
+	Notifications  *admin.Notifications
+	BotLinkBuilder *core.BotLinkBuilder
 
 	botLogins     map[string]*LoginViaBotInfo
 	botLoginsLock sync.Mutex
@@ -243,9 +241,8 @@ func (srv *Service) saveLoginViaBot(info *LoginViaBotInfo) string {
 
 func (srv *Service) LoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
 	id := srv.saveLoginViaBot(info)
-	url := fmt.Sprintf("https://t.me/%s?start=login_%s", srv.Bot.Self.UserName, id)
 
-	return url, nil
+	return srv.BotLinkBuilder.LoginURL(id), nil
 }
 
 var ErrBotLoginNotFound = errors.New("bot login not found")

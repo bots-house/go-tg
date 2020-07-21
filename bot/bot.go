@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
@@ -44,6 +45,15 @@ func New(cfg Config, client *tgbotapi.BotAPI, authSrv *auth.Service, adminSrv *a
 
 func (bot *Bot) Client() *tgbotapi.BotAPI {
 	return bot.client
+}
+
+func NewLinkBuilder(username string) *core.BotLinkBuilder {
+	return &core.BotLinkBuilder{
+		Useraname: username,
+
+		LoginPrefix:   startLoginPrefix,
+		ContactPrefix: startContactPrefix,
+	}
 }
 
 func (bot *Bot) SetWebhookIfNeed(ctx context.Context, domain string, path string) error {

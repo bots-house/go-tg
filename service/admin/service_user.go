@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/pkg/errors"
@@ -10,6 +11,7 @@ import (
 type FullUser struct {
 	*core.User
 	Lots int
+	Link string
 }
 
 type FullUserList struct {
@@ -22,14 +24,24 @@ var (
 )
 
 func (srv *Service) newFullUser(user *core.User, lotsCountByUser *core.LotsCountByUser) *FullUser {
+	var link string
+	if user.Telegram.Username.Valid {
+		link = fmt.Sprintf("https://t.me/%s", user.Telegram.Username.String)
+	} else {
+		link = srv.BotLinkBuilder.ContactURL(user.Telegram.ID)
+	}
+
 	fullUser := &FullUser{
 		User: user,
+		Link: link,
 	}
+
 	if lotsCountByUser != nil {
 		fullUser.Lots = lotsCountByUser.Lots
 	} else {
 		fullUser.Lots = 0
 	}
+
 	return fullUser
 }
 

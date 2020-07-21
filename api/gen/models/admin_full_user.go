@@ -39,6 +39,13 @@ type AdminFullUser struct {
 	// Required: true
 	Username *string `json:"username"`
 
+	// Ссылка на профиль пользователя в Telegram.
+	// В случае если нет username, пользователя сначала перенаправит в бота,
+	// а бот уже даст специальную ссылку которая работает только в Telegram.
+	//
+	// Required: true
+	Link *string `json:"link"`
+
 	// Количество лотов пользователя.
 	// Required: true
 	Lots *int64 `json:"lots"`
@@ -82,6 +89,10 @@ func (m *AdminFullUser) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateUsername(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLink(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -150,6 +161,15 @@ func (m *AdminFullUser) validateFullName(formats strfmt.Registry) error {
 func (m *AdminFullUser) validateUsername(formats strfmt.Registry) error {
 
 	if err := validate.Required("username", "body", m.Username); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullUser) validateLink(formats strfmt.Registry) error {
+
+	if err := validate.Required("link", "body", m.Link); err != nil {
 		return err
 	}
 

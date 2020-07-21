@@ -10,6 +10,14 @@ func (bot *Bot) send(s tgbotapi.Chattable) error {
 	return err
 }
 
+func (bot *Bot) newReplyMsg(msg *tgbotapi.Message, text string) *tgbotapi.MessageConfig {
+	result := bot.newAnswerMsg(msg, text)
+
+	result.ReplyToMessageID = msg.MessageID
+
+	return result
+}
+
 func (bot *Bot) newAnswerMsg(msg *tgbotapi.Message, text string) *tgbotapi.MessageConfig {
 	result := tgbotapi.NewMessage(
 		int64(msg.From.ID),

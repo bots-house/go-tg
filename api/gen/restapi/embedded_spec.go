@@ -1701,6 +1701,7 @@ func init() {
         "avatar",
         "full_name",
         "username",
+        "link",
         "lots",
         "is_admin",
         "joined_from",
@@ -1726,12 +1727,12 @@ func init() {
         "is_admin": {
           "description": "Админ ли пользователь.",
           "type": "boolean",
-          "x-order": 6
+          "x-order": 7
         },
         "joined_at": {
           "description": "Дата регистрации пользователя.",
           "type": "integer",
-          "x-order": 8
+          "x-order": 9
         },
         "joined_from": {
           "description": "Метод регистрации пользователя.",
@@ -1740,12 +1741,18 @@ func init() {
             "site",
             "bot"
           ],
-          "x-order": 7
+          "x-order": 8
+        },
+        "link": {
+          "description": "Ссылка на профиль пользователя в Telegram.\nВ случае если нет username, пользователя сначала перенаправит в бота,\nа бот уже даст специальную ссылку которая работает только в Telegram.\n",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
         },
         "lots": {
           "description": "Количество лотов пользователя.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
         },
         "telegram_id": {
           "description": "Telegram ID пользователя.",
@@ -1755,7 +1762,7 @@ func init() {
         "updated_at": {
           "description": "Дата обновления данных пользователя.",
           "type": "integer",
-          "x-order": 9
+          "x-order": 10
         },
         "username": {
           "description": "Юзернейм пользователя.",
@@ -2441,17 +2448,17 @@ func init() {
       ],
       "properties": {
         "avg_lot_channel_reach": {
-          "description": "Cредний охват одного обьявления в телеграм канале",
+          "description": "Cредний охват одного обьявления в телеграм канале (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 2
         },
         "avg_lot_site_reach": {
-          "description": "Cредний охват одного обьявления на сайте",
+          "description": "Cредний охват одного обьявления на сайте (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 1
         },
         "unique_visitors_per_month": {
-          "description": "Кол-во уникальных посетителей сайта.",
+          "description": "Кол-во уникальных посетителей сайта (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 0
         }
@@ -5283,6 +5290,7 @@ func init() {
         "avatar",
         "full_name",
         "username",
+        "link",
         "lots",
         "is_admin",
         "joined_from",
@@ -5308,12 +5316,12 @@ func init() {
         "is_admin": {
           "description": "Админ ли пользователь.",
           "type": "boolean",
-          "x-order": 6
+          "x-order": 7
         },
         "joined_at": {
           "description": "Дата регистрации пользователя.",
           "type": "integer",
-          "x-order": 8
+          "x-order": 9
         },
         "joined_from": {
           "description": "Метод регистрации пользователя.",
@@ -5322,12 +5330,18 @@ func init() {
             "site",
             "bot"
           ],
-          "x-order": 7
+          "x-order": 8
+        },
+        "link": {
+          "description": "Ссылка на профиль пользователя в Telegram.\nВ случае если нет username, пользователя сначала перенаправит в бота,\nа бот уже даст специальную ссылку которая работает только в Telegram.\n",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
         },
         "lots": {
           "description": "Количество лотов пользователя.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
         },
         "telegram_id": {
           "description": "Telegram ID пользователя.",
@@ -5337,7 +5351,7 @@ func init() {
         "updated_at": {
           "description": "Дата обновления данных пользователя.",
           "type": "integer",
-          "x-order": 9
+          "x-order": 10
         },
         "username": {
           "description": "Юзернейм пользователя.",
@@ -6042,17 +6056,17 @@ func init() {
       ],
       "properties": {
         "avg_lot_channel_reach": {
-          "description": "Cредний охват одного обьявления в телеграм канале",
+          "description": "Cредний охват одного обьявления в телеграм канале (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 2
         },
         "avg_lot_site_reach": {
-          "description": "Cредний охват одного обьявления на сайте",
+          "description": "Cредний охват одного обьявления на сайте (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 1
         },
         "unique_visitors_per_month": {
-          "description": "Кол-во уникальных посетителей сайта.",
+          "description": "Кол-во уникальных посетителей сайта (пока случайное число от 0-10k)",
           "type": "integer",
           "x-order": 0
         }

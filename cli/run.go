@@ -152,6 +152,8 @@ func run(ctx context.Context) error {
 		defer notifications.Close()
 	}
 
+	botLinkBuilder := bot.NewLinkBuilder(tgClient.Self.UserName)
+
 	authSrv := &auth.Service{
 		UserStore: pg.User,
 		Config: auth.Config{
@@ -161,10 +163,10 @@ func run(ctx context.Context) error {
 			TokenSecret:   cfg.TokenSecret,
 			TokenLifeTime: cfg.TokenLifeTime,
 		},
-		Clock:         clock.New(),
-		Storage:       strg,
-		Bot:           tgClient,
-		Notifications: notifications,
+		Clock:          clock.New(),
+		Storage:        strg,
+		BotLinkBuilder: botLinkBuilder,
+		Notifications:  notifications,
 	}
 
 	resolver := &tg.BotResolver{
@@ -197,8 +199,9 @@ func run(ctx context.Context) error {
 		LotFile:           pg.LotFile,
 		LotCanceledReason: pg.LotCanceledReason,
 		Storage:           strg,
+		BotLinkBuilder:    botLinkBuilder,
 		AvatarResolver: tg.AvatarResolver{
-			Client: &http.Client{},
+			Client: http.DefaultClient,
 		},
 	}
 

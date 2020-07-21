@@ -115,6 +115,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
 		}),
+		LandingGetLandingHandler: landing.GetLandingHandlerFunc(func(params landing.GetLandingParams) middleware.Responder {
+			return middleware.NotImplemented("operation landing.GetLanding has not yet been implemented")
+		}),
 		CatalogGetLotHandler: catalog.GetLotHandlerFunc(func(params catalog.GetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetLot has not yet been implemented")
 		}),
@@ -266,6 +269,8 @@ type BirzzhaAPI struct {
 	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
+	// LandingGetLandingHandler sets the operation handler for the get landing operation
+	LandingGetLandingHandler landing.GetLandingHandler
 	// CatalogGetLotHandler sets the operation handler for the get lot operation
 	CatalogGetLotHandler catalog.GetLotHandler
 	// PersonalAreaGetLotCanceledReasonsHandler sets the operation handler for the get lot canceled reasons operation
@@ -439,6 +444,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogGetFilterBoundariesHandler == nil {
 		unregistered = append(unregistered, "catalog.GetFilterBoundariesHandler")
+	}
+	if o.LandingGetLandingHandler == nil {
+		unregistered = append(unregistered, "landing.GetLandingHandler")
 	}
 	if o.CatalogGetLotHandler == nil {
 		unregistered = append(unregistered, "catalog.GetLotHandler")
@@ -681,6 +689,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/filter-boundaries"] = catalog.NewGetFilterBoundaries(o.context, o.CatalogGetFilterBoundariesHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/landing"] = landing.NewGetLanding(o.context, o.LandingGetLandingHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

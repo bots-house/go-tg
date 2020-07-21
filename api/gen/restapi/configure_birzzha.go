@@ -21,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml962536136 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/0k/708dty_x6c1411whczf7pxvh0000gn/T/swagger.yml253277363 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -164,6 +164,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogGetFilterBoundariesHandler == nil {
 		api.CatalogGetFilterBoundariesHandler = catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
+		})
+	}
+	if api.LandingGetLandingHandler == nil {
+		api.LandingGetLandingHandler = landing.GetLandingHandlerFunc(func(params landing.GetLandingParams) middleware.Responder {
+			return middleware.NotImplemented("operation landing.GetLanding has not yet been implemented")
 		})
 	}
 	if api.CatalogGetLotHandler == nil {

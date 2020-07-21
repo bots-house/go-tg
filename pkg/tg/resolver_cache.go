@@ -70,9 +70,18 @@ func (r *ResolverCache) Resolve(ctx context.Context, query string) (*ResolveResu
 
 func (r *ResolverCache) ResolveByID(ctx context.Context, id int64) (*ResolveResult, error) {
 	result, exists := r.getByID(id)
-	if exists {
-		return result, nil
+	if !exists {
+		var err error
+		result, err = r.resolver.ResolveByID(ctx, id)
+		if err != nil {
+			return nil, errors.Wrap(err, "resolve")
+		}
+
+		if c := result.Channel; c != nil {
+			key := strconv.FormatInt(c.ID, 10)
+			r.cache.SetDefault(key, result)
+		}
 	}
 
-	return r.resolver.ResolveByID(ctx, id)
+	return result, nil
 }

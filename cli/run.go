@@ -203,7 +203,9 @@ func run(ctx context.Context) error {
 	}
 
 	landingSrv := &landing.Service{
-		Review: pg.Review,
+		Review:   pg.Review,
+		Settings: pg.Settings,
+		Resolver: resolverCache,
 	}
 
 	bot := bot.New(bot.Config{

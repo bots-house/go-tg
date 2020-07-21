@@ -93,6 +93,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 
 	// landing
 	api.LandingGetReviewsHandler = landingops.GetReviewsHandlerFunc(h.getReviews)
+	api.LandingGetLandingHandler = landingops.GetLandingHandlerFunc(h.getLanding)
 
 	// personal
 	api.PersonalAreaCreateLotHandler = personalops.CreateLotHandlerFunc(h.createLot)

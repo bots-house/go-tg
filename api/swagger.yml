@@ -57,7 +57,7 @@ tags:
   - name: webhook
     description: |
       Содержит методы для обработки уведомлений от сторонних сервисов.
-  
+
   - name: admin
     description: |
       Содержит методы для работы с админкой.
@@ -260,7 +260,28 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
+  /landing:
+    get:
+      summary: Get Landing
+      operationId: getLanding
+      description: Агрегация данных для рендеринга лендинга.
+      tags: [landing]
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Landing"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /admin/reviews:
     get:
       summary: Get Reviews
@@ -291,7 +312,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/reviews/{id}:
     parameters:
       - in: path
@@ -299,7 +320,7 @@ paths:
         type: integer
         required: true
         description: ID отзыва
-    
+
     delete:
       summary: Delete Review
       operationId: adminDeleteReview
@@ -325,11 +346,11 @@ paths:
       parameters:
         - in: body
           name: body
-          schema: 
+          schema:
             $ref: "#/definitions/ReviewUpdate"
           required: true
           description: Отредактированный отзыв.
-      
+
       responses:
         200:
           description: OK
@@ -611,23 +632,23 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /lots/file:
     post:
       summary: Upload File
       tags: ["personal-area"]
-      description: | 
+      description: |
         Загрузка файла для лота.
 
         Возможные ошибки:
           - `lot_file_size_is_large` - Размер файла превышает 6MB;
           - `lot_file_extension_is_wrong` - Расширение файла не входит в список доступных (pdf, png, jpeg);
-          
+
       operationId: uploadLotFile
 
       consumes:
         - multipart/form-data
-      
+
       parameters:
         - in: formData
           name: file
@@ -910,7 +931,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/users:
     get:
       summary: Get Users
@@ -941,7 +962,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/users/{id}/admin:
     parameters:
       - name: id
@@ -967,7 +988,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/lot/statuses:
     parameters:
       - name: user_id
@@ -980,7 +1001,7 @@ paths:
       description: |
         Получить статусы лотов и количество лотов по ним.
         В случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.
-        
+
       operationId: adminGetLotStatuses
       tags: [admin]
       responses:
@@ -996,7 +1017,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/lots:
     parameters:
       - name: status
@@ -1025,7 +1046,7 @@ paths:
         type: integer
         required: false
         description: ID пользователя.
-    
+
     get:
       summary: Get Lots
       description: Получить лоты.
@@ -1044,7 +1065,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-
 
   /admin/settings:
     get:
@@ -1120,7 +1140,7 @@ paths:
         500:
           description: Internal Server Error
           schema:
-            $ref: "#/definitions/Error"  
+            $ref: "#/definitions/Error"
 
   /admin/settings/topics/{id}:
     parameters:
@@ -1155,7 +1175,7 @@ paths:
         500:
           description: Internal Server Error
           schema:
-            $ref: "#/definitions/Error"  
+            $ref: "#/definitions/Error"
 
     delete:
       summary: Delete Topic
@@ -1173,8 +1193,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-
-
 
   /admin/settings/lot-canceled-reasons:
     post:
@@ -1202,7 +1220,7 @@ paths:
         500:
           description: Internal Server Error
           schema:
-            $ref: "#/definitions/Error"  
+            $ref: "#/definitions/Error"
 
   /admin/settings/lot_canceled_reasons/{id}:
     parameters:
@@ -1237,7 +1255,7 @@ paths:
         500:
           description: Internal Server Error
           schema:
-            $ref: "#/definitions/Error"  
+            $ref: "#/definitions/Error"
 
     delete:
       summary: Delete Lot Canceled Reason
@@ -1979,7 +1997,6 @@ definitions:
         type: integer
         format: int64
         description: Дата создания отзыва.
-  
 
   ReviewList:
     description: Отзывы и их количетсво.
@@ -2103,7 +2120,6 @@ definitions:
         items:
           $ref: "#/definitions/OwnedLotUploadedFile"
 
-  
   LotFavoriteStatus:
     type: object
     description: Ответ после смены статуса избранности лота.
@@ -2113,7 +2129,7 @@ definitions:
       in_favorites:
         type: boolean
         description: Статус избранности лота.
-  
+
   AdminFullUserList:
     type: object
     required:
@@ -2142,7 +2158,7 @@ definitions:
       - joined_at
       - updated_at
     properties:
-      id: 
+      id:
         type: integer
         description: ID пользователя.
       telegram_id:
@@ -2173,7 +2189,6 @@ definitions:
       updated_at:
         type: integer
         description: Дата обновления данных пользователя.
-        
 
   ReviewUpdate:
     description: Отзыв для обновления.
@@ -2183,7 +2198,7 @@ definitions:
       text:
         type: string
         description: Текст отзыва.
-  
+
   LotUploadedFile:
     type: object
     description: Ответ после загрузки файла для лота.
@@ -2205,7 +2220,7 @@ definitions:
       size:
         type: integer
         description: Размер файла в байтах.
-  
+
   OwnedLotUploadedFile:
     type: object
     description: Файл созданного лота.
@@ -2223,7 +2238,7 @@ definitions:
       size:
         type: integer
         description: Размер файла в байтах.
-  
+
   LotStatusesCount:
     type: object
     description: Статусы лотов и количество лотов по ним.
@@ -2267,7 +2282,7 @@ definitions:
       size:
         type: integer
         description: Размер файла в байтах.
-  
+
   AdminFullLot:
     type: object
     description: Список лотов.
@@ -2282,7 +2297,7 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/AdminLot"
-  
+
   AdminLot:
     type: object
     description: Лот.
@@ -2370,7 +2385,6 @@ definitions:
         type: string
         description: Название категории на русском.
 
-
   InputLotCanceledReason:
     type: object
     required:
@@ -2383,7 +2397,6 @@ definitions:
       is_public:
         type: boolean
         description: True, если причина будет показана на странице лота (пока не используется)
-
 
   InputAdminSettingsPrices:
     type: object
@@ -2449,4 +2462,58 @@ definitions:
         items:
           $ref: "#/definitions/LotCanceledReason"
 
-        
+  LandingStats:
+    type: object
+    required:
+      - unique_visitors_per_month
+      - avg_lot_site_reach
+      - avg_lot_channel_reach
+    properties:
+      unique_visitors_per_month:
+        type: integer
+        description: Кол-во уникальных посетителей сайта (пока случайное число от 0-10k)
+      avg_lot_site_reach:
+        type: integer
+        description: Cредний охват одного обьявления на сайте (пока случайное число от 0-10k)
+      avg_lot_channel_reach:
+        type: integer
+        description: Cредний охват одного обьявления в телеграм канале (пока случайное число от 0-10k)
+
+  LandingChannel:
+    type: object
+    required:
+      - title
+      - members_count
+      - join_link
+      - avatar
+      - public_username
+    properties:
+      title:
+        type: string
+        description: Заголовок канала.
+      members_count:
+        type: integer
+        description: Количество подписчиков в канале.
+      join_link:
+        type: string
+        description: Ссылка на канал.
+      avatar:
+        type: string
+        description: Ссылка на аватарку канала.
+      public_username:
+        type: string
+        description: Юзернейм канала.
+
+  Landing:
+    type: object
+    required:
+      - stats
+      - channel
+      - reviews
+    properties:
+      stats:
+        $ref: "#/definitions/LandingStats"
+      channel:
+        $ref: "#/definitions/LandingChannel"
+      reviews:
+        $ref: "#/definitions/ReviewList"

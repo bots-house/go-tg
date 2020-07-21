@@ -777,6 +777,37 @@ func init() {
         }
       }
     },
+    "/landing": {
+      "get": {
+        "security": [],
+        "description": "Агрегация данных для рендеринга лендинга.",
+        "tags": [
+          "landing"
+        ],
+        "summary": "Get Landing",
+        "operationId": "getLanding",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Landing"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lot-canceled-reasons": {
       "get": {
         "security": [],
@@ -986,7 +1017,7 @@ func init() {
     },
     "/lots/file": {
       "post": {
-        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n  \n",
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n",
         "consumes": [
           "multipart/form-data"
         ],
@@ -2339,6 +2370,90 @@ func init() {
           "description": "to",
           "type": "integer",
           "x-order": 1
+        }
+      }
+    },
+    "Landing": {
+      "type": "object",
+      "required": [
+        "stats",
+        "channel",
+        "reviews"
+      ],
+      "properties": {
+        "channel": {
+          "x-order": 1,
+          "$ref": "#/definitions/LandingChannel"
+        },
+        "reviews": {
+          "x-order": 2,
+          "$ref": "#/definitions/ReviewList"
+        },
+        "stats": {
+          "x-order": 0,
+          "$ref": "#/definitions/LandingStats"
+        }
+      }
+    },
+    "LandingChannel": {
+      "type": "object",
+      "required": [
+        "title",
+        "members_count",
+        "join_link",
+        "avatar",
+        "public_username"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку канала.",
+          "type": "string",
+          "x-order": 3
+        },
+        "join_link": {
+          "description": "Ссылка на канал.",
+          "type": "string",
+          "x-order": 2
+        },
+        "members_count": {
+          "description": "Количество подписчиков в канале.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "public_username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 4
+        },
+        "title": {
+          "description": "Заголовок канала.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "LandingStats": {
+      "type": "object",
+      "required": [
+        "unique_visitors_per_month",
+        "avg_lot_site_reach",
+        "avg_lot_channel_reach"
+      ],
+      "properties": {
+        "avg_lot_channel_reach": {
+          "description": "Cредний охват одного обьявления в телеграм канале",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_lot_site_reach": {
+          "description": "Cредний охват одного обьявления на сайте",
+          "type": "integer",
+          "x-order": 1
+        },
+        "unique_visitors_per_month": {
+          "description": "Кол-во уникальных посетителей сайта.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },
@@ -4236,6 +4351,37 @@ func init() {
         }
       }
     },
+    "/landing": {
+      "get": {
+        "security": [],
+        "description": "Агрегация данных для рендеринга лендинга.",
+        "tags": [
+          "landing"
+        ],
+        "summary": "Get Landing",
+        "operationId": "getLanding",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Landing"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/lot-canceled-reasons": {
       "get": {
         "security": [],
@@ -4445,7 +4591,7 @@ func init() {
     },
     "/lots/file": {
       "post": {
-        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n  \n",
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n",
         "consumes": [
           "multipart/form-data"
         ],
@@ -5825,6 +5971,90 @@ func init() {
           "description": "to",
           "type": "integer",
           "x-order": 1
+        }
+      }
+    },
+    "Landing": {
+      "type": "object",
+      "required": [
+        "stats",
+        "channel",
+        "reviews"
+      ],
+      "properties": {
+        "channel": {
+          "x-order": 1,
+          "$ref": "#/definitions/LandingChannel"
+        },
+        "reviews": {
+          "x-order": 2,
+          "$ref": "#/definitions/ReviewList"
+        },
+        "stats": {
+          "x-order": 0,
+          "$ref": "#/definitions/LandingStats"
+        }
+      }
+    },
+    "LandingChannel": {
+      "type": "object",
+      "required": [
+        "title",
+        "members_count",
+        "join_link",
+        "avatar",
+        "public_username"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Ссылка на аватарку канала.",
+          "type": "string",
+          "x-order": 3
+        },
+        "join_link": {
+          "description": "Ссылка на канал.",
+          "type": "string",
+          "x-order": 2
+        },
+        "members_count": {
+          "description": "Количество подписчиков в канале.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "public_username": {
+          "description": "Юзернейм канала.",
+          "type": "string",
+          "x-order": 4
+        },
+        "title": {
+          "description": "Заголовок канала.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "LandingStats": {
+      "type": "object",
+      "required": [
+        "unique_visitors_per_month",
+        "avg_lot_site_reach",
+        "avg_lot_channel_reach"
+      ],
+      "properties": {
+        "avg_lot_channel_reach": {
+          "description": "Cредний охват одного обьявления в телеграм канале",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_lot_site_reach": {
+          "description": "Cредний охват одного обьявления на сайте",
+          "type": "integer",
+          "x-order": 1
+        },
+        "unique_visitors_per_month": {
+          "description": "Кол-во уникальных посетителей сайта.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },

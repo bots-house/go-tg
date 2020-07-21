@@ -12,8 +12,8 @@ type ReviewList struct {
 	Items core.ReviewSlice
 }
 
-func (srv *Service) GetReviews(ctx context.Context, offset int, limit int) (*ReviewList, error) {
-	reviews, err := srv.Review.Query().Limit(limit).Offset(offset).OrderByCreatedAt().All(ctx)
+func (srv *Service) GetReviews(ctx context.Context, offset, limit int) (*ReviewList, error) {
+	reviews, err := srv.Review.Query().Offset(offset).Limit(limit).All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get reviews")
 	}

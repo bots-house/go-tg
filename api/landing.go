@@ -21,3 +21,16 @@ func (h *Handler) getReviews(params landingops.GetReviewsParams) middleware.Resp
 	}
 	return landingops.NewGetReviewsOK().WithPayload(models.NewReviewList(h.Storage, result))
 }
+
+func (h *Handler) getLanding(params landingops.GetLandingParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Landing.GetLanding(ctx)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return landingops.NewGetLandingBadRequest().WithPayload(models.NewError(err2))
+		}
+		return landingops.NewGetLandingInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return landingops.NewGetLandingOK().WithPayload(models.NewLanding(h.Storage, result))
+}

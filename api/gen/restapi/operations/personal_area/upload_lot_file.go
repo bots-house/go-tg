@@ -42,7 +42,6 @@ Upload File
   - `lot_file_extension_is_wrong` - Расширение файла не входит в список доступных (pdf, png, jpeg);
 
 
-
 */
 type UploadLotFile struct {
 	Context *middleware.Context

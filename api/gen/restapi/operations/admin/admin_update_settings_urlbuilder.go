@@ -11,15 +11,15 @@ import (
 	golangswaggerpaths "path"
 )
 
-// AdminUpdateSettingsPricesURL generates an URL for the admin update settings prices operation
-type AdminUpdateSettingsPricesURL struct {
+// AdminUpdateSettingsURL generates an URL for the admin update settings operation
+type AdminUpdateSettingsURL struct {
 	_basePath string
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *AdminUpdateSettingsPricesURL) WithBasePath(bp string) *AdminUpdateSettingsPricesURL {
+func (o *AdminUpdateSettingsURL) WithBasePath(bp string) *AdminUpdateSettingsURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -27,15 +27,15 @@ func (o *AdminUpdateSettingsPricesURL) WithBasePath(bp string) *AdminUpdateSetti
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *AdminUpdateSettingsPricesURL) SetBasePath(bp string) {
+func (o *AdminUpdateSettingsURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *AdminUpdateSettingsPricesURL) Build() (*url.URL, error) {
+func (o *AdminUpdateSettingsURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/admin/settings/prices"
+	var _path = "/admin/settings"
 
 	_basePath := o._basePath
 	if _basePath == "" {
@@ -47,7 +47,7 @@ func (o *AdminUpdateSettingsPricesURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *AdminUpdateSettingsPricesURL) Must(u *url.URL, err error) *url.URL {
+func (o *AdminUpdateSettingsURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -58,17 +58,17 @@ func (o *AdminUpdateSettingsPricesURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *AdminUpdateSettingsPricesURL) String() string {
+func (o *AdminUpdateSettingsURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *AdminUpdateSettingsPricesURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *AdminUpdateSettingsURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on AdminUpdateSettingsPricesURL")
+		return nil, errors.New("scheme is required for a full url on AdminUpdateSettingsURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on AdminUpdateSettingsPricesURL")
+		return nil, errors.New("host is required for a full url on AdminUpdateSettingsURL")
 	}
 
 	base, err := o.Build()
@@ -82,6 +82,6 @@ func (o *AdminUpdateSettingsPricesURL) BuildFull(scheme, host string) (*url.URL,
 }
 
 // StringFull returns the string representation of a complete url
-func (o *AdminUpdateSettingsPricesURL) StringFull(scheme, host string) string {
+func (o *AdminUpdateSettingsURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

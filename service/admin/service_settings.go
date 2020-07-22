@@ -66,9 +66,12 @@ func (srv *Service) GetSettings(ctx context.Context, user *core.User) (*FullSett
 }
 
 type SettingsPriceInput struct {
-	Application *money.Money
-	Change      *money.Money
-	Cashier     string
+	Application    *money.Money
+	Change         *money.Money
+	Cashier        string
+	PrivateID      int64
+	PublicUsername string
+	PrivateLink    string
 }
 
 func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, input *SettingsPriceInput) (*FullSettings, error) {
@@ -86,6 +89,9 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 	settings.UpdatedAt = null.TimeFrom(time.Now())
 	settings.UpdatedBy = user.ID
 	settings.CashierUsername = input.Cashier
+	settings.Channel.PrivateID = input.PrivateID
+	settings.Channel.PublicUsername = input.PublicUsername
+	settings.Channel.PrivateLink = input.PrivateLink
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
 		return nil, errors.Wrap(err, "update settings")

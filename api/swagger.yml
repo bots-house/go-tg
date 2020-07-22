@@ -1085,20 +1085,18 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-
-  /admin/settings/prices:
     put:
       parameters:
         - in: body
           required: true
-          name: prices
-          description: Настройки цены.
+          name: settings
+          description: Настройки.
           schema:
-            $ref: "#/definitions/InputAdminSettingsPrices"
+            $ref: "#/definitions/InputAdminSettings"
 
-      summary: Update Settings Prices
-      description: Обновление цен в настройках.
-      operationId: adminUpdateSettingsPrices
+      summary: Update Settings
+      description: Обновление настроек.
+      operationId: adminUpdateSettings
       tags: [admin]
       responses:
         200:
@@ -2407,20 +2405,16 @@ definitions:
         type: boolean
         description: True, если причина будет показана на странице лота (пока не используется)
 
-  InputAdminSettingsPrices:
+  InputAdminSettings:
     type: object
     required:
-      - application
-      - change
-      - cashier
+      - prices
+      - channel
     properties:
-      application:
-        $ref: "#/definitions/Money"
-      change:
-        $ref: "#/definitions/Money"
-      cashier:
-        type: string
-        description: Кассир.
+      prices:
+        $ref: "#/definitions/AdminSettingsPrices"
+      channel:
+        $ref: "#/definitions/AdminSettingsChannel"
 
   AdminSettingsPrices:
     type: object

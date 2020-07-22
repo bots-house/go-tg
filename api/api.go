@@ -119,7 +119,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminGetLotsHandler = adminops.AdminGetLotsHandlerFunc(h.adminGetLots)
 
 	api.AdminAdminGetSettingsHandler = adminops.AdminGetSettingsHandlerFunc(h.adminGetSettings)
-	api.AdminAdminUpdateSettingsPricesHandler = adminops.AdminUpdateSettingsPricesHandlerFunc(h.adminUpdateSettingsPrices)
+	api.AdminAdminUpdateSettingsHandler = adminops.AdminUpdateSettingsHandlerFunc(h.adminUpdateSettings)
 
 	api.AdminAdminCreateTopicHandler = adminops.AdminCreateTopicHandlerFunc(h.adminCreateTopic)
 	api.AdminAdminUpdateTopicHandler = adminops.AdminUpdateTopicHandlerFunc(h.adminUpdateTopic)

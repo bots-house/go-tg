@@ -283,6 +283,45 @@ func init() {
             }
           }
         }
+      },
+      "put": {
+        "description": "Обновление настроек.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings",
+        "operationId": "adminUpdateSettings",
+        "parameters": [
+          {
+            "description": "Настройки.",
+            "name": "settings",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminSettings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/admin/settings/lot-canceled-reasons": {
@@ -400,47 +439,6 @@ func init() {
           "required": true
         }
       ]
-    },
-    "/admin/settings/prices": {
-      "put": {
-        "description": "Обновление цен в настройках.",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Update Settings Prices",
-        "operationId": "adminUpdateSettingsPrices",
-        "parameters": [
-          {
-            "description": "Настройки цены.",
-            "name": "prices",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/InputAdminSettingsPrices"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/AdminSettings"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
     },
     "/admin/settings/topics": {
       "post": {
@@ -2298,26 +2296,20 @@ func init() {
         "type": "Identity"
       }
     },
-    "InputAdminSettingsPrices": {
+    "InputAdminSettings": {
       "type": "object",
       "required": [
-        "application",
-        "change",
-        "cashier"
+        "prices",
+        "channel"
       ],
       "properties": {
-        "application": {
-          "x-order": 0,
-          "$ref": "#/definitions/Money"
-        },
-        "cashier": {
-          "description": "Кассир.",
-          "type": "string",
-          "x-order": 2
-        },
-        "change": {
+        "channel": {
           "x-order": 1,
-          "$ref": "#/definitions/Money"
+          "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "prices": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsPrices"
         }
       }
     },
@@ -3896,6 +3888,45 @@ func init() {
             }
           }
         }
+      },
+      "put": {
+        "description": "Обновление настроек.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings",
+        "operationId": "adminUpdateSettings",
+        "parameters": [
+          {
+            "description": "Настройки.",
+            "name": "settings",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminSettings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettings"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/admin/settings/lot-canceled-reasons": {
@@ -4013,47 +4044,6 @@ func init() {
           "required": true
         }
       ]
-    },
-    "/admin/settings/prices": {
-      "put": {
-        "description": "Обновление цен в настройках.",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Update Settings Prices",
-        "operationId": "adminUpdateSettingsPrices",
-        "parameters": [
-          {
-            "description": "Настройки цены.",
-            "name": "prices",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/InputAdminSettingsPrices"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/AdminSettings"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
     },
     "/admin/settings/topics": {
       "post": {
@@ -5950,26 +5940,20 @@ func init() {
         "type": "Identity"
       }
     },
-    "InputAdminSettingsPrices": {
+    "InputAdminSettings": {
       "type": "object",
       "required": [
-        "application",
-        "change",
-        "cashier"
+        "prices",
+        "channel"
       ],
       "properties": {
-        "application": {
-          "x-order": 0,
-          "$ref": "#/definitions/Money"
-        },
-        "cashier": {
-          "description": "Кассир.",
-          "type": "string",
-          "x-order": 2
-        },
-        "change": {
+        "channel": {
           "x-order": 1,
-          "$ref": "#/definitions/Money"
+          "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "prices": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsPrices"
         }
       }
     },

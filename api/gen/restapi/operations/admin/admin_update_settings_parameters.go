@@ -16,46 +16,46 @@ import (
 	"github.com/bots-house/birzzha/api/gen/models"
 )
 
-// NewAdminUpdateSettingsPricesParams creates a new AdminUpdateSettingsPricesParams object
+// NewAdminUpdateSettingsParams creates a new AdminUpdateSettingsParams object
 // no default values defined in spec.
-func NewAdminUpdateSettingsPricesParams() AdminUpdateSettingsPricesParams {
+func NewAdminUpdateSettingsParams() AdminUpdateSettingsParams {
 
-	return AdminUpdateSettingsPricesParams{}
+	return AdminUpdateSettingsParams{}
 }
 
-// AdminUpdateSettingsPricesParams contains all the bound params for the admin update settings prices operation
+// AdminUpdateSettingsParams contains all the bound params for the admin update settings operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters adminUpdateSettingsPrices
-type AdminUpdateSettingsPricesParams struct {
+// swagger:parameters adminUpdateSettings
+type AdminUpdateSettingsParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*Настройки цены.
+	/*Настройки.
 	  Required: true
 	  In: body
 	*/
-	Prices *models.InputAdminSettingsPrices
+	Settings *models.InputAdminSettings
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewAdminUpdateSettingsPricesParams() beforehand.
-func (o *AdminUpdateSettingsPricesParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewAdminUpdateSettingsParams() beforehand.
+func (o *AdminUpdateSettingsParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.InputAdminSettingsPrices
+		var body models.InputAdminSettings
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("prices", "body", ""))
+				res = append(res, errors.Required("settings", "body", ""))
 			} else {
-				res = append(res, errors.NewParseError("prices", "body", "", err))
+				res = append(res, errors.NewParseError("settings", "body", "", err))
 			}
 		} else {
 			// validate body object
@@ -64,11 +64,11 @@ func (o *AdminUpdateSettingsPricesParams) BindRequest(r *http.Request, route *mi
 			}
 
 			if len(res) == 0 {
-				o.Prices = &body
+				o.Settings = &body
 			}
 		}
 	} else {
-		res = append(res, errors.Required("prices", "body", ""))
+		res = append(res, errors.Required("settings", "body", ""))
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

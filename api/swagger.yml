@@ -2412,11 +2412,15 @@ definitions:
     required:
       - application
       - change
+      - cashier
     properties:
       application:
         $ref: "#/definitions/Money"
       change:
         $ref: "#/definitions/Money"
+      cashier:
+        type: string
+        description: Кассир.
 
   AdminSettingsPrices:
     type: object

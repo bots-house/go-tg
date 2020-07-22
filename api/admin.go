@@ -129,6 +129,7 @@ func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsP
 		&admin.SettingsPriceInput{
 			Application: models.ToMoney(params.Prices.Application),
 			Change:      models.ToMoney(params.Prices.Change),
+			Cashier:     swag.StringValue(params.Prices.Cashier),
 		},
 	)
 	if err != nil {

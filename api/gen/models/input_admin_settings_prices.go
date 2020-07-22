@@ -24,6 +24,10 @@ type InputAdminSettingsPrices struct {
 	// change
 	// Required: true
 	Change *Money `json:"change"`
+
+	// Кассир.
+	// Required: true
+	Cashier *string `json:"cashier"`
 }
 
 // Validate validates this input admin settings prices
@@ -35,6 +39,10 @@ func (m *InputAdminSettingsPrices) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateChange(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCashier(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -75,6 +83,15 @@ func (m *InputAdminSettingsPrices) validateChange(formats strfmt.Registry) error
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *InputAdminSettingsPrices) validateCashier(formats strfmt.Registry) error {
+
+	if err := validate.Required("cashier", "body", m.Cashier); err != nil {
+		return err
 	}
 
 	return nil

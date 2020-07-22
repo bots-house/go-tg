@@ -51,6 +51,7 @@ func (srv *Service) GetSettings(ctx context.Context, user *core.User) (*FullSett
 type SettingsPriceInput struct {
 	Application *money.Money
 	Change      *money.Money
+	Cashier     string
 }
 
 func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, input *SettingsPriceInput) (*FullSettings, error) {
@@ -67,13 +68,13 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 	settings.Prices.Change = input.Change
 	settings.UpdatedAt = null.TimeFrom(time.Now())
 	settings.UpdatedBy = user.ID
+	settings.CashierUsername = input.Cashier
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
 		return nil, errors.Wrap(err, "update settings")
 	}
 
 	return srv.newFullSettings(ctx, settings)
-
 }
 
 func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name string) (*core.Topic, error) {

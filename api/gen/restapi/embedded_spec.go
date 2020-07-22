@@ -2264,12 +2264,18 @@ func init() {
       "type": "object",
       "required": [
         "application",
-        "change"
+        "change",
+        "cashier"
       ],
       "properties": {
         "application": {
           "x-order": 0,
           "$ref": "#/definitions/Money"
+        },
+        "cashier": {
+          "description": "Кассир.",
+          "type": "string",
+          "x-order": 2
         },
         "change": {
           "x-order": 1,
@@ -5872,12 +5878,18 @@ func init() {
       "type": "object",
       "required": [
         "application",
-        "change"
+        "change",
+        "cashier"
       ],
       "properties": {
         "application": {
           "x-order": 0,
           "$ref": "#/definitions/Money"
+        },
+        "cashier": {
+          "description": "Кассир.",
+          "type": "string",
+          "x-order": 2
         },
         "change": {
           "x-order": 1,

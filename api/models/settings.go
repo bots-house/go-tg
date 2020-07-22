@@ -19,7 +19,7 @@ func NewSettings(in *admin.FullSettings) *models.AdminSettings {
 			JoinLink:       swag.String(in.Channel.PrivateLink),
 			PublicUsername: swag.String(in.Channel.PublicUsername),
 		},
-		Topics:             NewTopicSlice(in.Topics),
+		Topics:             NewAdminFullTopicSlice(in.Topics),
 		LotCanceledReasons: NewLotCanceledReasonSlice(in.CanceledReasons),
 	}
 }

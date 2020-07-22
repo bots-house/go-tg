@@ -11,14 +11,19 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
+type FullTopic struct {
+	*core.Topic
+	Lots int
+}
+
 type FullSettings struct {
 	*core.Settings
-	Topics          core.TopicSlice
+	Topics          []*FullTopic
 	CanceledReasons core.LotCanceledReasonSlice
 }
 
 func (srv *Service) newFullSettings(ctx context.Context, settings *core.Settings) (*FullSettings, error) {
-	topics, err := srv.LotTopic.Query().All(ctx)
+	topics, err := srv.Topic.Query().All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get topics")
 	}
@@ -28,9 +33,21 @@ func (srv *Service) newFullSettings(ctx context.Context, settings *core.Settings
 		return nil, errors.Wrap(err, "get canceled reasons")
 	}
 
+	fullTopics := make([]*FullTopic, len(topics))
+	for i, topic := range topics {
+		lots, err := srv.LotTopic.Query().TopicID(topic.ID).Count(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "get lots count")
+		}
+		fullTopics[i] = &FullTopic{
+			Topic: topic,
+			Lots:  lots,
+		}
+	}
+
 	return &FullSettings{
 		Settings:        settings,
-		Topics:          topics,
+		Topics:          fullTopics,
 		CanceledReasons: canceledReasons,
 	}, nil
 }
@@ -83,28 +100,37 @@ func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name strin
 	}
 
 	topic := core.NewTopic(name)
-	if err := srv.LotTopic.Add(ctx, topic); err != nil {
+	if err := srv.Topic.Add(ctx, topic); err != nil {
 		return nil, errors.Wrap(err, "create topic")
 	}
 	return topic, nil
 }
 
-func (srv *Service) UpdateTopic(ctx context.Context, user *core.User, id core.TopicID, name string) (*core.Topic, error) {
+func (srv *Service) UpdateTopic(ctx context.Context, user *core.User, id core.TopicID, name string) (*FullTopic, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
 
-	topic, err := srv.LotTopic.Query().ID(id).One(ctx)
+	topic, err := srv.Topic.Query().ID(id).One(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get topics")
 	}
 
 	topic.Name = name
 	topic.Slug = slug.Make(name)
-	if err := srv.LotTopic.Update(ctx, topic); err != nil {
+	if err := srv.Topic.Update(ctx, topic); err != nil {
 		return nil, errors.Wrap(err, "updaet topic")
 	}
-	return topic, nil
+
+	lots, err := srv.LotTopic.Query().TopicID(topic.ID).Count(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lots count")
+	}
+
+	return &FullTopic{
+		Topic: topic,
+		Lots:  lots,
+	}, nil
 }
 
 func (srv *Service) DeleteTopic(ctx context.Context, user *core.User, id core.TopicID) error {
@@ -112,7 +138,7 @@ func (srv *Service) DeleteTopic(ctx context.Context, user *core.User, id core.To
 		return err
 	}
 
-	if err := srv.LotTopic.Delete(ctx, id); err != nil {
+	if err := srv.Topic.Delete(ctx, id); err != nil {
 		return err
 	}
 	return nil

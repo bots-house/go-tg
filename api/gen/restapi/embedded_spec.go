@@ -506,7 +506,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topic"
+              "$ref": "#/definitions/AdminTopic"
             }
           },
           "400": {
@@ -1959,7 +1959,7 @@ func init() {
         "topics": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Topic"
+            "$ref": "#/definitions/AdminTopic"
           },
           "x-order": 2
         }
@@ -2010,6 +2010,44 @@ func init() {
         "change": {
           "x-order": 1,
           "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "AdminTopic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "lots",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 4
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lots": {
+          "description": "Количетсво лотов по данному топику.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный)",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -4081,7 +4119,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topic"
+              "$ref": "#/definitions/AdminTopic"
             }
           },
           "400": {
@@ -5554,7 +5592,7 @@ func init() {
         "topics": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Topic"
+            "$ref": "#/definitions/AdminTopic"
           },
           "x-order": 2
         }
@@ -5605,6 +5643,44 @@ func init() {
         "change": {
           "x-order": 1,
           "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "AdminTopic": {
+      "description": "Категория лота",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "lots",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 4
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lots": {
+          "description": "Количетсво лотов по данному топику.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
+          "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный)",
+          "type": "string",
+          "x-order": 2
         }
       }
     },

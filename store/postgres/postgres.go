@@ -43,7 +43,7 @@ func NewPostgres(db *sql.DB) *Postgres {
 		LotFile:           &LotFileStore{ContextExecutor: db},
 	}
 
-	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx}
+	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx, executor: db}
 	pg.Lot = &LotStore{ContextExecutor: db, txier: pg.Tx, lotTopicStore: pg.LotTopic}
 	pg.Settings = &SettingsStore{db: db, txier: pg.Tx}
 

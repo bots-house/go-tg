@@ -29,7 +29,7 @@ type AdminSettings struct {
 
 	// topics
 	// Required: true
-	Topics []*Topic `json:"topics"`
+	Topics []*AdminTopic `json:"topics"`
 
 	// lot canceled reasons
 	// Required: true

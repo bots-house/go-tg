@@ -11,7 +11,8 @@ type Service struct {
 	User              core.UserStore
 	Lot               core.LotStore
 	Settings          core.SettingsStore
-	LotTopic          core.TopicStore
+	Topic             core.TopicStore
+	LotTopic          core.LotTopicStore
 	LotFile           core.LotFileStore
 	LotCanceledReason core.LotCanceledReasonStore
 	BotLinkBuilder    *core.BotLinkBuilder

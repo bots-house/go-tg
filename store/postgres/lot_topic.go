@@ -5,15 +5,19 @@ import (
 	"database/sql"
 
 	"github.com/pkg/errors"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store"
+	"github.com/bots-house/birzzha/store/postgres/dal"
 	"github.com/bots-house/birzzha/store/postgres/shared"
 )
 
 type LotTopicStore struct {
-	db    *sql.DB
-	txier store.Txier
+	executor boil.ContextExecutor
+	db       *sql.DB
+	txier    store.Txier
 }
 
 func (ls *LotTopicStore) set(ctx context.Context, lot core.LotID, topics []core.TopicID) error {
@@ -96,4 +100,29 @@ func (ls *LotTopicStore) Get(ctx context.Context, lotID core.LotID) (core.TopicS
 	}
 
 	return result, nil
+}
+
+func (ls *LotTopicStore) Query() core.LotTopicStoreQuery {
+	return &LotTopicStoreQuery{store: ls}
+}
+
+type LotTopicStoreQuery struct {
+	mods  []qm.QueryMod
+	store *LotTopicStore
+}
+
+func (ltsq *LotTopicStoreQuery) TopicID(ids ...core.TopicID) core.LotTopicStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+	ltsq.mods = append(ltsq.mods, dal.LotTopicWhere.TopicID.IN(idsInt))
+	return ltsq
+}
+
+func (ltsq *LotTopicStoreQuery) Count(ctx context.Context) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, ltsq.store.executor)
+
+	count, err := dal.LotTopics(ltsq.mods...).Count(ctx, executor)
+	return int(count), err
 }

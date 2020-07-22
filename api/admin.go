@@ -164,7 +164,7 @@ func (h *Handler) adminUpdateTopic(params adminops.AdminUpdateTopicParams, ident
 		}
 		return adminops.NewAdminUpdateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return adminops.NewAdminUpdateTopicOK().WithPayload(models.NewTopic(result))
+	return adminops.NewAdminUpdateTopicOK().WithPayload(models.NewAdminFullTopic(result))
 }
 
 func (h *Handler) adminDeleteTopic(params adminops.AdminDeleteTopicParams, identity *authz.Identity) middleware.Responder {

@@ -1167,7 +1167,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Topic"
+            $ref: "#/definitions/AdminTopic"
         400:
           description: Bad Request
           schema:
@@ -2454,6 +2454,33 @@ definitions:
         type: string
         description: Юзернейм канала.
 
+
+  AdminTopic:
+    type: object
+    description: Категория лота
+    required:
+      - id
+      - name
+      - slug
+      - lots
+      - created_at
+    properties:
+      id:
+        type: integer
+        description: Уникальный ID категории.
+      name:
+        type: string
+        description: Название категории на русском.
+      slug:
+        type: string
+        description: Slug (уникальный)
+      lots:
+        type: integer
+        description: Количетсво лотов по данному топику.
+      created_at:
+        type: integer
+        description: Дата создания
+
   AdminSettings:
     type: object
     required:
@@ -2469,7 +2496,7 @@ definitions:
       topics:
         type: array
         items:
-          $ref: "#/definitions/Topic"
+          $ref: "#/definitions/AdminTopic"
       lot_canceled_reasons:
         type: array
         items:

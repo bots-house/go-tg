@@ -11,6 +11,7 @@ import (
 
 type Service struct {
 	Lot               core.LotStore
+	LotFavorite       core.FavoriteStore
 	Resolver          tg.Resolver
 	Payment           core.PaymentStore
 	Txier             store.Txier

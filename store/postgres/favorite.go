@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/store"
 	"github.com/bots-house/birzzha/store/postgres/dal"
 	"github.com/bots-house/birzzha/store/postgres/shared"
 	"github.com/pkg/errors"
@@ -81,6 +82,24 @@ func (fsq *FavoriteStoreQuery) LotID(ids ...core.LotID) core.FavoriteStoreQuery 
 
 func (fsq *FavoriteStoreQuery) UserID(id core.UserID) core.FavoriteStoreQuery {
 	fsq.mods = append(fsq.mods, dal.FavoriteWhere.UserID.EQ(int(id)))
+	return fsq
+}
+
+func (fsq *FavoriteStoreQuery) SortBy(field core.FavoriteField, typ store.SortType) core.FavoriteStoreQuery {
+	var orderBy string
+
+	if field == core.FavoriteFieldCreatedAt {
+		orderBy = dal.FavoriteColumns.CreatedAt
+	}
+
+	switch typ {
+	case store.SortTypeAsc:
+		orderBy += " ASC"
+	case store.SortTypeDesc:
+		orderBy += " DESC"
+	}
+
+	fsq.mods = append(fsq.mods, qm.OrderBy(orderBy))
 	return fsq
 }
 

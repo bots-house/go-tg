@@ -10,6 +10,7 @@ import (
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/personal"
+	"github.com/bots-house/birzzha/store"
 )
 
 func (h *Handler) createLot(params personalops.CreateLotParams, identity *authz.Identity) middleware.Responder {
@@ -163,4 +164,45 @@ func (h *Handler) uploadLotFile(params personalops.UploadLotFileParams, identity
 		return personalops.NewUploadLotFileInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 	return personalops.NewUploadLotFileCreated().WithPayload(models.NewUploadedLotFile(h.Storage, result))
+}
+
+func (h *Handler) getFavoriteLots(params personalops.GetFavoriteLotsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	query := &personal.LotsQuery{}
+
+	if params.SortBy != nil {
+		sortBy, err := core.ParseLotField(swag.StringValue(params.SortBy))
+		if err != nil {
+			if err2, ok := errors.Cause(err).(*core.Error); ok {
+				return personalops.NewGetFavoriteLotsBadRequest().WithPayload(models.NewError(err2))
+			}
+			return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		}
+		query.SortBy = sortBy
+	}
+
+	if params.SortByType != nil {
+		v := swag.StringValue(params.SortByType)
+		switch v {
+		case "asc":
+			query.SortByType = store.SortTypeAsc
+		case "desc":
+			query.SortByType = store.SortTypeDesc
+		}
+	}
+
+	result, err := h.Personal.GetFavoriteLots(ctx,
+		identity.User,
+		query,
+		int(swag.Int64Value(params.Limit)),
+		int(swag.Int64Value(params.Offset)),
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewGetFavoriteLotsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return personalops.NewGetFavoriteLotsOK().WithPayload(models.NewPersonalLotList(h.Storage, result))
 }

@@ -57,8 +57,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Ident
 		PaybackPeriodTo:    swag.Float64Value(params.PaybackPeriodTo),
 		Offset:             int(swag.Int64Value(params.Offset)),
 		Limit:              int(swag.Int64Value(params.Limit)),
-		//SortBy:             sortBy,
-		SortByType: 0,
+		SortByType:         0,
 	}
 
 	if params.SortBy != nil {

@@ -603,6 +603,58 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+
+  /user/favorites:
+    get:
+      summary: Get Favorite Lots
+      operationId: getFavoriteLots
+      tags: ["personal-area"]
+      description: Возвращает избранные лоты пользователя.
+      parameters:
+        - in: query
+          name: sort_by
+          type: string
+          enum:
+            - members_count
+            - price
+            - price_per_member
+            - price_per_view
+            - daily_coverage
+            - monthly_income
+            - payback_period
+            - created_at
+
+        - in: query
+          name: sort_by_type
+          type: string
+          enum:
+            - asc
+            - desc
+          description: сортировать от меньшего к большему (`asc`), или от большего к меньшему (`desc`)
+        - in: query
+          name: limit
+          type: integer
+          description: Лимит лотов.
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          description: Офсет лотов.
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LotList"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /lots/{id}:
     parameters:
       - name: id

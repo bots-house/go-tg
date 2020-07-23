@@ -112,6 +112,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
 		}),
+		PersonalAreaGetFavoriteLotsHandler: personal_area.GetFavoriteLotsHandlerFunc(func(params personal_area.GetFavoriteLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetFavoriteLots has not yet been implemented")
+		}),
 		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
 		}),
@@ -267,6 +270,8 @@ type BirzzhaAPI struct {
 	PersonalAreaGetApplicationInoviceHandler personal_area.GetApplicationInoviceHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
 	BotGetBotInfoHandler bot.GetBotInfoHandler
+	// PersonalAreaGetFavoriteLotsHandler sets the operation handler for the get favorite lots operation
+	PersonalAreaGetFavoriteLotsHandler personal_area.GetFavoriteLotsHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
 	// LandingGetLandingHandler sets the operation handler for the get landing operation
@@ -441,6 +446,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.BotGetBotInfoHandler == nil {
 		unregistered = append(unregistered, "bot.GetBotInfoHandler")
+	}
+	if o.PersonalAreaGetFavoriteLotsHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetFavoriteLotsHandler")
 	}
 	if o.CatalogGetFilterBoundariesHandler == nil {
 		unregistered = append(unregistered, "catalog.GetFilterBoundariesHandler")
@@ -685,6 +693,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/bot"] = bot.NewGetBotInfo(o.context, o.BotGetBotInfoHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/user/favorites"] = personal_area.NewGetFavoriteLots(o.context, o.PersonalAreaGetFavoriteLotsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

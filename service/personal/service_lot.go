@@ -10,6 +10,7 @@ import (
 	"github.com/volatiletech/null/v8"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/store"
 )
 
 type LotInput struct {
@@ -22,6 +23,16 @@ type LotInput struct {
 	Comment       string
 	Extra         []string
 	Files         []core.LotFileID
+}
+
+type LotsQuery struct {
+	SortBy     core.LotField
+	SortByType store.SortType
+}
+
+type LotList struct {
+	Total int
+	Items core.LotSlice
 }
 
 type OwnedLot struct {
@@ -260,5 +271,50 @@ func (srv *Service) UploadLotFile(
 		Path: path,
 		Name: filename,
 		Size: int(size),
+	}, nil
+}
+
+func (srv *Service) GetFavoriteLots(
+	ctx context.Context,
+	user *core.User,
+	query *LotsQuery,
+	limit int,
+	offset int,
+) (*LotList, error) {
+	favorites, err := srv.LotFavorite.Query().UserID(user.ID).SortBy(core.FavoriteFieldCreatedAt, store.SortTypeDesc).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get favorites")
+	}
+
+	lotIDs := make([]core.LotID, len(favorites))
+	for i, f := range favorites {
+		lotIDs[i] = f.LotID
+	}
+
+	var lots core.LotSlice
+	var finalLots core.LotSlice
+
+	if query.SortBy != 0 {
+		lots, err = srv.Lot.Query().SortBy(query.SortBy, query.SortByType).ID(lotIDs...).Limit(limit).Offset(offset).All(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "get lots")
+		}
+		finalLots = lots
+	} else {
+		lots, err = srv.Lot.Query().ID(lotIDs...).All(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "get lots")
+		}
+		for _, f := range favorites {
+			finalLots = append(finalLots, lots.Find(f.LotID))
+		}
+		if offset != 0 || limit != 0 {
+			finalLots = finalLots[offset : offset+limit]
+		}
+	}
+
+	return &LotList{
+		Total: len(favorites),
+		Items: finalLots,
 	}, nil
 }

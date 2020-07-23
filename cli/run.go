@@ -229,6 +229,7 @@ func run(ctx context.Context) error {
 		Resolver:          resolver,
 		Payment:           pg.Payment,
 		Txier:             pg.Tx,
+		LotFavorite:       pg.Favorite,
 		Storage:           strg,
 		Settings:          pg.Settings,
 		Gateways:          gateways,

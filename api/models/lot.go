@@ -258,3 +258,40 @@ func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot 
 		Items: newAdminLotSlice(s, in.Items),
 	}
 }
+
+func NewPersonalItemLot(s storage.Storage, in *core.Lot) *models.LotListItem {
+	lotListItem := &models.LotListItem{
+		ID:          swag.Int64(int64(in.ID)),
+		Name:        swag.String(in.Name),
+		Username:    nullStringToString(in.Username),
+		Link:        swag.String(in.Link()),
+		Price:       newLotPrice(in.Price),
+		Comment:     swag.String(in.Comment),
+		Metrics:     newLotMetrics(in.Metrics),
+		InFavorites: swag.Bool((true)),
+		Topics:      NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:   timeToUnix(in.CreatedAt),
+	}
+	if in.Avatar.Valid {
+		lotListItem.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+
+	return lotListItem
+}
+
+func NewPersonalLotList(s storage.Storage, list *personal.LotList) *models.LotList {
+	return &models.LotList{
+		Items: NewPersonalItemLotSlice(s, list.Items),
+		Total: swag.Int64(int64(list.Total)),
+	}
+}
+
+func NewPersonalItemLotSlice(s storage.Storage, in core.LotSlice) []*models.LotListItem {
+	result := make([]*models.LotListItem, len(in))
+
+	for i, v := range in {
+		result[i] = NewPersonalItemLot(s, v)
+	}
+
+	return result
+}

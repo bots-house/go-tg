@@ -1509,6 +1509,75 @@ func init() {
         }
       }
     },
+    "/user/favorites": {
+      "get": {
+        "description": "Возвращает избранные лоты пользователя.",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Favorite Lots",
+        "operationId": "getFavoriteLots",
+        "parameters": [
+          {
+            "enum": [
+              "members_count",
+              "price",
+              "price_per_member",
+              "price_per_view",
+              "daily_coverage",
+              "monthly_income",
+              "payback_period",
+              "created_at"
+            ],
+            "type": "string",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
+            "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит лотов.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет лотов.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotList"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/user/lots": {
       "get": {
         "description": "Получить список лотов пользователя.\n",
@@ -5117,6 +5186,75 @@ func init() {
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/favorites": {
+      "get": {
+        "description": "Возвращает избранные лоты пользователя.",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Favorite Lots",
+        "operationId": "getFavoriteLots",
+        "parameters": [
+          {
+            "enum": [
+              "members_count",
+              "price",
+              "price_per_member",
+              "price_per_view",
+              "daily_coverage",
+              "monthly_income",
+              "payback_period",
+              "created_at"
+            ],
+            "type": "string",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
+            "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Лимит лотов.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет лотов.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotList"
             }
           },
           "400": {

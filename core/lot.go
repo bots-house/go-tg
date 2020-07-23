@@ -275,6 +275,15 @@ func (lots LotSlice) OwnerIDs() []UserID {
 	return result
 }
 
+func (lots LotSlice) Find(id LotID) *Lot {
+	for _, lot := range lots {
+		if lot.ID == id {
+			return lot
+		}
+	}
+	return nil
+}
+
 func (lots LotSlice) CanceledReasonIDs() []LotCanceledReasonID {
 	result := make([]LotCanceledReasonID, len(lots))
 	for i, lot := range lots {

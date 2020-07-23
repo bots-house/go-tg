@@ -21,6 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
+
 //go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml545760419 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
@@ -159,6 +160,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.BotGetBotInfoHandler == nil {
 		api.BotGetBotInfoHandler = bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaGetFavoriteLotsHandler == nil {
+		api.PersonalAreaGetFavoriteLotsHandler = personal_area.GetFavoriteLotsHandlerFunc(func(params personal_area.GetFavoriteLotsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetFavoriteLots has not yet been implemented")
 		})
 	}
 	if api.CatalogGetFilterBoundariesHandler == nil {

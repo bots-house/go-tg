@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 	"time"
+
+	"github.com/bots-house/birzzha/store"
 )
 
 type FavoriteID int
@@ -22,6 +24,43 @@ type Favorite struct {
 }
 
 type FavoriteSlice []*Favorite
+
+type FavoriteField int8
+
+const (
+	FavoriteFieldCreatedAt FavoriteField = iota + 1
+)
+
+var (
+	stringToFavoriteField = map[string]FavoriteField{
+		"created_at": FavoriteFieldCreatedAt,
+	}
+
+	favoriteFieldToString = mirrorStringToFavoriteField(stringToFavoriteField)
+)
+
+func mirrorStringToFavoriteField(in map[string]FavoriteField) map[FavoriteField]string {
+	result := make(map[FavoriteField]string, len(in))
+
+	for k, v := range in {
+		result[v] = k
+	}
+	return result
+}
+
+var ErrInvalidFavoriteField = NewError("invalid_favorite_field", "invalid favorite field")
+
+func ParseFavoriteField(v string) (FavoriteField, error) {
+	f, ok := stringToFavoriteField[v]
+	if !ok {
+		return FavoriteField(-1), ErrInvalidFavoriteField
+	}
+	return f, nil
+}
+
+func (ff FavoriteField) String() string {
+	return favoriteFieldToString[ff]
+}
 
 func (fs FavoriteSlice) HasLot(id LotID) bool {
 	for _, favorite := range fs {
@@ -44,6 +83,7 @@ type FavoriteStoreQuery interface {
 	ID(ids ...FavoriteID) FavoriteStoreQuery
 	LotID(ids ...LotID) FavoriteStoreQuery
 	UserID(id UserID) FavoriteStoreQuery
+	SortBy(field FavoriteField, typ store.SortType) FavoriteStoreQuery
 	Delete(ctx context.Context) error
 	All(ctx context.Context) (FavoriteSlice, error)
 	One(ctx context.Context) (*Favorite, error)

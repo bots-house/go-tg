@@ -121,27 +121,44 @@ func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, ident
 	return adminops.NewAdminGetSettingsOK().WithPayload(models.NewSettings(result))
 }
 
-func (h *Handler) adminUpdateSettings(params adminops.AdminUpdateSettingsParams, identity *authz.Identity) middleware.Responder {
+func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsPricesParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	result, err := h.Admin.UpdateSettingsPrice(ctx,
 		identity.User,
-		&admin.SettingsPriceInput{
-			Application:    models.ToMoney(params.Settings.Prices.Application),
-			Change:         models.ToMoney(params.Settings.Prices.Change),
-			Cashier:        swag.StringValue(params.Settings.Prices.Cashier),
-			PrivateID:      swag.Int64Value(params.Settings.Channel.ID),
-			PrivateLink:    swag.StringValue(params.Settings.Channel.JoinLink),
-			PublicUsername: swag.StringValue(params.Settings.Channel.PublicUsername),
+		&admin.SettingsPricesInput{
+			Application: models.ToMoney(params.Prices.Application),
+			Change:      models.ToMoney(params.Prices.Change),
+			Cashier:     swag.StringValue(params.Prices.Cashier),
 		},
 	)
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
-			return adminops.NewAdminUpdateSettingsBadRequest().WithPayload(models.NewError(err2))
+			return adminops.NewAdminUpdateSettingsPricesBadRequest().WithPayload(models.NewError(err2))
 		}
 		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return adminops.NewAdminUpdateSettingsOK().WithPayload(models.NewSettings(result))
+	return adminops.NewAdminUpdateSettingsPricesOK().WithPayload(models.NewSettingsPrices(result))
+}
+
+func (h *Handler) adminUpdateSettingsChannel(params adminops.AdminUpdateSettingsChannelParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateSettingsChannel(ctx,
+		identity.User,
+		&admin.SettingsChannelInput{
+			PrivateID:      swag.Int64Value(params.Channel.ID),
+			PrivateLink:    swag.StringValue(params.Channel.JoinLink),
+			PublicUsername: swag.StringValue(params.Channel.PublicUsername),
+		},
+	)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateSettingsChannelBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdateSettingsChannelOK().WithPayload(models.NewSettingsChannel(result))
 }
 
 func (h *Handler) adminCreateTopic(params adminops.AdminCreateTopicParams, identity *authz.Identity) middleware.Responder {

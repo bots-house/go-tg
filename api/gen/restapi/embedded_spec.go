@@ -283,22 +283,24 @@ func init() {
             }
           }
         }
-      },
+      }
+    },
+    "/admin/settings/channel": {
       "put": {
-        "description": "Обновление настроек.",
+        "description": "Обновление настройки канала.",
         "tags": [
           "admin"
         ],
-        "summary": "Update Settings",
-        "operationId": "adminUpdateSettings",
+        "summary": "Update Settings Channel",
+        "operationId": "adminUpdateSettingsChannel",
         "parameters": [
           {
-            "description": "Настройки.",
-            "name": "settings",
+            "description": "Настройки канала.",
+            "name": "channel",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InputAdminSettings"
+              "$ref": "#/definitions/AdminSettingsChannel"
             }
           }
         ],
@@ -306,7 +308,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AdminSettings"
+              "$ref": "#/definitions/AdminSettingsChannel"
             }
           },
           "400": {
@@ -439,6 +441,47 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/admin/settings/prices": {
+      "put": {
+        "description": "Обновление настройки цен.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Prices",
+        "operationId": "adminUpdateSettingsPrices",
+        "parameters": [
+          {
+            "description": "Настройки цен.",
+            "name": "prices",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsPrices"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsPrices"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/admin/settings/topics": {
       "post": {
@@ -2365,23 +2408,6 @@ func init() {
         "type": "Identity"
       }
     },
-    "InputAdminSettings": {
-      "type": "object",
-      "required": [
-        "prices",
-        "channel"
-      ],
-      "properties": {
-        "channel": {
-          "x-order": 1,
-          "$ref": "#/definitions/AdminSettingsChannel"
-        },
-        "prices": {
-          "x-order": 0,
-          "$ref": "#/definitions/AdminSettingsPrices"
-        }
-      }
-    },
     "InputAuth": {
       "description": "Данный полученные с [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).",
       "required": [
@@ -3957,22 +3983,24 @@ func init() {
             }
           }
         }
-      },
+      }
+    },
+    "/admin/settings/channel": {
       "put": {
-        "description": "Обновление настроек.",
+        "description": "Обновление настройки канала.",
         "tags": [
           "admin"
         ],
-        "summary": "Update Settings",
-        "operationId": "adminUpdateSettings",
+        "summary": "Update Settings Channel",
+        "operationId": "adminUpdateSettingsChannel",
         "parameters": [
           {
-            "description": "Настройки.",
-            "name": "settings",
+            "description": "Настройки канала.",
+            "name": "channel",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InputAdminSettings"
+              "$ref": "#/definitions/AdminSettingsChannel"
             }
           }
         ],
@@ -3980,7 +4008,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AdminSettings"
+              "$ref": "#/definitions/AdminSettingsChannel"
             }
           },
           "400": {
@@ -4113,6 +4141,47 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/admin/settings/prices": {
+      "put": {
+        "description": "Обновление настройки цен.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Prices",
+        "operationId": "adminUpdateSettingsPrices",
+        "parameters": [
+          {
+            "description": "Настройки цен.",
+            "name": "prices",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsPrices"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsPrices"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/admin/settings/topics": {
       "post": {
@@ -6076,23 +6145,6 @@ func init() {
           "package": "github.com/bots-house/birzzha/api/authz"
         },
         "type": "Identity"
-      }
-    },
-    "InputAdminSettings": {
-      "type": "object",
-      "required": [
-        "prices",
-        "channel"
-      ],
-      "properties": {
-        "channel": {
-          "x-order": 1,
-          "$ref": "#/definitions/AdminSettingsChannel"
-        },
-        "prices": {
-          "x-order": 0,
-          "$ref": "#/definitions/AdminSettingsPrices"
-        }
       }
     },
     "InputAuth": {

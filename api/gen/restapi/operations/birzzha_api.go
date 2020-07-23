@@ -88,8 +88,11 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminUpdateReviewHandler: admin.AdminUpdateReviewHandlerFunc(func(params admin.AdminUpdateReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateReview has not yet been implemented")
 		}),
-		AdminAdminUpdateSettingsHandler: admin.AdminUpdateSettingsHandlerFunc(func(params admin.AdminUpdateSettingsParams, principal *authz.Identity) middleware.Responder {
-			return middleware.NotImplemented("operation admin.AdminUpdateSettings has not yet been implemented")
+		AdminAdminUpdateSettingsChannelHandler: admin.AdminUpdateSettingsChannelHandlerFunc(func(params admin.AdminUpdateSettingsChannelParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateSettingsChannel has not yet been implemented")
+		}),
+		AdminAdminUpdateSettingsPricesHandler: admin.AdminUpdateSettingsPricesHandlerFunc(func(params admin.AdminUpdateSettingsPricesParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateSettingsPrices has not yet been implemented")
 		}),
 		AdminAdminUpdateTopicHandler: admin.AdminUpdateTopicHandlerFunc(func(params admin.AdminUpdateTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateTopic has not yet been implemented")
@@ -254,8 +257,10 @@ type BirzzhaAPI struct {
 	AdminAdminUpdateLotCanceledReasonHandler admin.AdminUpdateLotCanceledReasonHandler
 	// AdminAdminUpdateReviewHandler sets the operation handler for the admin update review operation
 	AdminAdminUpdateReviewHandler admin.AdminUpdateReviewHandler
-	// AdminAdminUpdateSettingsHandler sets the operation handler for the admin update settings operation
-	AdminAdminUpdateSettingsHandler admin.AdminUpdateSettingsHandler
+	// AdminAdminUpdateSettingsChannelHandler sets the operation handler for the admin update settings channel operation
+	AdminAdminUpdateSettingsChannelHandler admin.AdminUpdateSettingsChannelHandler
+	// AdminAdminUpdateSettingsPricesHandler sets the operation handler for the admin update settings prices operation
+	AdminAdminUpdateSettingsPricesHandler admin.AdminUpdateSettingsPricesHandler
 	// AdminAdminUpdateTopicHandler sets the operation handler for the admin update topic operation
 	AdminAdminUpdateTopicHandler admin.AdminUpdateTopicHandler
 	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
@@ -423,8 +428,11 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminUpdateReviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateReviewHandler")
 	}
-	if o.AdminAdminUpdateSettingsHandler == nil {
-		unregistered = append(unregistered, "admin.AdminUpdateSettingsHandler")
+	if o.AdminAdminUpdateSettingsChannelHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateSettingsChannelHandler")
+	}
+	if o.AdminAdminUpdateSettingsPricesHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateSettingsPricesHandler")
 	}
 	if o.AdminAdminUpdateTopicHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateTopicHandler")
@@ -664,7 +672,11 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/admin/settings"] = admin.NewAdminUpdateSettings(o.context, o.AdminAdminUpdateSettingsHandler)
+	o.handlers["PUT"]["/admin/settings/channel"] = admin.NewAdminUpdateSettingsChannel(o.context, o.AdminAdminUpdateSettingsChannelHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/settings/prices"] = admin.NewAdminUpdateSettingsPrices(o.context, o.AdminAdminUpdateSettingsPricesHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

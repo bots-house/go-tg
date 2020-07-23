@@ -65,16 +65,19 @@ func (srv *Service) GetSettings(ctx context.Context, user *core.User) (*FullSett
 	return srv.newFullSettings(ctx, settings)
 }
 
-type SettingsPriceInput struct {
-	Application    *money.Money
-	Change         *money.Money
-	Cashier        string
+type SettingsPricesInput struct {
+	Application *money.Money
+	Change      *money.Money
+	Cashier     string
+}
+
+type SettingsChannelInput struct {
 	PrivateID      int64
 	PublicUsername string
 	PrivateLink    string
 }
 
-func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, input *SettingsPriceInput) (*FullSettings, error) {
+func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, input *SettingsPricesInput) (*core.Settings, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
@@ -89,15 +92,33 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 	settings.UpdatedAt = null.TimeFrom(time.Now())
 	settings.UpdatedBy = user.ID
 	settings.CashierUsername = input.Cashier
-	settings.Channel.PrivateID = input.PrivateID
-	settings.Channel.PublicUsername = input.PublicUsername
-	settings.Channel.PrivateLink = input.PrivateLink
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
 		return nil, errors.Wrap(err, "update settings")
 	}
+	return settings, nil
+}
 
-	return srv.newFullSettings(ctx, settings)
+func (srv *Service) UpdateSettingsChannel(ctx context.Context, user *core.User, input *SettingsChannelInput) (*core.Settings, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return nil, err
+	}
+
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get settings")
+	}
+
+	settings.UpdatedAt = null.TimeFrom(time.Now())
+	settings.UpdatedBy = user.ID
+	settings.Channel.PrivateID = input.PrivateID
+	settings.Channel.PrivateLink = input.PrivateLink
+	settings.Channel.PublicUsername = input.PublicUsername
+
+	if err := srv.Settings.Update(ctx, settings); err != nil {
+		return nil, errors.Wrap(err, "update settings")
+	}
+	return settings, nil
 }
 
 func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name string) (*FullTopic, error) {

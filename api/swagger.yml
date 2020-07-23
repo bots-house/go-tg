@@ -1137,24 +1137,26 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /admin/settings/prices:
     put:
       parameters:
         - in: body
           required: true
-          name: settings
-          description: Настройки.
+          name: prices
+          description: Настройки цен.
           schema:
-            $ref: "#/definitions/InputAdminSettings"
+            $ref: "#/definitions/AdminSettingsPrices"
 
-      summary: Update Settings
-      description: Обновление настроек.
-      operationId: adminUpdateSettings
+      summary: Update Settings Prices
+      description: Обновление настройки цен.
+      operationId: adminUpdateSettingsPrices
       tags: [admin]
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/AdminSettings"
+            $ref: "#/definitions/AdminSettingsPrices"
         400:
           description: Bad Request
           schema:
@@ -1163,6 +1165,36 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+      
+    
+  /admin/settings/channel:
+    put:
+      parameters:
+        - in: body
+          required: true
+          name: channel
+          description: Настройки канала.
+          schema:
+            $ref: "#/definitions/AdminSettingsChannel"
+
+      summary: Update Settings Channel
+      description: Обновление настройки канала.
+      operationId: adminUpdateSettingsChannel
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminSettingsChannel"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+          
 
   /admin/settings/topics:
     post:
@@ -2456,17 +2488,6 @@ definitions:
       is_public:
         type: boolean
         description: True, если причина будет показана на странице лота (пока не используется)
-
-  InputAdminSettings:
-    type: object
-    required:
-      - prices
-      - channel
-    properties:
-      prices:
-        $ref: "#/definitions/AdminSettingsPrices"
-      channel:
-        $ref: "#/definitions/AdminSettingsChannel"
 
   AdminSettingsPrices:
     type: object

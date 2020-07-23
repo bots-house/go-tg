@@ -50,8 +50,6 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
-github.com/bots-house/telegram-bot-api v1.0.1-0.20200622142737-6721de82af68 h1:Aln/ox1KaG4QeaU1qiz1RdFSX1PM+NhSSBvJSW7QztE=
-github.com/bots-house/telegram-bot-api v1.0.1-0.20200622142737-6721de82af68/go.mod h1:BVy5GfeB5jvufnjgYiU1QCRtfVtADlTbXN0H+AhRG08=
 github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a h1:WmvU6SBjJmTmhnKxDczRJLjkFtIccw1c0QvM3T18AlU=
 github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a/go.mod h1:BVy5GfeB5jvufnjgYiU1QCRtfVtADlTbXN0H+AhRG08=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
@@ -487,15 +485,10 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/volatiletech/inflect v0.0.1 h1:2a6FcMQyhmPZcLa+uet3VJ8gLn/9svWhJxJYwvE8KsU=
 github.com/volatiletech/inflect v0.0.1/go.mod h1:IBti31tG6phkHitLlr5j7shC5SOo//x0AjDzaJU1PLA=
-github.com/volatiletech/null v8.0.0+incompatible h1:7wP8m5d/gZ6kW/9GnrLtMCRre2dlEnaQ9Km5OXlK4zg=
-github.com/volatiletech/null v8.0.0+incompatible/go.mod h1:0wD98JzdqB+rLyZ70fN05VDbXbafIb0KU0MdVhCzmOQ=
 github.com/volatiletech/null/v8 v8.1.0 h1:eAO3I31A5R04usY5SKMMfDcOCnEGyT/T4wRI0JVGp4U=
 github.com/volatiletech/null/v8 v8.1.0/go.mod h1:98DbwNoKEpRrYtGjWFctievIfm4n4MxG0A6EBUcoS5g=
 github.com/volatiletech/randomize v0.0.1 h1:eE5yajattWqTB2/eN8df4dw+8jwAzBtbdo5sbWC4nMk=
 github.com/volatiletech/randomize v0.0.1/go.mod h1:GN3U0QYqfZ9FOJ67bzax1cqZ5q2xuj2mXrXBjWaRTlY=
-github.com/volatiletech/sqlboiler v1.0.0 h1:p0aCjD4tyDfjDjL6jakkfnrWWC4Z2wd1SNM7sS3rzAQ=
-github.com/volatiletech/sqlboiler v3.7.1+incompatible h1:dm9/NjDskQVwAarmpeZ2UqLn1NKE8M3WHSHBS4jw2x8=
-github.com/volatiletech/sqlboiler v3.7.1+incompatible/go.mod h1:jLfDkkHWPbS2cWRLkyC20vQWaIQsASEY7gM7zSo11Yw=
 github.com/volatiletech/sqlboiler/v4 v4.1.2 h1:/kzrumx85VFW78oyuIV9AIQMKO+fGy1vQKAY7fT6AAA=
 github.com/volatiletech/sqlboiler/v4 v4.1.2/go.mod h1:U0Z5K4y+twWgHxh364G45QyzyNssSbBqNWtXGHVTlgM=
 github.com/volatiletech/strmangle v0.0.1 h1:UKQoHmY6be/R3tSvD2nQYrH41k43OJkidwEiC74KIzk=

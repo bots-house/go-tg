@@ -100,7 +100,7 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 	return srv.newFullSettings(ctx, settings)
 }
 
-func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name string) (*core.Topic, error) {
+func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name string) (*FullTopic, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
@@ -109,7 +109,10 @@ func (srv *Service) CreateTopic(ctx context.Context, user *core.User, name strin
 	if err := srv.Topic.Add(ctx, topic); err != nil {
 		return nil, errors.Wrap(err, "create topic")
 	}
-	return topic, nil
+	return &FullTopic{
+		Topic: topic,
+		Lots:  0,
+	}, nil
 }
 
 func (srv *Service) UpdateTopic(ctx context.Context, user *core.User, id core.TopicID, name string) (*FullTopic, error) {

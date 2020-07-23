@@ -25,7 +25,7 @@ type AdminCreateTopicOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.Topic `json:"body,omitempty"`
+	Payload *models.AdminTopic `json:"body,omitempty"`
 }
 
 // NewAdminCreateTopicOK creates AdminCreateTopicOK with default headers values
@@ -35,13 +35,13 @@ func NewAdminCreateTopicOK() *AdminCreateTopicOK {
 }
 
 // WithPayload adds the payload to the admin create topic o k response
-func (o *AdminCreateTopicOK) WithPayload(payload *models.Topic) *AdminCreateTopicOK {
+func (o *AdminCreateTopicOK) WithPayload(payload *models.AdminTopic) *AdminCreateTopicOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the admin create topic o k response
-func (o *AdminCreateTopicOK) SetPayload(payload *models.Topic) {
+func (o *AdminCreateTopicOK) SetPayload(payload *models.AdminTopic) {
 	o.Payload = payload
 }
 

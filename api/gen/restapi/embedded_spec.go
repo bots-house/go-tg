@@ -463,7 +463,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topic"
+              "$ref": "#/definitions/AdminTopic"
             }
           },
           "400": {
@@ -4137,7 +4137,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topic"
+              "$ref": "#/definitions/AdminTopic"
             }
           },
           "400": {

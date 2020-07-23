@@ -154,7 +154,7 @@ func (h *Handler) adminCreateTopic(params adminops.AdminCreateTopicParams, ident
 		}
 		return adminops.NewAdminCreateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return adminops.NewAdminCreateTopicOK().WithPayload(models.NewTopic(result))
+	return adminops.NewAdminCreateTopicOK().WithPayload(models.NewAdminFullTopic(result))
 }
 
 func (h *Handler) adminUpdateTopic(params adminops.AdminUpdateTopicParams, identity *authz.Identity) middleware.Responder {

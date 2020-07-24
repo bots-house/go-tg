@@ -18,7 +18,14 @@ type LotID int
 
 // Extra resources like chats and bots.
 type LotExtraResource struct {
-	URL string
+	URL         string
+	Title       string
+	Image       string
+	Description string
+}
+
+type LotExtraResourceParser interface {
+	Parse(ctx context.Context, url string) (*LotExtraResource, error)
 }
 
 // LotPrice info
@@ -216,7 +223,7 @@ type Lot struct {
 	Metrics LotMetrics
 
 	// Extra resources of lot.
-	ExtraResources []LotExtraResource
+	ExtraResources []*LotExtraResource
 
 	// Time when lot was created
 	CreatedAt time.Time

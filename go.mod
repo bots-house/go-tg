@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go v1.32.7
 	github.com/benbjohnson/clock v1.0.3
 	github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a
+	github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab
 	github.com/cristalhq/jwt v1.2.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-http-utils/etag v0.0.0-20161124023236-513ea8f21eb1
@@ -32,6 +33,7 @@ require (
 	github.com/lithammer/dedent v1.1.0
 	github.com/magiconair/properties v1.8.1
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
+	github.com/otiai10/opengraph v1.1.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/remind101/migrate v0.0.0-20170729031349-52c1edff7319

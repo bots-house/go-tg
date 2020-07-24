@@ -2622,8 +2622,30 @@ func init() {
     },
     "LotExtraResource": {
       "type": "object",
+      "required": [
+        "url",
+        "title",
+        "image",
+        "description"
+      ],
       "properties": {
+        "description": {
+          "description": "Описание ресурса.",
+          "type": "string",
+          "x-order": 3
+        },
+        "image": {
+          "description": "Ссылки на картинки.",
+          "type": "string",
+          "x-order": 2
+        },
+        "title": {
+          "description": "Заголовок ресурса.",
+          "type": "string",
+          "x-order": 1
+        },
         "url": {
+          "description": "Ссылка на ресурс.",
           "type": "string",
           "format": "url",
           "x-order": 0
@@ -6361,8 +6383,30 @@ func init() {
     },
     "LotExtraResource": {
       "type": "object",
+      "required": [
+        "url",
+        "title",
+        "image",
+        "description"
+      ],
       "properties": {
+        "description": {
+          "description": "Описание ресурса.",
+          "type": "string",
+          "x-order": 3
+        },
+        "image": {
+          "description": "Ссылки на картинки.",
+          "type": "string",
+          "x-order": 2
+        },
+        "title": {
+          "description": "Заголовок ресурса.",
+          "type": "string",
+          "x-order": 1
+        },
         "url": {
+          "description": "Ссылка на ресурс.",
           "type": "string",
           "format": "url",
           "x-order": 0

@@ -30,11 +30,20 @@ func newLotMetrics(in core.LotMetrics) *models.LotMetrics {
 	}
 }
 
-func newLotExtraResourceSlice(in []core.LotExtraResource) []*models.LotExtraResource {
+func newLotExtraResource(in *core.LotExtraResource) *models.LotExtraResource {
+	return &models.LotExtraResource{
+		URL:         swag.String(in.URL),
+		Title:       swag.String(in.Title),
+		Image:       swag.String(in.Image),
+		Description: swag.String(in.Description),
+	}
+}
+
+func newLotExtraResourceSlice(in []*core.LotExtraResource) []*models.LotExtraResource {
 	result := make([]*models.LotExtraResource, len(in))
 
 	for i, v := range in {
-		result[i] = &models.LotExtraResource{URL: v.URL}
+		result[i] = newLotExtraResource(v)
 	}
 
 	return result

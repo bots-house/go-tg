@@ -8,11 +8,15 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - name: Configure git for private modules          
+        run: git config --global url."https://${{ secrets.GO_MODULES_USERNAME }}:${{ secrets.GO_MODULES_TOKEN }}@github.com".insteadOf "https://github.com"  
+      
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v1
         with:
-          version: v1.27
+          version: v1.29
+          github-token: ${{ secrets.GO_MODULES_TOKEN }}
 
   build:
     name: Build
@@ -36,7 +40,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Install Go
         uses: actions/setup-go@v1
         with:
@@ -50,10 +53,10 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+        
       - name: Download modules
         if: steps.cache.outputs.cache-hit != 'true'
         run: go mod download
-
       - name: Try to build
         run: go build
         # - name: Try to run

@@ -6,8 +6,10 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // LotExtraResource lot extra resource
@@ -15,12 +17,82 @@ import (
 // swagger:model LotExtraResource
 type LotExtraResource struct {
 
-	// url
-	URL string `json:"url,omitempty"`
+	// Ссылка на ресурс.
+	// Required: true
+	URL *string `json:"url"`
+
+	// Заголовок ресурса.
+	// Required: true
+	Title *string `json:"title"`
+
+	// Ссылки на картинки.
+	// Required: true
+	Image *string `json:"image"`
+
+	// Описание ресурса.
+	// Required: true
+	Description *string `json:"description"`
 }
 
 // Validate validates this lot extra resource
 func (m *LotExtraResource) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateURL(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTitle(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateImage(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *LotExtraResource) validateURL(formats strfmt.Registry) error {
+
+	if err := validate.Required("url", "body", m.URL); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *LotExtraResource) validateTitle(formats strfmt.Registry) error {
+
+	if err := validate.Required("title", "body", m.Title); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *LotExtraResource) validateImage(formats strfmt.Registry) error {
+
+	if err := validate.Required("image", "body", m.Image); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *LotExtraResource) validateDescription(formats strfmt.Registry) error {
+
+	if err := validate.Required("description", "body", m.Description); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -112,6 +112,19 @@ func (srv *Service) GetLots(ctx context.Context, user *core.User) ([]*OwnedLot, 
 	return srv.newOwnedLotSlice(lots)
 }
 
+func (srv *Service) newLotExtraResourceSlice(ctx context.Context, urls []string) ([]*core.LotExtraResource, error) {
+	result := make([]*core.LotExtraResource, len(urls))
+	var err error
+
+	for i, url := range urls {
+		result[i], err = srv.Parser.Parse(ctx, url)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
+}
+
 func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (*OwnedLot, error) {
 	result, err := srv.Resolver.ResolveByID(ctx, in.TelegramID)
 	if err != nil {
@@ -152,10 +165,11 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		lot.Avatar = null.StringFrom(avatar)
 	}
 
-	lot.ExtraResources = make([]core.LotExtraResource, len(in.Extra))
-	for i, v := range in.Extra {
-		lot.ExtraResources[i] = core.LotExtraResource{URL: v}
+	resources, err := srv.newLotExtraResourceSlice(ctx, in.Extra)
+	if err != nil {
+		return nil, errors.Wrap(err, "format extra resources")
 	}
+	lot.ExtraResources = resources
 
 	lot.TopicIDs = in.TopicIDs
 

@@ -22,4 +22,5 @@ type Service struct {
 	Storage  storage.Storage
 	Settings core.SettingsStore
 	Gateways *payment.GatewayRegistry
+	Parser   core.LotExtraResourceParser
 }

@@ -187,7 +187,7 @@ func (store *LotStore) toRow(lot *core.Lot) (*dal.Lot, error) {
 }
 
 func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
-	var extra []core.LotExtraResource
+	var extra []*core.LotExtraResource
 
 	if err := row.ExtraResources.Unmarshal(&extra); err != nil {
 		return nil, errors.Wrap(err, "unmarshal extra resources")

@@ -15,10 +15,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
+	tgme "github.com/bots-house/tg-me"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/bots-house/birzzha/api"
 	"github.com/bots-house/birzzha/bot"
+	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
@@ -65,6 +67,10 @@ func newStorage(cfg Config) (*storage.Space, error) {
 		Bucket:       cfg.S3Bucket,
 		PublicPrefix: cfg.S3PublicPrefix,
 	}, nil
+}
+
+func newParser(client *http.Client) core.LotExtraResourceParser {
+	return personal.LotExtraResourceParser{Telegram: &tgme.Parser{Client: client}}
 }
 
 func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistry {
@@ -236,6 +242,7 @@ func run(ctx context.Context) error {
 		AdminNotify:       notifications,
 		LotCanceledReason: pg.LotCanceledReason,
 		LotFile:           pg.LotFile,
+		Parser:            newParser(&http.Client{}),
 	}
 
 	handler := api.Handler{

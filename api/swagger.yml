@@ -1696,10 +1696,25 @@ definitions:
 
   LotExtraResource:
     type: object
+    required:
+      - url
+      - title
+      - image
+      - description
     properties:
       url:
         type: string
         format: url
+        description: Ссылка на ресурс.
+      title:
+        type: string
+        description: Заголовок ресурса.
+      image:
+        type: string
+        description: Ссылки на картинки.
+      description:
+        type: string
+        description: Описание ресурса.
 
   LotMetrics:
     type: object

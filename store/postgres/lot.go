@@ -435,7 +435,7 @@ func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit i
 			where
 				lot.id = $1
 		) select
-			lot.id
+			distinct(lot.id)
 		from
 			lot 
 			inner join

@@ -152,7 +152,6 @@ func (srv *Service) processGatewayNotification(ctx context.Context, notify *paym
 
 	payment.Status = notify.Status
 	payment.ExternalID.SetValid(notify.ExternalID)
-
 	if payment.Status.IsFinal() {
 		payment.Paid = notify.Paid
 		payment.Received = notify.Received

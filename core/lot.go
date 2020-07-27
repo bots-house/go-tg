@@ -22,6 +22,7 @@ type LotExtraResource struct {
 	Title       string
 	Image       string
 	Description string
+	Domain      string
 }
 
 type LotExtraResourceParser interface {

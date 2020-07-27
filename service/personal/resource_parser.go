@@ -68,21 +68,20 @@ func (parser LotExtraResourceParser) getLotExtraResourceOpengraph(ctx context.Co
 		return nil, ErrWrongContentType
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(body) > maxLotExtraResourceSizeInBytes {
-		return nil, ErrLotExtraResourceSizeIsLarge
-	}
-
 	if err := og.Parse(res.Body); err != nil {
 		return nil, err
 	}
 
-	return og, nil
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
 
+	if len(bytes) > maxLotExtraResourceSizeInBytes {
+		return nil, ErrLotExtraResourceSizeIsLarge
+	}
+
+	return og, nil
 }
 
 func (parser LotExtraResourceParser) parseSiteLotExtraResource(ctx context.Context, url string) (*core.LotExtraResource, error) {
@@ -95,9 +94,10 @@ func (parser LotExtraResourceParser) parseSiteLotExtraResource(ctx context.Conte
 		URL:         url,
 		Title:       result.Title,
 		Description: result.Description,
+		Domain:      url,
 	}
 	if len(result.Image) > 0 {
-		resource.Image = result.Image[0].URL
+		resource.Image = url + result.Image[0].URL
 	}
 
 	return resource, nil
@@ -108,6 +108,9 @@ func (parser LotExtraResourceParser) parseTelegramLotExtraResource(ctx context.C
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch telegram resource")
 	}
+
+	_, domain := tg.ParseResolveQuery(url)
+
 	switch {
 	case result.Channel != nil:
 		return &core.LotExtraResource{
@@ -115,6 +118,7 @@ func (parser LotExtraResourceParser) parseTelegramLotExtraResource(ctx context.C
 			Title:       result.Channel.Title,
 			Image:       result.Channel.Avatar,
 			Description: result.Channel.Description,
+			Domain:      domain,
 		}, nil
 	case result.Chat != nil:
 		return &core.LotExtraResource{
@@ -122,12 +126,14 @@ func (parser LotExtraResourceParser) parseTelegramLotExtraResource(ctx context.C
 			Title:       result.Chat.Title,
 			Image:       result.Chat.Avatar,
 			Description: result.Chat.Description,
+			Domain:      domain,
 		}, nil
 	case result.User != nil:
 		return &core.LotExtraResource{
-			URL:   url,
-			Title: result.User.Name,
-			Image: result.User.Avatar,
+			URL:    url,
+			Title:  result.User.Name,
+			Image:  result.User.Avatar,
+			Domain: domain,
 		}, nil
 	}
 	return nil, nil

@@ -14,6 +14,7 @@ var TableNames = struct {
 	Settings          string
 	Topic             string
 	User              string
+	Views             string
 }{
 	Favorite:          "favorite",
 	Lot:               "lot",
@@ -25,4 +26,5 @@ var TableNames = struct {
 	Settings:          "settings",
 	Topic:             "topic",
 	User:              "user",
+	Views:             "views",
 }

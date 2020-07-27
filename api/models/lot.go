@@ -36,6 +36,7 @@ func newLotExtraResource(in *core.LotExtraResource) *models.LotExtraResource {
 		Title:       swag.String(in.Title),
 		Image:       swag.String(in.Image),
 		Description: swag.String(in.Description),
+		Domain:      swag.String(in.Domain),
 	}
 }
 

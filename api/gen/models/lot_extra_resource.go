@@ -32,6 +32,12 @@ type LotExtraResource struct {
 	// Описание ресурса.
 	// Required: true
 	Description *string `json:"description"`
+
+	// URL в случае сайта.
+	// Юзернейм в случае tg entity.
+	//
+	// Required: true
+	Domain *string `json:"domain"`
 }
 
 // Validate validates this lot extra resource
@@ -51,6 +57,10 @@ func (m *LotExtraResource) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDomain(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -90,6 +100,15 @@ func (m *LotExtraResource) validateImage(formats strfmt.Registry) error {
 func (m *LotExtraResource) validateDescription(formats strfmt.Registry) error {
 
 	if err := validate.Required("description", "body", m.Description); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *LotExtraResource) validateDomain(formats strfmt.Registry) error {
+
+	if err := validate.Required("domain", "body", m.Domain); err != nil {
 		return err
 	}
 

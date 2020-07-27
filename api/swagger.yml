@@ -1701,6 +1701,7 @@ definitions:
       - title
       - image
       - description
+      - domain
     properties:
       url:
         type: string
@@ -1715,6 +1716,11 @@ definitions:
       description:
         type: string
         description: Описание ресурса.
+      domain:
+        type: string
+        description: |
+          URL в случае сайта.
+          Юзернейм в случае tg entity.
 
   LotMetrics:
     type: object

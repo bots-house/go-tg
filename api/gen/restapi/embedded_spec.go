@@ -2626,13 +2626,19 @@ func init() {
         "url",
         "title",
         "image",
-        "description"
+        "description",
+        "domain"
       ],
       "properties": {
         "description": {
           "description": "Описание ресурса.",
           "type": "string",
           "x-order": 3
+        },
+        "domain": {
+          "description": "URL в случае сайта.\nЮзернейм в случае tg entity.\n",
+          "type": "string",
+          "x-order": 4
         },
         "image": {
           "description": "Ссылки на картинки.",
@@ -6387,13 +6393,19 @@ func init() {
         "url",
         "title",
         "image",
-        "description"
+        "description",
+        "domain"
       ],
       "properties": {
         "description": {
           "description": "Описание ресурса.",
           "type": "string",
           "x-order": 3
+        },
+        "domain": {
+          "description": "URL в случае сайта.\nЮзернейм в случае tg entity.\n",
+          "type": "string",
+          "x-order": 4
         },
         "image": {
           "description": "Ссылки на картинки.",

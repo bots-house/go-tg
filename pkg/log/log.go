@@ -33,7 +33,7 @@ func NewLogger(debug bool, colors bool) log.Logger {
 
 // With creates a context with new key values.
 func With(ctx context.Context, kvs ...interface{}) context.Context {
-	logger := Logger(ctx)
+	logger := GetLogger(ctx)
 	logger = log.With(logger, kvs...)
 
 	return WithLogger(ctx, logger)
@@ -41,7 +41,7 @@ func With(ctx context.Context, kvs ...interface{}) context.Context {
 
 // WithPrefix create a context with prefix.
 func WithPrefix(ctx context.Context, kvs ...interface{}) context.Context {
-	logger := Logger(ctx)
+	logger := GetLogger(ctx)
 	logger = log.WithPrefix(logger, kvs...)
 
 	return WithLogger(ctx, logger)
@@ -54,7 +54,7 @@ func Log(ctx context.Context, msg string, kvs ...interface{}) {
 		msg,
 	}, kvs...)
 
-	_ = Logger(ctx).Log(kvs...)
+	_ = GetLogger(ctx).Log(kvs...)
 }
 
 // Debug message
@@ -64,7 +64,7 @@ func Debug(ctx context.Context, msg string, kvs ...interface{}) {
 		msg,
 	}, kvs...)
 
-	_ = level.Debug(Logger(ctx)).Log(kvs...)
+	_ = level.Debug(GetLogger(ctx)).Log(kvs...)
 }
 
 // Info message
@@ -74,7 +74,7 @@ func Info(ctx context.Context, msg string, kvs ...interface{}) {
 		msg,
 	}, kvs...)
 
-	_ = level.Info(Logger(ctx)).Log(kvs...)
+	_ = level.Info(GetLogger(ctx)).Log(kvs...)
 }
 
 // Error message
@@ -84,7 +84,7 @@ func Error(ctx context.Context, msg string, kvs ...interface{}) {
 		msg,
 	}, kvs...)
 
-	_ = level.Error(Logger(ctx)).Log(kvs...)
+	_ = level.Error(GetLogger(ctx)).Log(kvs...)
 }
 
 // Warn message
@@ -94,5 +94,5 @@ func Warn(ctx context.Context, msg string, kvs ...interface{}) {
 		msg,
 	}, kvs...)
 
-	_ = level.Warn(Logger(ctx)).Log(kvs...)
+	_ = level.Warn(GetLogger(ctx)).Log(kvs...)
 }

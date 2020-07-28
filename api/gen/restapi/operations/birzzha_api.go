@@ -91,6 +91,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminUpdateSettingsChannelHandler: admin.AdminUpdateSettingsChannelHandlerFunc(func(params admin.AdminUpdateSettingsChannelParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateSettingsChannel has not yet been implemented")
 		}),
+		AdminAdminUpdateSettingsLandingHandler: admin.AdminUpdateSettingsLandingHandlerFunc(func(params admin.AdminUpdateSettingsLandingParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateSettingsLanding has not yet been implemented")
+		}),
 		AdminAdminUpdateSettingsPricesHandler: admin.AdminUpdateSettingsPricesHandlerFunc(func(params admin.AdminUpdateSettingsPricesParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateSettingsPrices has not yet been implemented")
 		}),
@@ -268,6 +271,8 @@ type BirzzhaAPI struct {
 	AdminAdminUpdateReviewHandler admin.AdminUpdateReviewHandler
 	// AdminAdminUpdateSettingsChannelHandler sets the operation handler for the admin update settings channel operation
 	AdminAdminUpdateSettingsChannelHandler admin.AdminUpdateSettingsChannelHandler
+	// AdminAdminUpdateSettingsLandingHandler sets the operation handler for the admin update settings landing operation
+	AdminAdminUpdateSettingsLandingHandler admin.AdminUpdateSettingsLandingHandler
 	// AdminAdminUpdateSettingsPricesHandler sets the operation handler for the admin update settings prices operation
 	AdminAdminUpdateSettingsPricesHandler admin.AdminUpdateSettingsPricesHandler
 	// AdminAdminUpdateTopicHandler sets the operation handler for the admin update topic operation
@@ -445,6 +450,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminUpdateSettingsChannelHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateSettingsChannelHandler")
+	}
+	if o.AdminAdminUpdateSettingsLandingHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateSettingsLandingHandler")
 	}
 	if o.AdminAdminUpdateSettingsPricesHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateSettingsPricesHandler")
@@ -656,7 +664,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/admin/settings/lot_canceled_reasons/{id}"] = admin.NewAdminDeleteLotCanceledReason(o.context, o.AdminAdminDeleteLotCanceledReasonHandler)
+	o.handlers["DELETE"]["/admin/settings/lot-canceled-reason/{id}"] = admin.NewAdminDeleteLotCanceledReason(o.context, o.AdminAdminDeleteLotCanceledReasonHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
@@ -688,7 +696,7 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/admin/settings/lot_canceled_reasons/{id}"] = admin.NewAdminUpdateLotCanceledReason(o.context, o.AdminAdminUpdateLotCanceledReasonHandler)
+	o.handlers["PUT"]["/admin/settings/lot-canceled-reason/{id}"] = admin.NewAdminUpdateLotCanceledReason(o.context, o.AdminAdminUpdateLotCanceledReasonHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
@@ -697,6 +705,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/admin/settings/channel"] = admin.NewAdminUpdateSettingsChannel(o.context, o.AdminAdminUpdateSettingsChannelHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/settings/landing"] = admin.NewAdminUpdateSettingsLanding(o.context, o.AdminAdminUpdateSettingsLandingHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

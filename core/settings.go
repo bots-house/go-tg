@@ -18,6 +18,11 @@ type SettingsChannel struct {
 	PrivateID      int64
 }
 
+func (channel *SettingsChannel) MTProtoPrivateID() int64 {
+	// Telegram Bot API looks like -1001129109101
+	return -(channel.PrivateID % -1000000000000)
+}
+
 type Settings struct {
 	Prices          SettingsPrices
 	Channel         SettingsChannel

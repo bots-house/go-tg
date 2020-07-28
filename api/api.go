@@ -17,6 +17,7 @@ import (
 	"github.com/bots-house/birzzha/service/landing"
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/personal"
+	"github.com/bots-house/birzzha/service/views"
 
 	adminops "github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
@@ -44,6 +45,7 @@ type Handler struct {
 	Storage      storage.Storage
 	Gateways     *payment.GatewayRegistry
 	Landing      *landing.Service
+	Views        *views.Service
 	Logger       kitlog.Logger
 }
 
@@ -123,6 +125,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminGetLotsHandler = adminops.AdminGetLotsHandlerFunc(h.adminGetLots)
 
 	api.AdminAdminGetSettingsHandler = adminops.AdminGetSettingsHandlerFunc(h.adminGetSettings)
+	api.AdminAdminUpdateSettingsLandingHandler = adminops.AdminUpdateSettingsLandingHandlerFunc(h.adminUpdateSettingsLanding)
 	api.AdminAdminUpdateSettingsPricesHandler = adminops.AdminUpdateSettingsPricesHandlerFunc(h.adminUpdateSettingsPrices)
 	api.AdminAdminUpdateSettingsChannelHandler = adminops.AdminUpdateSettingsChannelHandlerFunc(h.adminUpdateSettingsChannel)
 

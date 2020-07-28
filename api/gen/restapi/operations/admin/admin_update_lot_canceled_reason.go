@@ -31,7 +31,7 @@ func NewAdminUpdateLotCanceledReason(ctx *middleware.Context, handler AdminUpdat
 	return &AdminUpdateLotCanceledReason{Context: ctx, Handler: handler}
 }
 
-/*AdminUpdateLotCanceledReason swagger:route PUT /admin/settings/lot_canceled_reasons/{id} admin adminUpdateLotCanceledReason
+/*AdminUpdateLotCanceledReason swagger:route PUT /admin/settings/lot-canceled-reason/{id} admin adminUpdateLotCanceledReason
 
 Update Lot Canceled Reason
 

@@ -5,6 +5,7 @@ package dal
 
 var TableNames = struct {
 	Favorite          string
+	Landing           string
 	Lot               string
 	LotCanceledReason string
 	LotFile           string
@@ -17,6 +18,7 @@ var TableNames = struct {
 	Views             string
 }{
 	Favorite:          "favorite",
+	Landing:           "landing",
 	Lot:               "lot",
 	LotCanceledReason: "lot_canceled_reason",
 	LotFile:           "lot_file",

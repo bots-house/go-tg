@@ -42,7 +42,7 @@ func (o *AdminDeleteLotCanceledReasonURL) SetBasePath(bp string) {
 func (o *AdminDeleteLotCanceledReasonURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/admin/settings/lot_canceled_reasons/{id}"
+	var _path = "/admin/settings/lot-canceled-reason/{id}"
 
 	id := swag.FormatInt64(o.ID)
 	if id != "" {

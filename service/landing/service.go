@@ -2,7 +2,6 @@ package landing
 
 import (
 	"context"
-	"math/rand"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
@@ -12,6 +11,8 @@ import (
 type Service struct {
 	Review   core.ReviewStore
 	Settings core.SettingsStore
+	Landing  core.LandingStore
+
 	Resolver tg.Resolver
 }
 
@@ -59,11 +60,16 @@ func (srv *Service) GetLanding(ctx context.Context) (*Landing, error) {
 		return nil, ErrChannelNotFound
 	}
 
+	landing, err := srv.Landing.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get landing")
+	}
+
 	return &Landing{
 		Stats: Stats{
-			UniqueVisitorsPerMonth: rand.Intn(10000) + 1,
-			AvgLotChannelReach:     rand.Intn(10000) + 1,
-			AvgLotSiteReach:        rand.Intn(10000) + 1,
+			UniqueVisitorsPerMonth: landing.UniqueUsersPerMonth(),
+			AvgLotChannelReach:     landing.AvgChannelReach(),
+			AvgLotSiteReach:        landing.AvgSiteReach(),
 		},
 		Reviews: reviews,
 		Channel: Channel{

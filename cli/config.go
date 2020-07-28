@@ -13,6 +13,10 @@ type Config struct {
 	DatabaseMaxOpenConns int    `default:"10" split_words:"true"`
 	DatabaseMaxIdleConns int    `default:"0" split_words:"true"`
 
+	Redis             string `default:"redis://localhost:6379"`
+	RedisMaxOpenConns int    `default:"10" split_words:"true"`
+	RedisMaxIdleConns int    `default:"0" split_words:"true"`
+
 	TokenSecret   string        `required:"true" split_words:"true"`
 	TokenLifeTime time.Duration `default:"24h" split_words:"true"`
 
@@ -35,6 +39,8 @@ type Config struct {
 
 	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
 
+	SiteViewExpiration time.Duration `default:"24h" split_words:"true"`
+
 	SitePathSellChannel string `default:"/channels/sell" split_words:"true"`
 	SitePathListChannel string `default:"/channels" split_words:"true"`
 
@@ -47,6 +53,14 @@ type Config struct {
 	AdminNotificationsChannelID int64 `required:"true" split_words:"true"`
 
 	Addr string `default:":8000"`
+
+	// Proxy used for Yandex Metrika and Telemetr
+	Proxy string `split_words:"true"`
+
+	YandexMetrikaCounterID int `required:"true" split_words:"true"`
+
+	// Run each 15 minutes
+	WorkerUpdateLandingCron string `default:"0,15,30,45 * * * *" split_words:"true"`
 }
 
 func (cfg Config) getSiteFullPath(path string) string {

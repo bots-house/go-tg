@@ -31,7 +31,7 @@ func NewAdminDeleteLotCanceledReason(ctx *middleware.Context, handler AdminDelet
 	return &AdminDeleteLotCanceledReason{Context: ctx, Handler: handler}
 }
 
-/*AdminDeleteLotCanceledReason swagger:route DELETE /admin/settings/lot_canceled_reasons/{id} admin adminDeleteLotCanceledReason
+/*AdminDeleteLotCanceledReason swagger:route DELETE /admin/settings/lot-canceled-reason/{id} admin adminDeleteLotCanceledReason
 
 Delete Lot Canceled Reason
 

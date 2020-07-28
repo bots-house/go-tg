@@ -1,15 +1,24 @@
 package api
 
 import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"net/http"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
+	"github.com/tomasen/realip"
 
 	"github.com/bots-house/birzzha/api/authz"
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/service/catalog"
+	"github.com/bots-house/birzzha/service/views"
+
 	"github.com/bots-house/birzzha/store"
 )
 
@@ -118,6 +127,29 @@ func (h *Handler) getTopics(params catalogops.GetTopicsParams) middleware.Respon
 	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopicSlice(topics))
 }
 
+func (h *Handler) getAnonymousID(r *http.Request) string {
+	ip := realip.FromRequest(r)
+
+	hsh := sha256.New()
+	_, _ = hsh.Write([]byte(ip))
+
+	return hex.EncodeToString(hsh.Sum(nil))
+}
+
+func (h *Handler) registerLotView(ctx context.Context, lot core.LotID, r *http.Request, identity *authz.Identity) {
+	var view *views.SiteView
+
+	if identity.IsAnonymous() {
+		view = views.NewAnonymousView(lot, h.getAnonymousID(r))
+	} else {
+		view = views.NewAuthorizedView(lot, identity.User.ID)
+	}
+
+	if err := h.Views.RegisterSiteView(context.Background(), view); err != nil {
+		log.Error(ctx, "register view", "lot_id", lot, "is_anonymous", identity.IsAnonymous(), "err", err)
+	}
+}
+
 func (h *Handler) getLot(params catalogops.GetLotParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	id := core.LotID(int(params.ID))
@@ -129,6 +161,9 @@ func (h *Handler) getLot(params catalogops.GetLotParams, identity *authz.Identit
 		}
 		return catalogops.NewGetLotInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
+
+	go h.registerLotView(ctx, id, params.HTTPRequest, identity)
+
 	return catalogops.NewGetLotOK().WithPayload(models.NewFullLot(h.Storage, result))
 }
 

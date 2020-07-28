@@ -11,8 +11,6 @@ import (
 	"github.com/bots-house/birzzha/store"
 	"github.com/bots-house/birzzha/store/postgres/dal"
 	"github.com/bots-house/birzzha/store/postgres/shared"
-	//"github.com/bots-house/birzzha/store/postgres/dal"
-	//"github.com/bots-house/birzzha/store/postgres/shared"
 )
 
 type SettingsStore struct {

@@ -376,26 +376,26 @@ func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int
 	rows, err := executor.QueryContext(ctx, `
 		with topics as (
 			select
-				lot_topic.topic_id 
+				lot_topic.topic_id
 			from
-				lot 
+				lot
 				inner join
-					lot_topic 
-					on lot.id = lot_topic.lot_id 
+					lot_topic
+					on lot.id = lot_topic.lot_id
 			where
 				lot.id = $1
 		) select
 			count(distinct(lot.id))
 		from
-			lot 
+			lot
 			inner join
-				lot_topic 
-				on lot.id = lot_topic.lot_id 
+				lot_topic
+				on lot.id = lot_topic.lot_id
 		where
 			lot.id != $1
 			and lot_topic.topic_id in (
 				select
-					* 
+					*
 				from
 					topics
 			);
@@ -426,32 +426,32 @@ func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit i
 	rows, err := executor.QueryContext(ctx, `
 		with topics as (
 			select
-				lot_topic.topic_id 
+				lot_topic.topic_id
 			from
-				lot 
+				lot
 				inner join
-					lot_topic 
-					on lot.id = lot_topic.lot_id 
+					lot_topic
+					on lot.id = lot_topic.lot_id
 			where
 				lot.id = $1
 		) select
 			distinct(lot.id)
 		from
-			lot 
+			lot
 			inner join
-				lot_topic 
-				on lot.id = lot_topic.lot_id 
+				lot_topic
+				on lot.id = lot_topic.lot_id
 		where
 			lot.id != $1
 			and lot_topic.topic_id in (
 				select
-					* 
+					*
 				from
 					topics
 			)
 		group by
 			lot_topic.topic_id,
-			lot.id 
+			lot.id
 		limit $2
 		offset $3;
 	`, id, limit, offset)
@@ -475,6 +475,47 @@ func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit i
 		return nil, errors.Wrap(err, "rows err")
 	}
 	return result, nil
+}
+
+func (store *LotStore) IncreaseSiteViews(ctx context.Context, id core.LotID) error {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	result, err := executor.ExecContext(ctx, "update lot set views_site = views_site + 1 where id = $1", id)
+	if err != nil {
+		return errors.Wrap(err, "exec update query")
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return errors.Wrap(err, "get rows affected")
+	}
+
+	if rows == 0 {
+		return core.ErrLotNotFound
+	}
+
+	return nil
+}
+
+func (store *LotStore) AverageSiteViews(ctx context.Context) (float64, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	var result null.Float64
+
+	if err := executor.QueryRowContext(ctx, `
+        select
+            avg(views_site)
+        from
+            lot
+        where
+            views_site > 0
+    `).Scan(
+		&result,
+	); err != nil {
+		return 0, errors.Wrap(err, "scan result")
+	}
+
+	return result.Float64, nil
 }
 
 func (store *LotStore) Query() core.LotStoreQuery {

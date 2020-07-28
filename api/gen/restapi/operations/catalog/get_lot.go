@@ -35,8 +35,6 @@ func NewGetLot(ctx *middleware.Context, handler GetLotHandler) *GetLot {
 
 Get Lot
 
-Получить лот.
-
 */
 type GetLot struct {
 	Context *middleware.Context

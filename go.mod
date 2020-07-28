@@ -4,6 +4,7 @@ module github.com/bots-house/birzzha
 go 1.14
 
 require (
+	github.com/DATA-DOG/go-txdb v0.1.3
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Rhymond/go-money v1.0.1
 	github.com/aws/aws-sdk-go v1.32.7
@@ -24,6 +25,7 @@ require (
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.10
+	github.com/go-redis/redis/v8 v8.0.0-beta.6
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
@@ -38,12 +40,15 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/remind101/migrate v0.0.0-20170729031349-52c1edff7319
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/xid v1.2.1
 	github.com/stretchr/testify v1.6.1
+	github.com/subosito/gotenv v1.2.0
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
 	github.com/volatiletech/null/v8 v8.1.0
 	github.com/volatiletech/sqlboiler/v4 v4.1.2
 	github.com/volatiletech/strmangle v0.0.1
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 
 )

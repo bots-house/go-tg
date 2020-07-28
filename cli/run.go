@@ -3,9 +3,11 @@ package cli
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -16,12 +18,17 @@ import (
 	"github.com/benbjohnson/clock"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	tgme "github.com/bots-house/tg-me"
+	"github.com/go-redis/redis/v8"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/subosito/gotenv"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/bots-house/birzzha/api"
 	"github.com/bots-house/birzzha/bot"
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/kv"
 	"github.com/bots-house/birzzha/pkg/log"
+	"github.com/bots-house/birzzha/pkg/stat"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
@@ -31,7 +38,9 @@ import (
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/payment/interkassa"
 	"github.com/bots-house/birzzha/service/personal"
+	"github.com/bots-house/birzzha/service/views"
 	"github.com/bots-house/birzzha/store/postgres"
+	"github.com/bots-house/birzzha/worker"
 
 	"github.com/pkg/errors"
 )
@@ -97,18 +106,60 @@ func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistr
 	return payment.NewGatewayRegistry(gateways...)
 }
 
-func run(ctx context.Context) error {
-	// load .env
-	// if err := godotenv.Load(".env.local"); err != nil {
-	// 	return errors.Wrap(err, "load env")
-	// }
+func newRedis(ctx context.Context, cfg Config) (redis.UniversalClient, error) {
+	opts, err := redis.ParseURL(cfg.Redis)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse url")
+	}
 
-	// parse config
+	opts.PoolSize = cfg.RedisMaxIdleConns
+
+	rds := redis.NewClient(opts)
+
+	_, err = rds.Ping(ctx).Result()
+	if err != nil {
+		return nil, errors.Wrap(err, "ping db")
+	}
+
+	return rds, nil
+}
+
+func parseConfig(config string) (Config, error) {
 	var cfg Config
+
+	// load envs
+	if config != "" {
+		if err := gotenv.Load(config); err != nil {
+			return cfg, errors.Wrap(err, "load env")
+		}
+	}
 
 	if err := envconfig.Process(envPrefix, &cfg); err != nil {
 		_ = envconfig.Usage(envPrefix, &cfg)
-		return errors.Wrap(err, "parse config from env")
+		return cfg, err
+	}
+
+	return cfg, nil
+}
+
+func run(ctx context.Context) error {
+
+	// parse flags
+	var (
+		flagWorker, flagServer bool
+		flagConfig             string
+	)
+
+	flag.BoolVar(&flagWorker, "worker", false, "run only server")
+	flag.BoolVar(&flagServer, "server", false, "run only worker")
+	flag.StringVar(&flagConfig, "config", "", "path to env file")
+
+	flag.Parse()
+
+	// parse config
+	cfg, err := parseConfig(flagConfig)
+	if err != nil {
+		return errors.Wrap(err, "parse config")
 	}
 
 	log.Info(ctx, "open db", "dsn", cfg.Database)
@@ -134,6 +185,17 @@ func run(ctx context.Context) error {
 	log.Info(ctx, "migrate database")
 	if err := pg.Migrator().Up(ctx); err != nil {
 		return errors.Wrap(err, "migrate db")
+	}
+
+	log.Info(ctx, "open redis", "dsn", cfg.Redis)
+	rds, err := newRedis(ctx, cfg)
+	if err != nil {
+		return errors.Wrap(err, "open redis")
+	}
+	defer rds.Close()
+
+	kvStore := &kv.RedisStore{
+		Client: rds,
 	}
 
 	strg, err := newStorage(cfg)
@@ -205,6 +267,7 @@ func run(ctx context.Context) error {
 		Lot:               pg.Lot,
 		LotFile:           pg.LotFile,
 		LotCanceledReason: pg.LotCanceledReason,
+		Landing:           pg.Landing,
 		Storage:           strg,
 		BotLinkBuilder:    botLinkBuilder,
 		AvatarResolver: tg.AvatarResolver{
@@ -216,6 +279,7 @@ func run(ctx context.Context) error {
 		Review:   pg.Review,
 		Settings: pg.Settings,
 		Resolver: resolverCache,
+		Landing:  pg.Landing,
 	}
 
 	bot := bot.New(bot.Config{
@@ -245,6 +309,13 @@ func run(ctx context.Context) error {
 		Parser:            newParser(&http.Client{}),
 	}
 
+	viewsSrv := &views.Service{
+		Lot:                pg.Lot,
+		Txier:              pg.Tx,
+		KV:                 kvStore.Sub("views"),
+		SiteViewExpiration: cfg.SiteViewExpiration,
+	}
+
 	handler := api.Handler{
 		Auth:         authSrv,
 		Admin:        adminSrv,
@@ -255,34 +326,92 @@ func run(ctx context.Context) error {
 		Storage:      strg,
 		Gateways:     gateways,
 		Landing:      landingSrv,
-		Logger:       log.Logger(ctx),
+		Logger:       log.GetLogger(ctx),
+		Views:        viewsSrv,
 	}
 
-	server := newServer(cfg, handler.Make())
+	proxyDoer, err := newProxyDoer(ctx, cfg)
+	if err != nil {
+		return errors.Wrap(err, "new proxy doer")
+	}
+
+	// setup server
+	var (
+		srv *http.Server
+		wrk *worker.Worker
+	)
+
+	isRunBoth := !flagServer && !flagWorker
+
+	if flagServer || isRunBoth {
+		srv = newServer(cfg, handler.Make())
+	}
+
+	if flagWorker || isRunBoth {
+		wrk = &worker.Worker{
+			Landing:  pg.Landing,
+			Lot:      pg.Lot,
+			Settings: pg.Settings,
+
+			SiteStat: &stat.SiteYandexMetrika{
+				CounterID: cfg.YandexMetrikaCounterID,
+				Doer:      proxyDoer,
+			},
+
+			TelegramStat: &stat.TelegramTelemetr{
+				Doer: proxyDoer,
+			},
+
+			Location: time.Local,
+
+			UpdateLandingSpec: cfg.WorkerUpdateLandingCron,
+		}
+	}
 
 	go func() {
 		<-ctx.Done()
+		log.Warn(ctx, "shutdown signal received")
 
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
-		log.Info(ctx, "shutdown server")
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			log.Warn(ctx, "shutdown error", "err", err)
+		if srv != nil {
+			log.Info(ctx, "shutdown server")
+			if err := srv.Shutdown(shutdownCtx); err != nil {
+				log.Warn(ctx, "shutdown error", "err", err)
+			}
 		}
 	}()
 
-	log.Info(ctx, "start server", "addr", cfg.Addr, "webhook_domain", cfg.BotWebhookDomain)
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		return errors.Wrap(err, "listen and serve")
+	g, ctx := errgroup.WithContext(ctx)
+
+	if srv != nil {
+		g.Go(func() error {
+			log.Info(ctx, "start server", "addr", cfg.Addr, "webhook_domain", cfg.BotWebhookDomain)
+			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+				return errors.Wrap(err, "run server")
+			}
+			return nil
+		})
 	}
 
-	return nil
+	if wrk != nil {
+		g.Go(func() error {
+			if err := wrk.Run(ctx); err != nil {
+				return errors.Wrap(err, "run worker")
+			}
+
+			return nil
+		})
+	}
+
+	return g.Wait()
 }
 
 func newServer(cfg Config, handler http.Handler) *http.Server {
 	baseCtx := context.Background()
 	baseCtx = log.WithLogger(baseCtx, logger)
+	baseCtx = log.WithPrefix(baseCtx, "scope", "server")
 
 	return &http.Server{
 		Addr:    cfg.Addr,
@@ -291,4 +420,22 @@ func newServer(cfg Config, handler http.Handler) *http.Server {
 			return baseCtx
 		},
 	}
+}
+
+func newProxyDoer(ctx context.Context, cfg Config) (*http.Client, error) {
+	if cfg.Proxy != "" {
+		log.Info(ctx, "use proxy for stats service", "dsn", cfg.Proxy)
+		u, err := url.Parse(cfg.Proxy)
+		if err != nil {
+			return nil, errors.Wrap(err, "parse proxy url")
+		}
+
+		return &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(u),
+			},
+		}, nil
+	}
+
+	return http.DefaultClient, nil
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -169,9 +168,9 @@ type LotViews struct {
 	Site int
 }
 
+// Total views of lot.
 func (lv LotViews) Total() int {
-	// return lv.Site + lv.Telegram
-	return rand.Intn(500000)
+	return lv.Site + lv.Telegram
 }
 
 // Lot for sale
@@ -427,6 +426,13 @@ type LotStore interface {
 
 	// Get lots count group by statuses.
 	LotsCountByStatus(ctx context.Context, filter *LotsCountByStatusFilter) (LotsCountByStatusSlice, error)
+
+	// Increase site views count of lot
+	IncreaseSiteViews(ctx context.Context, lot LotID) error
+
+	// Average lot views on site.
+	// Only includes not zero values.
+	AverageSiteViews(ctx context.Context) (float64, error)
 }
 
 type LotField int8

@@ -34,6 +34,10 @@ type AdminSettings struct {
 	// lot canceled reasons
 	// Required: true
 	LotCanceledReasons []*LotCanceledReason `json:"lot_canceled_reasons"`
+
+	// landing
+	// Required: true
+	Landing *AdminSettingsLanding `json:"landing"`
 }
 
 // Validate validates this admin settings
@@ -53,6 +57,10 @@ func (m *AdminSettings) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLotCanceledReasons(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLanding(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -143,6 +151,24 @@ func (m *AdminSettings) validateLotCanceledReasons(formats strfmt.Registry) erro
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *AdminSettings) validateLanding(formats strfmt.Registry) error {
+
+	if err := validate.Required("landing", "body", m.Landing); err != nil {
+		return err
+	}
+
+	if m.Landing != nil {
+		if err := m.Landing.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("landing")
+			}
+			return err
+		}
 	}
 
 	return nil

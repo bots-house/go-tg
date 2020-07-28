@@ -326,22 +326,20 @@ func init() {
         }
       }
     },
-    "/admin/settings/lot-canceled-reasons": {
-      "post": {
-        "description": "Создание причины отмены лота.",
+    "/admin/settings/landing": {
+      "put": {
         "tags": [
           "admin"
         ],
-        "summary": "Create Lot Canceled Reason",
-        "operationId": "adminCreateLotCanceledReason",
+        "summary": "Update Landing Stats",
+        "operationId": "adminUpdateSettingsLanding",
         "parameters": [
           {
-            "description": "Причина отмены лота.",
-            "name": "reason",
+            "name": "landing",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InputLotCanceledReason"
+              "$ref": "#/definitions/AdminSettingsLandingInput"
             }
           }
         ],
@@ -349,7 +347,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LotCanceledReason"
+              "$ref": "#/definitions/AdminSettingsLanding"
             }
           },
           "400": {
@@ -367,7 +365,7 @@ func init() {
         }
       }
     },
-    "/admin/settings/lot_canceled_reasons/{id}": {
+    "/admin/settings/lot-canceled-reason/{id}": {
       "put": {
         "description": "Обновление причины отмены лота.",
         "tags": [
@@ -441,6 +439,47 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/admin/settings/lot-canceled-reasons": {
+      "post": {
+        "description": "Создание причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Lot Canceled Reason",
+        "operationId": "adminCreateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/admin/settings/prices": {
       "put": {
@@ -1145,7 +1184,6 @@ func init() {
             "TokenQuery": []
           }
         ],
-        "description": "Получить лот.",
         "tags": [
           "catalog"
         ],
@@ -2195,12 +2233,17 @@ func init() {
         "prices",
         "channel",
         "topics",
-        "lot_canceled_reasons"
+        "lot_canceled_reasons",
+        "landing"
       ],
       "properties": {
         "channel": {
           "x-order": 1,
           "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "landing": {
+          "x-order": 4,
+          "$ref": "#/definitions/AdminSettingsLanding"
         },
         "lot_canceled_reasons": {
           "type": "array",
@@ -2244,6 +2287,75 @@ func init() {
           "description": "Юзернейм канала.",
           "type": "string",
           "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsLanding": {
+      "description": "Содержит статистику которая показывается на лендинке.\nПоля вида ` + "`" + `*_shift` + "`" + ` нужны для того чтобы на старте показатель не были слишком низкие.\n",
+      "type": "object",
+      "required": [
+        "unique_users_per_month_actual",
+        "unique_users_per_month_shift",
+        "avg_site_reach_actual",
+        "avg_site_reach_shift",
+        "avg_channel_reach_actual",
+        "avg_channel_reach_shift"
+      ],
+      "properties": {
+        "avg_channel_reach_actual": {
+          "description": "реальный средний охват одного поста в канале",
+          "type": "integer",
+          "x-order": 4
+        },
+        "avg_channel_reach_shift": {
+          "description": "сдвиг охвата одного поста в Telegram",
+          "type": "integer",
+          "x-order": 5
+        },
+        "avg_site_reach_actual": {
+          "description": "реальный охват одного лота",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_site_reach_shift": {
+          "description": "сдвиг охвата одного лтоа",
+          "type": "integer",
+          "x-order": 3
+        },
+        "unique_users_per_month_actual": {
+          "description": "реальное кол-во уникальных посетителей в месяц",
+          "type": "integer",
+          "x-order": 0
+        },
+        "unique_users_per_month_shift": {
+          "description": "сдвиг кол-ва уникальных посетителей в месяц.",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "AdminSettingsLandingInput": {
+      "type": "object",
+      "required": [
+        "unique_users_per_month_shift",
+        "avg_site_reach_shift",
+        "avg_channel_reach_shift"
+      ],
+      "properties": {
+        "avg_channel_reach_shift": {
+          "description": "сдвиг охвата одного поста в Telegram",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_site_reach_shift": {
+          "description": "сдвиг охвата одного лтоа",
+          "type": "integer",
+          "x-order": 1
+        },
+        "unique_users_per_month_shift": {
+          "description": "сдвиг кол-ва уникальных посетителей в месяц.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },
@@ -4274,22 +4386,20 @@ func init() {
         }
       }
     },
-    "/admin/settings/lot-canceled-reasons": {
-      "post": {
-        "description": "Создание причины отмены лота.",
+    "/admin/settings/landing": {
+      "put": {
         "tags": [
           "admin"
         ],
-        "summary": "Create Lot Canceled Reason",
-        "operationId": "adminCreateLotCanceledReason",
+        "summary": "Update Landing Stats",
+        "operationId": "adminUpdateSettingsLanding",
         "parameters": [
           {
-            "description": "Причина отмены лота.",
-            "name": "reason",
+            "name": "landing",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InputLotCanceledReason"
+              "$ref": "#/definitions/AdminSettingsLandingInput"
             }
           }
         ],
@@ -4297,7 +4407,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LotCanceledReason"
+              "$ref": "#/definitions/AdminSettingsLanding"
             }
           },
           "400": {
@@ -4315,7 +4425,7 @@ func init() {
         }
       }
     },
-    "/admin/settings/lot_canceled_reasons/{id}": {
+    "/admin/settings/lot-canceled-reason/{id}": {
       "put": {
         "description": "Обновление причины отмены лота.",
         "tags": [
@@ -4389,6 +4499,47 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/admin/settings/lot-canceled-reasons": {
+      "post": {
+        "description": "Создание причины отмены лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Lot Canceled Reason",
+        "operationId": "adminCreateLotCanceledReason",
+        "parameters": [
+          {
+            "description": "Причина отмены лота.",
+            "name": "reason",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotCanceledReason"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LotCanceledReason"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/admin/settings/prices": {
       "put": {
@@ -5105,7 +5256,6 @@ func init() {
             "TokenQuery": []
           }
         ],
-        "description": "Получить лот.",
         "tags": [
           "catalog"
         ],
@@ -6163,12 +6313,17 @@ func init() {
         "prices",
         "channel",
         "topics",
-        "lot_canceled_reasons"
+        "lot_canceled_reasons",
+        "landing"
       ],
       "properties": {
         "channel": {
           "x-order": 1,
           "$ref": "#/definitions/AdminSettingsChannel"
+        },
+        "landing": {
+          "x-order": 4,
+          "$ref": "#/definitions/AdminSettingsLanding"
         },
         "lot_canceled_reasons": {
           "type": "array",
@@ -6212,6 +6367,75 @@ func init() {
           "description": "Юзернейм канала.",
           "type": "string",
           "x-order": 2
+        }
+      }
+    },
+    "AdminSettingsLanding": {
+      "description": "Содержит статистику которая показывается на лендинке.\nПоля вида ` + "`" + `*_shift` + "`" + ` нужны для того чтобы на старте показатель не были слишком низкие.\n",
+      "type": "object",
+      "required": [
+        "unique_users_per_month_actual",
+        "unique_users_per_month_shift",
+        "avg_site_reach_actual",
+        "avg_site_reach_shift",
+        "avg_channel_reach_actual",
+        "avg_channel_reach_shift"
+      ],
+      "properties": {
+        "avg_channel_reach_actual": {
+          "description": "реальный средний охват одного поста в канале",
+          "type": "integer",
+          "x-order": 4
+        },
+        "avg_channel_reach_shift": {
+          "description": "сдвиг охвата одного поста в Telegram",
+          "type": "integer",
+          "x-order": 5
+        },
+        "avg_site_reach_actual": {
+          "description": "реальный охват одного лота",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_site_reach_shift": {
+          "description": "сдвиг охвата одного лтоа",
+          "type": "integer",
+          "x-order": 3
+        },
+        "unique_users_per_month_actual": {
+          "description": "реальное кол-во уникальных посетителей в месяц",
+          "type": "integer",
+          "x-order": 0
+        },
+        "unique_users_per_month_shift": {
+          "description": "сдвиг кол-ва уникальных посетителей в месяц.",
+          "type": "integer",
+          "x-order": 1
+        }
+      }
+    },
+    "AdminSettingsLandingInput": {
+      "type": "object",
+      "required": [
+        "unique_users_per_month_shift",
+        "avg_site_reach_shift",
+        "avg_channel_reach_shift"
+      ],
+      "properties": {
+        "avg_channel_reach_shift": {
+          "description": "сдвиг охвата одного поста в Telegram",
+          "type": "integer",
+          "x-order": 2
+        },
+        "avg_site_reach_shift": {
+          "description": "сдвиг охвата одного лтоа",
+          "type": "integer",
+          "x-order": 1
+        },
+        "unique_users_per_month_shift": {
+          "description": "сдвиг кол-ва уникальных посетителей в месяц.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },

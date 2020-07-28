@@ -121,6 +121,24 @@ func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, ident
 	return adminops.NewAdminGetSettingsOK().WithPayload(models.NewSettings(result))
 }
 
+func (h *Handler) adminUpdateSettingsLanding(params adminops.AdminUpdateSettingsLandingParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateSettingsLanding(ctx, identity.User, &admin.SettingsInputLanding{
+		UniqueUsersPerMonthShift: int(swag.Int64Value(params.Landing.UniqueUsersPerMonthShift)),
+		AvgChannelReachShift:     int(swag.Int64Value(params.Landing.AvgChannelReachShift)),
+		AvgSiteReachShift:        int(swag.Int64Value(params.Landing.AvgSiteReachShift)),
+	})
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateSettingsLandingBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateSettingsLandingInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return adminops.NewAdminUpdateSettingsLandingOK().WithPayload(models.NewAdminLanding(result))
+}
+
 func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsPricesParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	result, err := h.Admin.UpdateSettingsPrice(ctx,
@@ -137,6 +155,7 @@ func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsP
 		}
 		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
+
 	return adminops.NewAdminUpdateSettingsPricesOK().WithPayload(models.NewSettingsPrices(result))
 }
 

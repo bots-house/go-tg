@@ -27,6 +27,7 @@ type Postgres struct {
 	Payment           *PaymentStore
 	Favorite          *FavoriteStore
 	LotFile           *LotFileStore
+	Landing           *LandingStore
 }
 
 // NewPostgres create postgres based database with all stores.
@@ -46,6 +47,7 @@ func NewPostgres(db *sql.DB) *Postgres {
 	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx, executor: db}
 	pg.Lot = &LotStore{ContextExecutor: db, txier: pg.Tx, lotTopicStore: pg.LotTopic}
 	pg.Settings = &SettingsStore{db: db, txier: pg.Tx}
+	pg.Landing = &LandingStore{db: db, txier: pg.Tx}
 
 	return pg
 }

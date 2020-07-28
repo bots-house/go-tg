@@ -18,6 +18,7 @@ type FullTopic struct {
 
 type FullSettings struct {
 	*core.Settings
+	Landing         *core.Landing
 	Topics          []*FullTopic
 	CanceledReasons core.LotCanceledReasonSlice
 }
@@ -45,10 +46,16 @@ func (srv *Service) newFullSettings(ctx context.Context, settings *core.Settings
 		}
 	}
 
+	landing, err := srv.Landing.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get landing")
+	}
+
 	return &FullSettings{
 		Settings:        settings,
 		Topics:          fullTopics,
 		CanceledReasons: canceledReasons,
+		Landing:         landing,
 	}, nil
 }
 
@@ -75,6 +82,34 @@ type SettingsChannelInput struct {
 	PrivateID      int64
 	PublicUsername string
 	PrivateLink    string
+	Landing        SettingsInputLanding
+}
+
+type SettingsInputLanding struct {
+	UniqueUsersPerMonthShift int
+	AvgSiteReachShift        int
+	AvgChannelReachShift     int
+}
+
+func (srv *Service) UpdateSettingsLanding(ctx context.Context, user *core.User, input *SettingsInputLanding) (*core.Landing, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return nil, err
+	}
+
+	landing, err := srv.Landing.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get landing")
+	}
+
+	landing.AvgChannelReachShift = input.AvgChannelReachShift
+	landing.AvgSiteReachShift = input.AvgSiteReachShift
+	landing.UniqueUsersPerMonthShift = input.UniqueUsersPerMonthShift
+
+	if err := srv.Landing.Update(ctx, landing); err != nil {
+		return nil, errors.Wrap(err, "update landing")
+	}
+
+	return landing, err
 }
 
 func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, input *SettingsPricesInput) (*core.Settings, error) {
@@ -89,8 +124,7 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 
 	settings.Prices.Application = input.Application
 	settings.Prices.Change = input.Change
-	settings.UpdatedAt = null.TimeFrom(time.Now())
-	settings.UpdatedBy = user.ID
+
 	settings.CashierUsername = input.Cashier
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
@@ -114,6 +148,9 @@ func (srv *Service) UpdateSettingsChannel(ctx context.Context, user *core.User, 
 	settings.Channel.PrivateID = input.PrivateID
 	settings.Channel.PrivateLink = input.PrivateLink
 	settings.Channel.PublicUsername = input.PublicUsername
+
+	settings.UpdatedAt = null.TimeFrom(time.Now())
+	settings.UpdatedBy = user.ID
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
 		return nil, errors.Wrap(err, "update settings")

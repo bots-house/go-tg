@@ -22,6 +22,7 @@ func NewSettings(in *admin.FullSettings) *models.AdminSettings {
 		},
 		Topics:             NewAdminFullTopicSlice(in.Topics),
 		LotCanceledReasons: NewLotCanceledReasonSlice(in.CanceledReasons),
+		Landing:            NewAdminLanding(in.Landing),
 	}
 }
 

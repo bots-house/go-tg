@@ -322,9 +322,6 @@ func (srv *Service) GetFavoriteLots(
 		for _, f := range favorites {
 			finalLots = append(finalLots, lots.Find(f.LotID))
 		}
-		if offset != 0 || limit != 0 {
-			finalLots = finalLots[offset : offset+limit]
-		}
 	}
 
 	return &LotList{

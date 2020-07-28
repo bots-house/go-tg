@@ -76,6 +76,10 @@ var (
 		"lot_file_extension_is_wrong",
 		"lot file extension is wrong (pdf, png, jpeg)",
 	)
+	ErrCantChangeLotPriceFree = core.NewError(
+		"cant_change_lot_price_free",
+		"cant change lot price free",
+	)
 )
 
 const (
@@ -205,6 +209,31 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 	olufs := NewOwnedLotUploadedFileSlice(files)
 
 	return srv.newOwnedLot(lot, olufs)
+}
+
+func (srv *Service) ChangeLotPrice(
+	ctx context.Context,
+	user *core.User,
+	lotID core.LotID,
+	price int,
+) (*OwnedLot, error) {
+	lot, err := srv.getOwnedLot(ctx, user, lotID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get owned lot")
+	}
+
+	if lot.CanChangePricePaid() {
+		return nil, ErrCantChangeLotPriceFree
+	}
+
+	lot.Price.Previous = null.IntFrom(lot.Price.Current)
+	lot.Price.Current = price
+
+	if err := srv.Lot.Update(ctx, lot.Lot); err != nil {
+		return nil, errors.Wrap(err, "update lot")
+	}
+
+	return lot, nil
 }
 
 var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")

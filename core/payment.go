@@ -2,6 +2,8 @@ package core
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Rhymond/go-money"
@@ -83,6 +85,7 @@ var (
 
 var (
 	ErrPaymentStatusInvalid = NewError("payment_status_invalid", "payment status invalid")
+	ErrCantGetChangePrice   = NewError("cant_get_change_price", "cant get change price")
 )
 
 func ParsePaymentStatus(v string) (PaymentStatus, error) {
@@ -135,6 +138,22 @@ type Payment struct {
 
 	// When payment was updated?
 	UpdatedAt null.Time
+}
+
+func (pm *Payment) SetChangePrice(price *money.Money) {
+	pm.Metadata["ik_x_change_price"] = fmt.Sprintf("%.2f", price.AsMajorUnits())
+}
+
+func (pm *Payment) GetChangePrice() (int, error) {
+	price, ok := pm.Metadata["ik_x_change_price"]
+	if !ok {
+		return 0, ErrCantGetChangePrice
+	}
+	v, err := strconv.ParseFloat(price, 64)
+	if err != nil {
+		return 0, ErrCantGetChangePrice
+	}
+	return int(v), nil
 }
 
 func NewPayment(

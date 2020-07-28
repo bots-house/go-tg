@@ -53,7 +53,9 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-        
+
+      - name: Configure git for private modules          
+        run: git config --global url."https://${{ secrets.GO_MODULES_USERNAME }}:${{ secrets.GO_MODULES_TOKEN }}@github.com".insteadOf "https://github.com"  
       - name: Download modules
         if: steps.cache.outputs.cache-hit != 'true'
         run: go mod download

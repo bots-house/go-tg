@@ -5,6 +5,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/payment"
@@ -16,6 +17,17 @@ type ApplicationInvoice struct {
 	CashierUsername string
 	Gateways        []string
 }
+
+type ChangeInvoice struct {
+	Lot             *OwnedLot
+	Price           *money.Money
+	CashierUsername string
+	Gateways        []string
+}
+
+var (
+	ErrGatewayNotFound = core.NewError("gateway_not_found", "requested gateway not found")
+)
 
 func (srv *Service) getOwnedLot(ctx context.Context, user *core.User, id core.LotID) (*OwnedLot, error) {
 	lot, err := srv.Lot.Query().OwnerID(user.ID).ID(id).One(ctx)
@@ -56,6 +68,29 @@ func (srv *Service) GetApplicationInvoice(
 	}, nil
 }
 
+func (srv *Service) GetChangeInvoice(
+	ctx context.Context,
+	user *core.User,
+	id core.LotID,
+) (*ChangeInvoice, error) {
+	lot, err := srv.getOwnedLot(ctx, user, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "get owned lot")
+	}
+
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get settings")
+	}
+
+	return &ChangeInvoice{
+		Lot:             lot,
+		Price:           settings.Prices.Change,
+		CashierUsername: settings.CashierUsername,
+		Gateways:        []string{"interkassa", "direct"},
+	}, nil
+}
+
 func (srv *Service) CreateApplicationPayment(
 	ctx context.Context,
 	user *core.User,
@@ -89,7 +124,7 @@ func (srv *Service) createApplicationPayment(
 
 	gateway := srv.Gateways.Get(gatewayName)
 	if gateway == nil {
-		return nil, core.NewError("gateway_not_found", "requested gateway not found")
+		return nil, ErrGatewayNotFound
 	}
 
 	payment := core.NewPayment(
@@ -109,6 +144,64 @@ func (srv *Service) createApplicationPayment(
 		return nil, errors.Wrap(err, "new payment")
 	}
 
+	return form, nil
+}
+
+func (srv *Service) CreateChangePricePayment(
+	ctx context.Context,
+	user *core.User,
+	id core.LotID,
+	gatewayName string,
+	changePrice *money.Money,
+) (*payment.Form, error) {
+	var form *payment.Form
+
+	err := srv.Txier(ctx, func(ctx context.Context) error {
+		var err error
+		form, err = srv.createChangePricePayment(ctx, user, id, gatewayName, changePrice)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return form, err
+}
+
+func (srv *Service) createChangePricePayment(
+	ctx context.Context,
+	user *core.User,
+	id core.LotID,
+	gatewayName string,
+	changePrice *money.Money,
+
+) (*payment.Form, error) {
+	invoice, err := srv.GetChangeInvoice(ctx, user, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "get change invoice")
+	}
+
+	gateway := srv.Gateways.Get(gatewayName)
+	if gateway == nil {
+		return nil, ErrGatewayNotFound
+	}
+
+	payment := core.NewPayment(
+		core.PaymentPurposeChangePrice,
+		user.ID,
+		invoice.Lot.ID,
+		gatewayName,
+		invoice.Price,
+	)
+	payment.Metadata = make(map[string]string)
+	payment.SetChangePrice(changePrice)
+	if err := srv.Payment.Add(ctx, payment); err != nil {
+		return nil, errors.Wrap(err, "add payment to store")
+	}
+
+	form, err := gateway.NewPayment(ctx, user, payment)
+	if err != nil {
+		return nil, errors.Wrap(err, "new payment")
+	}
 	return form, nil
 }
 
@@ -163,8 +256,11 @@ func (srv *Service) processGatewayNotification(ctx context.Context, notify *paym
 	}
 
 	if payment.Status == core.PaymentStatusSuccess {
-		if payment.Purpose == core.PaymentPurposeApplication {
+		switch payment.Purpose {
+		case core.PaymentPurposeApplication:
 			return srv.onPaymentApplication(ctx, payment)
+		case core.PaymentPurposeChangePrice:
+			return srv.onPaymentChangePrice(ctx, payment)
 		}
 	}
 
@@ -188,5 +284,29 @@ func (srv *Service) onPaymentApplication(ctx context.Context, pm *core.Payment) 
 		Lot:     lot,
 	})
 
+	return nil
+}
+
+func (srv *Service) onPaymentChangePrice(ctx context.Context, pm *core.Payment) error {
+	lot, err := srv.Lot.Query().ID(pm.LotID).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "query payment")
+	}
+
+	lot.Price.Previous = null.IntFrom(lot.Price.Current)
+	price, err := pm.GetChangePrice()
+	if err != nil {
+		return errors.Wrap(err, "get change price")
+	}
+
+	lot.Price.Current = price
+	if err := srv.Lot.Update(ctx, lot); err != nil {
+		return errors.Wrap(err, "update lot")
+	}
+
+	srv.AdminNotify.Send(NewPaymentNotification{
+		Payment: pm,
+		Lot:     lot,
+	})
 	return nil
 }

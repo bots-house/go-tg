@@ -871,6 +871,110 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /lots/{id}/change-price:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID лота.
+    put:
+      summary: Change Lot Price
+      parameters:
+        - in: body
+          name: price
+          required: true
+          schema:
+            $ref: "#/definitions/InputLotPrice"
+
+      description: | 
+        Изменяет цену лота если он не опубликованный, в ином случае возвращает ошибку.
+        Возможные ошибки:
+          - `cant_change_lot_price_free` - Невозможно обновить цену лота бесплатно так как лот уже опубликован;
+
+      operationId: changeLotPrice
+      tags: ["personal-area"]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OwnedLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+
+  /lots/{id}/change-price-invoice:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID оплаченного лота
+    get:
+      summary: Get Change Price Invoice
+      description: |
+        Получить информацию для оплаты смены цены лота.
+      operationId: getChangePriceInvoice
+      tags: ["personal-area"]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ChangePriceInvoice"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /lots/{id}/change-price-payment:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID оплаченного лота
+    post:
+      summary: Create Change Price Payment
+      parameters:
+        - in: query
+          name: gateway
+          required: true
+          type: string
+          enum: [interkassa, direct]
+        - in: body
+          name: price
+          required: true
+          schema:
+            $ref: "#/definitions/InputChangePricePayment"
+      description: |
+        Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
+      operationId: createChangePricePayment
+      tags: ["personal-area"]
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/PaymentForm"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /payments/{id}/status:
     parameters:
       - name: id
@@ -1436,6 +1540,54 @@ definitions:
         $ref: "#/definitions/OwnedLot"
       price:
         description: Цена размещения
+        $ref: "#/definitions/Money"
+      cashier:
+        type: object
+        description: |
+          Содержит контакты человека для приема оплат напрямую.
+        required:
+          - username
+          - link
+        properties:
+          username:
+            type: string
+          link:
+            type: string
+      gateways:
+        type: array
+        items:
+          type: string
+          enum:
+            - interkassa
+            - direct
+    
+  InputChangePricePayment:
+    type: object
+    required:
+      - price
+    properties:
+      price:
+        $ref: "#/definitions/Money"
+  
+  InputLotPrice:
+    type: object
+    required:
+      - price
+    properties:
+      price:
+        type: integer
+        description: Цена лота.
+      
+  ChangePriceInvoice:
+    type: object
+    required:
+      - lot
+      - price
+      - gateways
+    properties:
+      lot:
+        $ref: "#/definitions/OwnedLot"
+      price:
         $ref: "#/definitions/Money"
       cashier:
         type: object

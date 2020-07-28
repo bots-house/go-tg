@@ -54,3 +54,15 @@ func NewPaymentStatus(status *personal.PaymentStatus) *models.PaymentStatus {
 		Purpose: swag.String(status.Purpose.String()),
 	}
 }
+
+func NewChangePriceInvoice(s storage.Storage, inv *personal.ChangeInvoice) *models.ChangePriceInvoice {
+	return &models.ChangePriceInvoice{
+		Lot:   NewOwnedLot(s, inv.Lot),
+		Price: newMoney(inv.Price),
+		Cashier: &models.ChangePriceInvoiceCashier{
+			Username: swag.String(inv.CashierUsername),
+			Link:     swag.String(tg.GetLinkByUsername(inv.CashierUsername)),
+		},
+		Gateways: inv.Gateways,
+	}
+}

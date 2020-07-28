@@ -2,9 +2,7 @@ package landing
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
@@ -52,12 +50,10 @@ func (srv *Service) GetLanding(ctx context.Context) (*Landing, error) {
 		return nil, errors.Wrap(err, "get reviews")
 	}
 
-	now := time.Now()
 	result, err := srv.Resolver.ResolveByID(ctx, settings.Channel.PrivateID)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolve by id")
 	}
-	fmt.Println(time.Since(now))
 
 	if result.Channel == nil {
 		return nil, ErrChannelNotFound

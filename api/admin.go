@@ -123,7 +123,6 @@ func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, ident
 
 func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsPricesParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
-
 	result, err := h.Admin.UpdateSettingsPrice(ctx,
 		identity.User,
 		&admin.SettingsPricesInput{

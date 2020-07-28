@@ -88,6 +88,7 @@ func (gw *Gateway) NewPayment(ctx context.Context, payer *core.User, pm *core.Pa
 		desc = fmt.Sprintf("Оплата размещения лота №%d", pm.LotID)
 	case core.PaymentPurposeChangePrice:
 		desc = fmt.Sprintf("Оплата изменения цены лота №%d", pm.LotID)
+		vs.Set("ik_x_change_price", pm.Metadata["ik_x_change_price"])
 	default:
 		desc = "Оплата"
 	}
@@ -239,7 +240,7 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 
 	notification.Metadata["ik_invoice_created_at"] = values.Get("ik_inv_crt")
 	notification.Metadata["ik_invoice_processed_at"] = values.Get("ik_inv_prc")
-
+	notification.Metadata["ik_x_change_price"] = values.Get("ik_x_change_price")
 	if gw.CheckoutID != notification.Metadata["ik_checkout_id"] {
 		return nil, ErrInvalidNotificationCheckoutID
 	}

@@ -100,8 +100,14 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		PersonalAreaCancelLotHandler: personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
 		}),
+		PersonalAreaChangeLotPriceHandler: personal_area.ChangeLotPriceHandlerFunc(func(params personal_area.ChangeLotPriceParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.ChangeLotPrice has not yet been implemented")
+		}),
 		PersonalAreaCreateApplicationPaymentHandler: personal_area.CreateApplicationPaymentHandlerFunc(func(params personal_area.CreateApplicationPaymentParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CreateApplicationPayment has not yet been implemented")
+		}),
+		PersonalAreaCreateChangePricePaymentHandler: personal_area.CreateChangePricePaymentHandlerFunc(func(params personal_area.CreateChangePricePaymentParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.CreateChangePricePayment has not yet been implemented")
 		}),
 		PersonalAreaCreateLotHandler: personal_area.CreateLotHandlerFunc(func(params personal_area.CreateLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CreateLot has not yet been implemented")
@@ -114,6 +120,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		BotGetBotInfoHandler: bot.GetBotInfoHandlerFunc(func(params bot.GetBotInfoParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.GetBotInfo has not yet been implemented")
+		}),
+		PersonalAreaGetChangePriceInvoiceHandler: personal_area.GetChangePriceInvoiceHandlerFunc(func(params personal_area.GetChangePriceInvoiceParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetChangePriceInvoice has not yet been implemented")
 		}),
 		PersonalAreaGetFavoriteLotsHandler: personal_area.GetFavoriteLotsHandlerFunc(func(params personal_area.GetFavoriteLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetFavoriteLots has not yet been implemented")
@@ -265,8 +274,12 @@ type BirzzhaAPI struct {
 	AdminAdminUpdateTopicHandler admin.AdminUpdateTopicHandler
 	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
 	PersonalAreaCancelLotHandler personal_area.CancelLotHandler
+	// PersonalAreaChangeLotPriceHandler sets the operation handler for the change lot price operation
+	PersonalAreaChangeLotPriceHandler personal_area.ChangeLotPriceHandler
 	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
 	PersonalAreaCreateApplicationPaymentHandler personal_area.CreateApplicationPaymentHandler
+	// PersonalAreaCreateChangePricePaymentHandler sets the operation handler for the create change price payment operation
+	PersonalAreaCreateChangePricePaymentHandler personal_area.CreateChangePricePaymentHandler
 	// PersonalAreaCreateLotHandler sets the operation handler for the create lot operation
 	PersonalAreaCreateLotHandler personal_area.CreateLotHandler
 	// AuthCreateTokenHandler sets the operation handler for the create token operation
@@ -275,6 +288,8 @@ type BirzzhaAPI struct {
 	PersonalAreaGetApplicationInoviceHandler personal_area.GetApplicationInoviceHandler
 	// BotGetBotInfoHandler sets the operation handler for the get bot info operation
 	BotGetBotInfoHandler bot.GetBotInfoHandler
+	// PersonalAreaGetChangePriceInvoiceHandler sets the operation handler for the get change price invoice operation
+	PersonalAreaGetChangePriceInvoiceHandler personal_area.GetChangePriceInvoiceHandler
 	// PersonalAreaGetFavoriteLotsHandler sets the operation handler for the get favorite lots operation
 	PersonalAreaGetFavoriteLotsHandler personal_area.GetFavoriteLotsHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
@@ -440,8 +455,14 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.PersonalAreaCancelLotHandler == nil {
 		unregistered = append(unregistered, "personal_area.CancelLotHandler")
 	}
+	if o.PersonalAreaChangeLotPriceHandler == nil {
+		unregistered = append(unregistered, "personal_area.ChangeLotPriceHandler")
+	}
 	if o.PersonalAreaCreateApplicationPaymentHandler == nil {
 		unregistered = append(unregistered, "personal_area.CreateApplicationPaymentHandler")
+	}
+	if o.PersonalAreaCreateChangePricePaymentHandler == nil {
+		unregistered = append(unregistered, "personal_area.CreateChangePricePaymentHandler")
 	}
 	if o.PersonalAreaCreateLotHandler == nil {
 		unregistered = append(unregistered, "personal_area.CreateLotHandler")
@@ -454,6 +475,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.BotGetBotInfoHandler == nil {
 		unregistered = append(unregistered, "bot.GetBotInfoHandler")
+	}
+	if o.PersonalAreaGetChangePriceInvoiceHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetChangePriceInvoiceHandler")
 	}
 	if o.PersonalAreaGetFavoriteLotsHandler == nil {
 		unregistered = append(unregistered, "personal_area.GetFavoriteLotsHandler")
@@ -685,10 +709,18 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/user/lots/{id}/cancel"] = personal_area.NewCancelLot(o.context, o.PersonalAreaCancelLotHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/lots/{id}/change-price"] = personal_area.NewChangeLotPrice(o.context, o.PersonalAreaChangeLotPriceHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/lots/{id}/application-payment"] = personal_area.NewCreateApplicationPayment(o.context, o.PersonalAreaCreateApplicationPaymentHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/lots/{id}/change-price-payment"] = personal_area.NewCreateChangePricePayment(o.context, o.PersonalAreaCreateChangePricePaymentHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -705,6 +737,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/bot"] = bot.NewGetBotInfo(o.context, o.BotGetBotInfoHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/lots/{id}/change-price-invoice"] = personal_area.NewGetChangePriceInvoice(o.context, o.PersonalAreaGetChangePriceInvoiceHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

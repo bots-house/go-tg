@@ -206,3 +206,49 @@ func (h *Handler) getFavoriteLots(params personalops.GetFavoriteLotsParams, iden
 	}
 	return personalops.NewGetFavoriteLotsOK().WithPayload(models.NewPersonalLotList(h.Storage, result))
 }
+
+func (h *Handler) changeLotPrice(params personalops.ChangeLotPriceParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(params.ID)
+
+	result, err := h.Personal.ChangeLotPrice(ctx, identity.User, id, int(swag.Int64Value(params.Price.Price)))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewChangeLotPriceBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewChangeLotPriceInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return personalops.NewChangeLotPriceOK().WithPayload(models.NewOwnedLot(h.Storage, result))
+}
+
+func (h *Handler) getChangePriceInvoice(params personalops.GetChangePriceInvoiceParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	id := core.LotID(params.ID)
+
+	invoice, err := h.Personal.GetChangeInvoice(ctx, identity.User, id)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewGetChangePriceInvoiceBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewGetChangePriceInvoiceInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return personalops.NewGetChangePriceInvoiceOK().WithPayload(models.NewChangePriceInvoice(h.Storage, invoice))
+}
+
+func (h *Handler) createChangePricePayment(params personalops.CreateChangePricePaymentParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	id := core.LotID(params.ID)
+
+	invoice, err := h.Personal.CreateChangePricePayment(ctx, identity.User, id, params.Gateway, models.ToMoney(params.Price.Price))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewCreateChangePricePaymentBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewCreateChangePricePaymentInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return personalops.NewCreateChangePricePaymentCreated().WithPayload(models.NewPaymentForm(invoice))
+}

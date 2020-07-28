@@ -1272,6 +1272,153 @@ func init() {
         }
       ]
     },
+    "/lots/{id}/change-price": {
+      "put": {
+        "description": "Изменяет цену лота если он не опубликованный, в ином случае возвращает ошибку.\nВозможные ошибки:\n  - ` + "`" + `cant_change_lot_price_free` + "`" + ` - Невозможно обновить цену лота бесплатно так как лот уже опубликован;\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Change Lot Price",
+        "operationId": "changeLotPrice",
+        "parameters": [
+          {
+            "name": "price",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotPrice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/change-price-invoice": {
+      "get": {
+        "description": "Получить информацию для оплаты смены цены лота.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Change Price Invoice",
+        "operationId": "getChangePriceInvoice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ChangePriceInvoice"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID оплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/change-price-payment": {
+      "post": {
+        "description": "Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Change Price Payment",
+        "operationId": "createChangePricePayment",
+        "parameters": [
+          {
+            "enum": [
+              "interkassa",
+              "direct"
+            ],
+            "type": "string",
+            "name": "gateway",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "price",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputChangePricePayment"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/PaymentForm"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID оплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/lots/{id}/favorite": {
       "post": {
         "description": "Изменение статуса избранности лота.",
@@ -2235,6 +2382,54 @@ func init() {
         }
       }
     },
+    "ChangePriceInvoice": {
+      "type": "object",
+      "required": [
+        "lot",
+        "price",
+        "gateways"
+      ],
+      "properties": {
+        "cashier": {
+          "description": "Содержит контакты человека для приема оплат напрямую.\n",
+          "type": "object",
+          "required": [
+            "username",
+            "link"
+          ],
+          "properties": {
+            "link": {
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 2
+        },
+        "gateways": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "interkassa",
+              "direct"
+            ]
+          },
+          "x-order": 3
+        },
+        "lot": {
+          "x-order": 0,
+          "$ref": "#/definitions/OwnedLot"
+        },
+        "price": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "Error": {
       "type": "object",
       "required": [
@@ -2459,6 +2654,18 @@ func init() {
         }
       }
     },
+    "InputChangePricePayment": {
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "properties": {
+        "price": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "InputLotCanceledReason": {
       "type": "object",
       "required": [
@@ -2474,6 +2681,19 @@ func init() {
         "why": {
           "description": "Причина снятия с продажи",
           "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "InputLotPrice": {
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "properties": {
+        "price": {
+          "description": "Цена лота.",
+          "type": "integer",
           "x-order": 0
         }
       }
@@ -5012,6 +5232,153 @@ func init() {
         }
       ]
     },
+    "/lots/{id}/change-price": {
+      "put": {
+        "description": "Изменяет цену лота если он не опубликованный, в ином случае возвращает ошибку.\nВозможные ошибки:\n  - ` + "`" + `cant_change_lot_price_free` + "`" + ` - Невозможно обновить цену лота бесплатно так как лот уже опубликован;\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Change Lot Price",
+        "operationId": "changeLotPrice",
+        "parameters": [
+          {
+            "name": "price",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputLotPrice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/change-price-invoice": {
+      "get": {
+        "description": "Получить информацию для оплаты смены цены лота.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Change Price Invoice",
+        "operationId": "getChangePriceInvoice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ChangePriceInvoice"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID оплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/lots/{id}/change-price-payment": {
+      "post": {
+        "description": "Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Create Change Price Payment",
+        "operationId": "createChangePricePayment",
+        "parameters": [
+          {
+            "enum": [
+              "interkassa",
+              "direct"
+            ],
+            "type": "string",
+            "name": "gateway",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "price",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputChangePricePayment"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/PaymentForm"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID оплаченного лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/lots/{id}/favorite": {
       "post": {
         "description": "Изменение статуса избранности лота.",
@@ -6002,6 +6369,73 @@ func init() {
         }
       }
     },
+    "ChangePriceInvoice": {
+      "type": "object",
+      "required": [
+        "lot",
+        "price",
+        "gateways"
+      ],
+      "properties": {
+        "cashier": {
+          "description": "Содержит контакты человека для приема оплат напрямую.\n",
+          "type": "object",
+          "required": [
+            "username",
+            "link"
+          ],
+          "properties": {
+            "link": {
+              "type": "string",
+              "x-order": 1
+            },
+            "username": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 2
+        },
+        "gateways": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "interkassa",
+              "direct"
+            ]
+          },
+          "x-order": 3
+        },
+        "lot": {
+          "x-order": 0,
+          "$ref": "#/definitions/OwnedLot"
+        },
+        "price": {
+          "x-order": 1,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "ChangePriceInvoiceCashier": {
+      "description": "Содержит контакты человека для приема оплат напрямую.\n",
+      "type": "object",
+      "required": [
+        "username",
+        "link"
+      ],
+      "properties": {
+        "link": {
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "type": "string",
+          "x-order": 0
+        }
+      },
+      "x-order": 2
+    },
     "Error": {
       "type": "object",
       "required": [
@@ -6226,6 +6660,18 @@ func init() {
         }
       }
     },
+    "InputChangePricePayment": {
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "properties": {
+        "price": {
+          "x-order": 0,
+          "$ref": "#/definitions/Money"
+        }
+      }
+    },
     "InputLotCanceledReason": {
       "type": "object",
       "required": [
@@ -6241,6 +6687,19 @@ func init() {
         "why": {
           "description": "Причина снятия с продажи",
           "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "InputLotPrice": {
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "properties": {
+        "price": {
+          "description": "Цена лота.",
+          "type": "integer",
           "x-order": 0
         }
       }

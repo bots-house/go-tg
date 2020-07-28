@@ -1637,7 +1637,7 @@ func init() {
     "/tg/resolve": {
       "get": {
         "security": [],
-        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке.\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 400 | ` + "`" + `tg_entity_not_found_or_bot_is_not_admin` + "`" + ` | Сущность не найдена либо бот не являеться админом канала |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
           "catalog"
         ],
@@ -5709,7 +5709,7 @@ func init() {
     "/tg/resolve": {
       "get": {
         "security": [],
-        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "description": "Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке.\nНаписание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).\n\n### Пример запросов\n\n  - https://t.me/channely_updates\n  - t.me/crosser_live\n  - crosser_chat\n  - @zzapusk\n\n### Возможные ошибки\n\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `tg_invalid_query` + "`" + ` | Недопустимый формат ввода |\n| 400 | ` + "`" + `tg_entity_not_found` + "`" + ` | Сущность не найдена |\n| 400 | ` + "`" + `tg_entity_not_found_or_bot_is_not_admin` + "`" + ` | Сущность не найдена либо бот не являеться админом канала |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
         "tags": [
           "catalog"
         ],

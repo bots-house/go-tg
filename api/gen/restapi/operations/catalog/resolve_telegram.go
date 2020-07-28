@@ -33,7 +33,7 @@ func NewResolveTelegram(ctx *middleware.Context, handler ResolveTelegramHandler)
 
 Resolve Telegram Identity
 
-Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке (в разработке).
+Возвращает информацию о Telegram-сущности (каналы и чат) по @username или приватной ссылке.
 Написание ссылки или @username **не важно** (есть протокол или нет, домен, @ в начала).
 
 ### Пример запросов
@@ -49,6 +49,7 @@ Resolve Telegram Identity
 |:---------|:--------------|:-----------------|
 | 400 | `tg_invalid_query` | Недопустимый формат ввода |
 | 400 | `tg_entity_not_found` | Сущность не найдена |
+| 400 | `tg_entity_not_found_or_bot_is_not_admin` | Сущность не найдена либо бот не являеться админом канала |
 | 500 | `internal_error` | Внутреняя ошибка сервера |
 
 

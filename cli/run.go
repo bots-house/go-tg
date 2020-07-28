@@ -112,6 +112,9 @@ func newRedis(ctx context.Context, cfg Config) (redis.UniversalClient, error) {
 		return nil, errors.Wrap(err, "parse url")
 	}
 
+	// remove heroku fake username
+	opts.Username = ""
+
 	opts.PoolSize = cfg.RedisMaxIdleConns
 
 	rds := redis.NewClient(opts)

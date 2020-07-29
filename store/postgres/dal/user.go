@@ -36,7 +36,7 @@ type User struct {
 	JoinedFrom           null.String `boil:"joined_from" json:"joined_from,omitempty" toml:"joined_from" yaml:"joined_from,omitempty"`
 	JoinedAt             time.Time   `boil:"joined_at" json:"joined_at" toml:"joined_at" yaml:"joined_at"`
 	UpdatedAt            null.Time   `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
-	FileID               null.String `boil:"file_id" json:"file_id,omitempty" toml:"file_id" yaml:"file_id,omitempty"`
+	AvatarFileID         null.String `boil:"avatar_file_id" json:"avatar_file_id,omitempty" toml:"avatar_file_id" yaml:"avatar_file_id,omitempty"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -55,7 +55,7 @@ var UserColumns = struct {
 	JoinedFrom           string
 	JoinedAt             string
 	UpdatedAt            string
-	FileID               string
+	AvatarFileID         string
 }{
 	ID:                   "id",
 	TelegramID:           "telegram_id",
@@ -69,7 +69,7 @@ var UserColumns = struct {
 	JoinedFrom:           "joined_from",
 	JoinedAt:             "joined_at",
 	UpdatedAt:            "updated_at",
-	FileID:               "file_id",
+	AvatarFileID:         "avatar_file_id",
 }
 
 // Generated where
@@ -87,7 +87,7 @@ var UserWhere = struct {
 	JoinedFrom           whereHelpernull_String
 	JoinedAt             whereHelpertime_Time
 	UpdatedAt            whereHelpernull_Time
-	FileID               whereHelpernull_String
+	AvatarFileID         whereHelpernull_String
 }{
 	ID:                   whereHelperint{field: "\"user\".\"id\""},
 	TelegramID:           whereHelperint{field: "\"user\".\"telegram_id\""},
@@ -101,7 +101,7 @@ var UserWhere = struct {
 	JoinedFrom:           whereHelpernull_String{field: "\"user\".\"joined_from\""},
 	JoinedAt:             whereHelpertime_Time{field: "\"user\".\"joined_at\""},
 	UpdatedAt:            whereHelpernull_Time{field: "\"user\".\"updated_at\""},
-	FileID:               whereHelpernull_String{field: "\"user\".\"file_id\""},
+	AvatarFileID:         whereHelpernull_String{field: "\"user\".\"avatar_file_id\""},
 }
 
 // UserRels is where relationship names are stored.
@@ -131,8 +131,8 @@ func (*userR) NewStruct() *userR {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "telegram_id", "telegram_username", "telegram_language_code", "first_name", "last_name", "is_name_edited", "avatar", "is_admin", "joined_from", "joined_at", "updated_at", "file_id"}
-	userColumnsWithoutDefault = []string{"telegram_id", "telegram_username", "telegram_language_code", "first_name", "last_name", "is_name_edited", "avatar", "is_admin", "joined_from", "joined_at", "updated_at", "file_id"}
+	userAllColumns            = []string{"id", "telegram_id", "telegram_username", "telegram_language_code", "first_name", "last_name", "is_name_edited", "avatar", "is_admin", "joined_from", "joined_at", "updated_at", "avatar_file_id"}
+	userColumnsWithoutDefault = []string{"telegram_id", "telegram_username", "telegram_language_code", "first_name", "last_name", "is_name_edited", "avatar", "is_admin", "joined_from", "joined_at", "updated_at", "avatar_file_id"}
 	userColumnsWithDefault    = []string{"id"}
 	userPrimaryKeyColumns     = []string{"id"}
 )

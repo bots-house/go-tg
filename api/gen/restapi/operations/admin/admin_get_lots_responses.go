@@ -25,7 +25,7 @@ type AdminGetLotsOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.AdminFullLot `json:"body,omitempty"`
+	Payload *models.AdminLotItemList `json:"body,omitempty"`
 }
 
 // NewAdminGetLotsOK creates AdminGetLotsOK with default headers values
@@ -35,13 +35,13 @@ func NewAdminGetLotsOK() *AdminGetLotsOK {
 }
 
 // WithPayload adds the payload to the admin get lots o k response
-func (o *AdminGetLotsOK) WithPayload(payload *models.AdminFullLot) *AdminGetLotsOK {
+func (o *AdminGetLotsOK) WithPayload(payload *models.AdminLotItemList) *AdminGetLotsOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the admin get lots o k response
-func (o *AdminGetLotsOK) SetPayload(payload *models.AdminFullLot) {
+func (o *AdminGetLotsOK) SetPayload(payload *models.AdminLotItemList) {
 	o.Payload = payload
 }
 

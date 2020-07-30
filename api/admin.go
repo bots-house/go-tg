@@ -105,7 +105,7 @@ func (h *Handler) adminGetLots(params adminops.AdminGetLotsParams, identity *aut
 		}
 		return adminops.NewAdminGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return adminops.NewAdminGetLotsOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
+	return adminops.NewAdminGetLotsOK().WithPayload(models.NewAdminLotItemList(h.Storage, result))
 }
 
 func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, identity *authz.Identity) middleware.Responder {
@@ -266,4 +266,19 @@ func (h *Handler) adminDeleteLotCanceledReason(params adminops.AdminDeleteLotCan
 		return adminops.NewAdminDeleteLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 	return adminops.NewAdminDeleteLotCanceledReasonNoContent()
+}
+
+func (h *Handler) adminGetLot(params adminops.AdminGetLotParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(int(params.ID))
+
+	result, err := h.Admin.GetLot(ctx, identity.GetUser(), id)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return adminops.NewAdminGetLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
 }

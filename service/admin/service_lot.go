@@ -2,8 +2,10 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/pkg/errors"
 )
 
@@ -22,7 +24,7 @@ type LotItem struct {
 	Files          core.LotFileSlice
 }
 
-type FullLot struct {
+type LotItemList struct {
 	Total int
 	Items []*LotItem
 }
@@ -130,7 +132,7 @@ func (srv *Service) GetLots(
 	status string,
 	limit int,
 	offset int,
-) (*FullLot, error) {
+) (*LotItemList, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
@@ -170,8 +172,82 @@ func (srv *Service) GetLots(
 		return nil, errors.Wrap(err, "get lots count")
 	}
 
-	return &FullLot{
+	return &LotItemList{
 		Total: total,
 		Items: lotItems,
+	}, nil
+}
+
+type FullLot struct {
+	*core.Lot
+	User  *core.User
+	Views int
+	Files []*LotUploadedFile
+}
+
+func (fl *FullLot) TgstatLink() string {
+	if fl.Username.Valid {
+		return fmt.Sprintf("https://tgstat.ru/channel/@%s", fl.Username.String)
+	}
+	_, value := tg.ParseResolveQuery(fl.JoinLink.String)
+	return fmt.Sprintf("https://tgstat.ru/channel/%s", value)
+}
+
+func (fl *FullLot) TelemetrLink() string {
+	if fl.Username.Valid {
+		return fmt.Sprintf("https://telemetr.me/@%s", fl.Username.String)
+	}
+	_, value := tg.ParseResolveQuery(fl.JoinLink.String)
+	return fmt.Sprintf("https://telemetr.me/joinchat/%s", value)
+}
+
+type LotUploadedFile struct {
+	ID   core.LotFileID
+	Path string
+	Name string
+	Size int
+}
+
+func newLotUploadedFile(lf *core.LotFile) *LotUploadedFile {
+	return &LotUploadedFile{
+		Path: lf.Path,
+		Name: lf.Name,
+		Size: lf.Size,
+	}
+}
+
+func NewLotUploadedFileSlice(files core.LotFileSlice) []*LotUploadedFile {
+	result := make([]*LotUploadedFile, len(files))
+	for i, file := range files {
+		result[i] = newLotUploadedFile(file)
+	}
+	return result
+}
+
+func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return nil, err
+	}
+
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot")
+	}
+
+	usr, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user")
+	}
+
+	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot files")
+	}
+
+	return &FullLot{
+		Lot:   lot,
+		User:  usr,
+		Views: lot.Views.Total(),
+		Files: NewLotUploadedFileSlice(files),
 	}, nil
 }

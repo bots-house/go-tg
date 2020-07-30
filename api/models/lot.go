@@ -262,8 +262,8 @@ func newAdminLotSlice(s storage.Storage, in []*admin.LotItem) []*models.AdminLot
 	return out
 }
 
-func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot {
-	return &models.AdminFullLot{
+func NewAdminLotItemList(s storage.Storage, in *admin.LotItemList) *models.AdminLotItemList {
+	return &models.AdminLotItemList{
 		Total: swag.Int64(int64(in.Total)),
 		Items: newAdminLotSlice(s, in.Items),
 	}
@@ -304,4 +304,50 @@ func NewPersonalItemLotSlice(s storage.Storage, in core.LotSlice) []*models.LotL
 	}
 
 	return result
+}
+
+func NewAdminLotUploadedFile(s storage.Storage, in *admin.LotUploadedFile) *models.LotUploadedFile {
+	return &models.LotUploadedFile{
+		ID:   swag.Int64(int64(in.ID)),
+		URL:  swag.String(s.PublicURL(in.Path)),
+		Name: swag.String(in.Name),
+		Size: swag.Int64(int64(in.Size)),
+	}
+}
+
+func NewAdminLotUploadedFileSlice(s storage.Storage, in []*admin.LotUploadedFile) []*models.LotUploadedFile {
+	out := make([]*models.LotUploadedFile, len(in))
+	for i, v := range in {
+		out[i] = NewAdminLotUploadedFile(s, v)
+	}
+	return out
+}
+
+func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot {
+	lot := &models.AdminFullLot{
+		ID:           swag.Int64(int64(in.ID)),
+		Name:         swag.String(in.Name),
+		Username:     nullStringToString(in.Username),
+		Link:         swag.String(in.Link()),
+		Price:        newLotPrice(in.Price),
+		Comment:      swag.String(in.Comment),
+		Metrics:      newLotMetrics(in.Metrics),
+		Topics:       NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:    timeToUnix(in.CreatedAt),
+		Bio:          nullStringToString(in.Bio),
+		User:         newLotOwner(s, in.User),
+		TgstatLink:   swag.String(in.TgstatLink()),
+		TelemetrLink: swag.String(in.TelemetrLink()),
+		Views:        swag.Int64(int64(in.Views)),
+		Extra:        newLotExtraResourceSlice(in.ExtraResources),
+		Files:        NewAdminLotUploadedFileSlice(s, in.Files),
+		PaidAt:       nullTimeToUnix(in.PaidAt),
+		ApprovedAt:   nullTimeToUnix(in.ApprovedAt),
+		PublishedAt:  nullTimeToUnix(in.PublishedAt),
+	}
+
+	if in.Avatar.Valid {
+		lot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+	return lot
 }

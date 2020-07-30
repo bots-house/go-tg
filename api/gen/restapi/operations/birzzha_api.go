@@ -67,6 +67,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminDeleteTopicHandler: admin.AdminDeleteTopicHandlerFunc(func(params admin.AdminDeleteTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteTopic has not yet been implemented")
 		}),
+		AdminAdminGetLotHandler: admin.AdminGetLotHandlerFunc(func(params admin.AdminGetLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetLot has not yet been implemented")
+		}),
 		AdminAdminGetLotStatusesHandler: admin.AdminGetLotStatusesHandlerFunc(func(params admin.AdminGetLotStatusesParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetLotStatuses has not yet been implemented")
 		}),
@@ -255,6 +258,8 @@ type BirzzhaAPI struct {
 	AdminAdminDeleteReviewHandler admin.AdminDeleteReviewHandler
 	// AdminAdminDeleteTopicHandler sets the operation handler for the admin delete topic operation
 	AdminAdminDeleteTopicHandler admin.AdminDeleteTopicHandler
+	// AdminAdminGetLotHandler sets the operation handler for the admin get lot operation
+	AdminAdminGetLotHandler admin.AdminGetLotHandler
 	// AdminAdminGetLotStatusesHandler sets the operation handler for the admin get lot statuses operation
 	AdminAdminGetLotStatusesHandler admin.AdminGetLotStatusesHandler
 	// AdminAdminGetLotsHandler sets the operation handler for the admin get lots operation
@@ -426,6 +431,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminDeleteTopicHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteTopicHandler")
+	}
+	if o.AdminAdminGetLotHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetLotHandler")
 	}
 	if o.AdminAdminGetLotStatusesHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetLotStatusesHandler")
@@ -673,6 +681,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/admin/settings/topics/{id}"] = admin.NewAdminDeleteTopic(o.context, o.AdminAdminDeleteTopicHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/lots/{id}"] = admin.NewAdminGetLot(o.context, o.AdminAdminGetLotHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

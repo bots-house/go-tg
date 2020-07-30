@@ -269,6 +269,7 @@ func run(ctx context.Context) error {
 		User:              pg.User,
 		Lot:               pg.Lot,
 		LotFile:           pg.LotFile,
+		Favorite:          pg.Favorite,
 		LotCanceledReason: pg.LotCanceledReason,
 		Landing:           pg.Landing,
 		Storage:           strg,

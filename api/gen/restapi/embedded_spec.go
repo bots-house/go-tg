@@ -85,7 +85,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AdminFullLot"
+              "$ref": "#/definitions/AdminLotItemList"
             }
           },
           "400": {
@@ -133,6 +133,45 @@ func init() {
           "description": "ID пользователя.",
           "name": "user_id",
           "in": "query"
+        }
+      ]
+    },
+    "/admin/lots/{id}": {
+      "get": {
+        "description": "Получить детали лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lot",
+        "operationId": "adminGetLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
         }
       ]
     },
@@ -1967,24 +2006,143 @@ func init() {
   },
   "definitions": {
     "AdminFullLot": {
-      "description": "Список лотов.",
+      "description": "Детали лота.",
       "type": "object",
       "required": [
-        "total",
-        "items"
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at",
+        "topics",
+        "views",
+        "extra",
+        "user",
+        "tgstat_link",
+        "telemetr_link",
+        "files",
+        "paid_at",
+        "approved_at",
+        "published_at"
       ],
       "properties": {
-        "items": {
+        "approved_at": {
+          "description": "Дата одобрения.",
+          "type": "integer",
+          "x-order": 19
+        },
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
+        },
+        "bio": {
+          "description": "Описание лота.",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 11
+        },
+        "extra": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/AdminLot"
+            "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 1
+          "x-order": 13
         },
-        "total": {
-          "description": "Общее количество лотов в соответствии с фильтрами.",
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotUploadedFile"
+          },
+          "x-order": 17
+        },
+        "id": {
+          "description": "ID лота",
           "type": "integer",
           "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 10
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "paid_at": {
+          "description": "Дата оплаты.",
+          "type": "integer",
+          "x-order": 18
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 20
+        },
+        "telemetr_link": {
+          "description": "Ссылка на telemetr.me.",
+          "type": "string",
+          "x-order": 16
+        },
+        "tgstat_link": {
+          "description": "Ссылка на tgstat.ru.",
+          "type": "string",
+          "x-order": 15
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 9
+        },
+        "user": {
+          "x-order": 12,
+          "$ref": "#/definitions/LotOwner"
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
+        },
+        "views": {
+          "description": "Количество просмотров.",
+          "type": "integer",
+          "x-order": 14
         }
       }
     },
@@ -2198,6 +2356,28 @@ func init() {
           "description": "Юзернейм канала.",
           "type": "string",
           "x-order": 5
+        }
+      }
+    },
+    "AdminLotItemList": {
+      "description": "Список лотов.",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLot"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество лотов в соответствии с фильтрами.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },
@@ -4145,7 +4325,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AdminFullLot"
+              "$ref": "#/definitions/AdminLotItemList"
             }
           },
           "400": {
@@ -4193,6 +4373,45 @@ func init() {
           "description": "ID пользователя.",
           "name": "user_id",
           "in": "query"
+        }
+      ]
+    },
+    "/admin/lots/{id}": {
+      "get": {
+        "description": "Получить детали лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Lot",
+        "operationId": "adminGetLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
         }
       ]
     },
@@ -6047,24 +6266,143 @@ func init() {
   },
   "definitions": {
     "AdminFullLot": {
-      "description": "Список лотов.",
+      "description": "Детали лота.",
       "type": "object",
       "required": [
-        "total",
-        "items"
+        "id",
+        "name",
+        "avatar",
+        "link",
+        "bio",
+        "username",
+        "price",
+        "comment",
+        "metrics",
+        "in_favorites",
+        "created_at",
+        "topics",
+        "views",
+        "extra",
+        "user",
+        "tgstat_link",
+        "telemetr_link",
+        "files",
+        "paid_at",
+        "approved_at",
+        "published_at"
       ],
       "properties": {
-        "items": {
+        "approved_at": {
+          "description": "Дата одобрения.",
+          "type": "integer",
+          "x-order": 19
+        },
+        "avatar": {
+          "description": "Аватарка лота",
+          "type": "string",
+          "format": "url",
+          "x-order": 2
+        },
+        "bio": {
+          "description": "Описание лота.",
+          "type": "string",
+          "x-order": 5
+        },
+        "comment": {
+          "description": "Комментарий к лоту",
+          "type": "string",
+          "x-order": 7
+        },
+        "created_at": {
+          "description": "Дата создания",
+          "type": "integer",
+          "x-order": 11
+        },
+        "extra": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/AdminLot"
+            "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 1
+          "x-order": 13
         },
-        "total": {
-          "description": "Общее количество лотов в соответствии с фильтрами.",
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotUploadedFile"
+          },
+          "x-order": 17
+        },
+        "id": {
+          "description": "ID лота",
           "type": "integer",
           "x-order": 0
+        },
+        "in_favorites": {
+          "description": "True, если лот в избранном",
+          "type": "boolean",
+          "x-order": 10
+        },
+        "link": {
+          "description": "Ссылка для вступления (как приватная так и публичная)",
+          "type": "string",
+          "format": "url",
+          "x-order": 4
+        },
+        "metrics": {
+          "x-order": 8,
+          "$ref": "#/definitions/LotMetrics"
+        },
+        "name": {
+          "description": "Название лота (канала) в Telegram",
+          "type": "string",
+          "x-order": 1
+        },
+        "paid_at": {
+          "description": "Дата оплаты.",
+          "type": "integer",
+          "x-order": 18
+        },
+        "price": {
+          "x-order": 6,
+          "$ref": "#/definitions/LotPrice"
+        },
+        "published_at": {
+          "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 20
+        },
+        "telemetr_link": {
+          "description": "Ссылка на telemetr.me.",
+          "type": "string",
+          "x-order": 16
+        },
+        "tgstat_link": {
+          "description": "Ссылка на tgstat.ru.",
+          "type": "string",
+          "x-order": 15
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 9
+        },
+        "user": {
+          "x-order": 12,
+          "$ref": "#/definitions/LotOwner"
+        },
+        "username": {
+          "description": "@username канала (может быть null)",
+          "type": "string",
+          "x-order": 3
+        },
+        "views": {
+          "description": "Количество просмотров.",
+          "type": "integer",
+          "x-order": 14
         }
       }
     },
@@ -6278,6 +6616,28 @@ func init() {
           "description": "Юзернейм канала.",
           "type": "string",
           "x-order": 5
+        }
+      }
+    },
+    "AdminLotItemList": {
+      "description": "Список лотов.",
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AdminLot"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Общее количество лотов в соответствии с фильтрами.",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },

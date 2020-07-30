@@ -1211,6 +1211,33 @@ paths:
         200:
           description: OK
           schema:
+            $ref: "#/definitions/AdminLotItemList"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/lots/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: ID лота.
+        required: true
+        type: integer
+    
+    get:
+      summary: Get Lot
+      description: Получить детали лота.
+      operationId: adminGetLot
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
             $ref: "#/definitions/AdminFullLot"
         400:
           description: Bad Request
@@ -2620,7 +2647,7 @@ definitions:
         type: integer
         description: Размер файла в байтах.
 
-  AdminFullLot:
+  AdminLotItemList:
     type: object
     description: Список лотов.
     required:
@@ -2872,3 +2899,97 @@ definitions:
         $ref: "#/definitions/LandingChannel"
       reviews:
         $ref: "#/definitions/ReviewList"
+
+  AdminFullLot:
+    type: object
+    description: Детали лота.
+    required:
+      - id
+      - name
+      - avatar
+      - link
+      - bio
+      - username
+      - price
+      - comment
+      - metrics
+      - in_favorites
+      - created_at
+      - topics
+      - views
+      - extra
+      - user
+      - tgstat_link
+      - telemetr_link
+      - files
+      - paid_at
+      - approved_at
+      - published_at
+    properties:
+      id:
+        type: integer
+        description: ID лота
+      name:
+        type: string
+        description: Название лота (канала) в Telegram
+      avatar:
+        type: string
+        format: url
+        description: Аватарка лота
+      username:
+        type: string
+        description: "@username канала (может быть null)"
+      link:
+        type: string
+        description: Ссылка для вступления (как приватная так и публичная)
+        format: url
+      bio:
+        type: string
+        description: Описание лота.
+      price:
+        $ref: "#/definitions/LotPrice"
+      comment:
+        type: string
+        description: Комментарий к лоту
+      metrics:
+        $ref: "#/definitions/LotMetrics"
+      topics:
+        type: array
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+      in_favorites:
+        type: boolean
+        description: True, если лот в избранном
+      created_at:
+        type: integer
+        description: Дата создания
+      user:
+        $ref: "#/definitions/LotOwner"
+      extra:
+        type: array
+        items:
+          $ref: "#/definitions/LotExtraResource"
+      views:
+        type: integer
+        description: Количество просмотров.
+      tgstat_link:
+        type: string
+        description: Ссылка на tgstat.ru.
+      telemetr_link:
+        type: string
+        description: Ссылка на telemetr.me.
+      files:
+        type: array
+        items:
+          $ref: "#/definitions/LotUploadedFile"
+      paid_at:
+        type: integer
+        description: Дата оплаты.
+      approved_at:
+        type: integer
+        description: Дата одобрения.
+      published_at:
+        type: integer
+        description: Дата публикации.  

@@ -14,29 +14,181 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// AdminFullLot Список лотов.
+// AdminFullLot Детали лота.
 //
 // swagger:model AdminFullLot
 type AdminFullLot struct {
 
-	// Общее количество лотов в соответствии с фильтрами.
+	// ID лота
 	// Required: true
-	Total *int64 `json:"total"`
+	ID *int64 `json:"id"`
 
-	// items
+	// Название лота (канала) в Telegram
 	// Required: true
-	Items []*AdminLot `json:"items"`
+	Name *string `json:"name"`
+
+	// Аватарка лота
+	// Required: true
+	Avatar *string `json:"avatar"`
+
+	// @username канала (может быть null)
+	// Required: true
+	Username *string `json:"username"`
+
+	// Ссылка для вступления (как приватная так и публичная)
+	// Required: true
+	Link *string `json:"link"`
+
+	// Описание лота.
+	// Required: true
+	Bio *string `json:"bio"`
+
+	// price
+	// Required: true
+	Price *LotPrice `json:"price"`
+
+	// Комментарий к лоту
+	// Required: true
+	Comment *string `json:"comment"`
+
+	// metrics
+	// Required: true
+	Metrics *LotMetrics `json:"metrics"`
+
+	// topics
+	// Required: true
+	Topics []int64 `json:"topics"`
+
+	// True, если лот в избранном
+	// Required: true
+	InFavorites *bool `json:"in_favorites"`
+
+	// Дата создания
+	// Required: true
+	CreatedAt *int64 `json:"created_at"`
+
+	// user
+	// Required: true
+	User *LotOwner `json:"user"`
+
+	// extra
+	// Required: true
+	Extra []*LotExtraResource `json:"extra"`
+
+	// Количество просмотров.
+	// Required: true
+	Views *int64 `json:"views"`
+
+	// Ссылка на tgstat.ru.
+	// Required: true
+	TgstatLink *string `json:"tgstat_link"`
+
+	// Ссылка на telemetr.me.
+	// Required: true
+	TelemetrLink *string `json:"telemetr_link"`
+
+	// files
+	// Required: true
+	Files []*LotUploadedFile `json:"files"`
+
+	// Дата оплаты.
+	// Required: true
+	PaidAt *int64 `json:"paid_at"`
+
+	// Дата одобрения.
+	// Required: true
+	ApprovedAt *int64 `json:"approved_at"`
+
+	// Дата публикации.
+	// Required: true
+	PublishedAt *int64 `json:"published_at"`
 }
 
 // Validate validates this admin full lot
 func (m *AdminFullLot) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateTotal(formats); err != nil {
+	if err := m.validateID(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateItems(formats); err != nil {
+	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAvatar(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUsername(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLink(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateBio(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePrice(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateComment(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMetrics(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTopics(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateInFavorites(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCreatedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUser(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExtra(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateViews(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTgstatLink(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTelemetrLink(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFiles(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePaidAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateApprovedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePublishedAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -46,35 +198,261 @@ func (m *AdminFullLot) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *AdminFullLot) validateTotal(formats strfmt.Registry) error {
+func (m *AdminFullLot) validateID(formats strfmt.Registry) error {
 
-	if err := validate.Required("total", "body", m.Total); err != nil {
+	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *AdminFullLot) validateItems(formats strfmt.Registry) error {
+func (m *AdminFullLot) validateName(formats strfmt.Registry) error {
 
-	if err := validate.Required("items", "body", m.Items); err != nil {
+	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
 	}
 
-	for i := 0; i < len(m.Items); i++ {
-		if swag.IsZero(m.Items[i]) { // not required
+	return nil
+}
+
+func (m *AdminFullLot) validateAvatar(formats strfmt.Registry) error {
+
+	if err := validate.Required("avatar", "body", m.Avatar); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateUsername(formats strfmt.Registry) error {
+
+	if err := validate.Required("username", "body", m.Username); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateLink(formats strfmt.Registry) error {
+
+	if err := validate.Required("link", "body", m.Link); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateBio(formats strfmt.Registry) error {
+
+	if err := validate.Required("bio", "body", m.Bio); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validatePrice(formats strfmt.Registry) error {
+
+	if err := validate.Required("price", "body", m.Price); err != nil {
+		return err
+	}
+
+	if m.Price != nil {
+		if err := m.Price.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("price")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateComment(formats strfmt.Registry) error {
+
+	if err := validate.Required("comment", "body", m.Comment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateMetrics(formats strfmt.Registry) error {
+
+	if err := validate.Required("metrics", "body", m.Metrics); err != nil {
+		return err
+	}
+
+	if m.Metrics != nil {
+		if err := m.Metrics.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("metrics")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateTopics(formats strfmt.Registry) error {
+
+	if err := validate.Required("topics", "body", m.Topics); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Topics); i++ {
+
+		if err := validate.MinLength("topics"+"."+strconv.Itoa(i), "body", string(m.Topics[i]), 1); err != nil {
+			return err
+		}
+
+		if err := validate.MaxLength("topics"+"."+strconv.Itoa(i), "body", string(m.Topics[i]), 3); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateInFavorites(formats strfmt.Registry) error {
+
+	if err := validate.Required("in_favorites", "body", m.InFavorites); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateCreatedAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateUser(formats strfmt.Registry) error {
+
+	if err := validate.Required("user", "body", m.User); err != nil {
+		return err
+	}
+
+	if m.User != nil {
+		if err := m.User.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("user")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateExtra(formats strfmt.Registry) error {
+
+	if err := validate.Required("extra", "body", m.Extra); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Extra); i++ {
+		if swag.IsZero(m.Extra[i]) { // not required
 			continue
 		}
 
-		if m.Items[i] != nil {
-			if err := m.Items[i].Validate(formats); err != nil {
+		if m.Extra[i] != nil {
+			if err := m.Extra[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("items" + "." + strconv.Itoa(i))
+					return ve.ValidateName("extra" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateViews(formats strfmt.Registry) error {
+
+	if err := validate.Required("views", "body", m.Views); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateTgstatLink(formats strfmt.Registry) error {
+
+	if err := validate.Required("tgstat_link", "body", m.TgstatLink); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateTelemetrLink(formats strfmt.Registry) error {
+
+	if err := validate.Required("telemetr_link", "body", m.TelemetrLink); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateFiles(formats strfmt.Registry) error {
+
+	if err := validate.Required("files", "body", m.Files); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Files); i++ {
+		if swag.IsZero(m.Files[i]) { // not required
+			continue
+		}
+
+		if m.Files[i] != nil {
+			if err := m.Files[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("files" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validatePaidAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("paid_at", "body", m.PaidAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateApprovedAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("approved_at", "body", m.ApprovedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validatePublishedAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
+		return err
 	}
 
 	return nil

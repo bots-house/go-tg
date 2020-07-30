@@ -16,6 +16,7 @@ type Service struct {
 	LotFile           core.LotFileStore
 	LotCanceledReason core.LotCanceledReasonStore
 	Landing           core.LandingStore
+	Favorite          core.FavoriteStore
 	BotLinkBuilder    *core.BotLinkBuilder
 
 	Storage        storage.Storage

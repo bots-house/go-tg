@@ -2,8 +2,10 @@ package personal
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	urlutils "net/url"
 	"strings"
 
 	"github.com/bots-house/birzzha/core"
@@ -39,10 +41,6 @@ func (parser LotExtraResourceParser) Parse(ctx context.Context, url string) (*co
 }
 
 func (parser LotExtraResourceParser) getLotExtraResourceOpengraph(ctx context.Context, url string) (*opengraph.OpenGraph, error) {
-	if !strings.Contains(url, "http://") && !strings.Contains(url, "https://") {
-		url = "https://" + url
-	}
-
 	og := opengraph.New(url)
 	if og.Error != nil {
 		return nil, og.Error
@@ -85,6 +83,15 @@ func (parser LotExtraResourceParser) getLotExtraResourceOpengraph(ctx context.Co
 }
 
 func (parser LotExtraResourceParser) parseSiteLotExtraResource(ctx context.Context, url string) (*core.LotExtraResource, error) {
+	if !strings.Contains(url, "http://") && !strings.Contains(url, "https://") {
+		url = "https://" + url
+	}
+
+	parsedURL, err := urlutils.Parse(url)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse url")
+	}
+
 	result, err := parser.getLotExtraResourceOpengraph(ctx, url)
 	if err != nil {
 		return nil, err
@@ -97,7 +104,7 @@ func (parser LotExtraResourceParser) parseSiteLotExtraResource(ctx context.Conte
 		Domain:      url,
 	}
 	if len(result.Image) > 0 {
-		resource.Image = url + result.Image[0].URL
+		resource.Image = fmt.Sprintf("%s://%s%s", parsedURL.Scheme, parsedURL.Hostname(), result.Image[0].URL)
 	}
 
 	return resource, nil

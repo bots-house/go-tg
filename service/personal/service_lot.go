@@ -287,6 +287,7 @@ func (srv *Service) UploadLotFile(
 	size int64,
 	mimeType string,
 ) (*LotUploadedFile, error) {
+
 	if size > uploadLotFileMaxSizeInBytes {
 		return nil, ErrLotFileSizeIsLarge
 	}
@@ -324,7 +325,17 @@ func (srv *Service) GetFavoriteLots(
 	limit int,
 	offset int,
 ) (*LotList, error) {
-	favorites, err := srv.LotFavorite.Query().UserID(user.ID).SortBy(core.FavoriteFieldCreatedAt, store.SortTypeDesc).All(ctx)
+	favoritesCount, err := srv.LotFavorite.Query().UserID(user.ID).Count(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get favorites count")
+	}
+
+	favorites, err := srv.LotFavorite.Query().
+		UserID(user.ID).
+		Offset(offset).
+		Limit(limit).
+		SortBy(core.FavoriteFieldCreatedAt, store.SortTypeDesc).
+		All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get favorites")
 	}
@@ -335,26 +346,26 @@ func (srv *Service) GetFavoriteLots(
 	}
 
 	var lots core.LotSlice
-	var finalLots core.LotSlice
 
 	if query.SortBy != 0 {
-		lots, err = srv.Lot.Query().SortBy(query.SortBy, query.SortByType).ID(lotIDs...).Limit(limit).Offset(offset).All(ctx)
+		lots, err = srv.Lot.Query().SortBy(query.SortBy, query.SortByType).ID(lotIDs...).All(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "get lots")
 		}
-		finalLots = lots
 	} else {
 		lots, err = srv.Lot.Query().ID(lotIDs...).All(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "get lots")
 		}
-		for _, f := range favorites {
-			finalLots = append(finalLots, lots.Find(f.LotID))
-		}
+	}
+
+	finalLots := make(core.LotSlice, len(favorites))
+	for i, favorite := range favorites {
+		finalLots[i] = lots.Find(favorite.LotID)
 	}
 
 	return &LotList{
-		Total: len(favorites),
+		Total: favoritesCount,
 		Items: finalLots,
 	}, nil
 }

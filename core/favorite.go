@@ -85,8 +85,11 @@ type FavoriteStoreQuery interface {
 	UserID(id UserID) FavoriteStoreQuery
 	SortBy(field FavoriteField, typ store.SortType) FavoriteStoreQuery
 	Delete(ctx context.Context) error
+	Offset(offset int) FavoriteStoreQuery
+	Limit(limit int) FavoriteStoreQuery
 	All(ctx context.Context) (FavoriteSlice, error)
 	One(ctx context.Context) (*Favorite, error)
+	Count(ctx context.Context) (int, error)
 }
 
 var ErrFavoriteNotFound = NewError("favorite_not_found", "favorite not found")

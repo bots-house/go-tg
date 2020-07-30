@@ -103,6 +103,16 @@ func (fsq *FavoriteStoreQuery) SortBy(field core.FavoriteField, typ store.SortTy
 	return fsq
 }
 
+func (fsq *FavoriteStoreQuery) Offset(offset int) core.FavoriteStoreQuery {
+	fsq.mods = append(fsq.mods, qm.Offset(offset))
+	return fsq
+}
+
+func (fsq *FavoriteStoreQuery) Limit(limit int) core.FavoriteStoreQuery {
+	fsq.mods = append(fsq.mods, qm.Limit(limit))
+	return fsq
+}
+
 func (fsq *FavoriteStoreQuery) One(ctx context.Context) (*core.Favorite, error) {
 	executor := shared.GetExecutorOrDefault(ctx, fsq.store.ContextExecutor)
 
@@ -125,6 +135,14 @@ func (fsq *FavoriteStoreQuery) Delete(ctx context.Context) error {
 		return core.ErrFavoriteNotFound
 	}
 	return nil
+}
+
+func (fsq *FavoriteStoreQuery) Count(ctx context.Context) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, fsq.store.ContextExecutor)
+
+	count, err := dal.Favorites(fsq.mods...).Count(ctx, executor)
+
+	return int(count), err
 }
 
 func (fsq *FavoriteStoreQuery) All(ctx context.Context) (core.FavoriteSlice, error) {

@@ -70,7 +70,6 @@ func (h *Handler) wrapMiddlewareRecovery(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-
 				inlog.Error(ctx, "something went wrong, recovery", "URL", r.URL, "method", r.Method, "error", err)
 
 				fmt.Println(string(debug.Stack()))

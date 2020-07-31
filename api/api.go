@@ -123,6 +123,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminToggleUserAdminHandler = adminops.ToggleUserAdminHandlerFunc(h.toggleUserAdmin)
 	api.AdminAdminGetLotStatusesHandler = adminops.AdminGetLotStatusesHandlerFunc(h.adminGetLotStatuses)
 	api.AdminAdminGetLotsHandler = adminops.AdminGetLotsHandlerFunc(h.adminGetLots)
+	api.AdminAdminDeclineLotHandler = adminops.AdminDeclineLotHandlerFunc(h.adminDeclineLot)
 	api.AdminAdminGetLotHandler = adminops.AdminGetLotHandlerFunc(h.adminGetLot)
 
 	api.AdminAdminGetSettingsHandler = adminops.AdminGetSettingsHandlerFunc(h.adminGetSettings)

@@ -58,6 +58,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminCreateTopicHandler: admin.AdminCreateTopicHandlerFunc(func(params admin.AdminCreateTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateTopic has not yet been implemented")
 		}),
+		AdminAdminDeclineLotHandler: admin.AdminDeclineLotHandlerFunc(func(params admin.AdminDeclineLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeclineLot has not yet been implemented")
+		}),
 		AdminAdminDeleteLotCanceledReasonHandler: admin.AdminDeleteLotCanceledReasonHandlerFunc(func(params admin.AdminDeleteLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteLotCanceledReason has not yet been implemented")
 		}),
@@ -252,6 +255,8 @@ type BirzzhaAPI struct {
 	AdminAdminCreateLotCanceledReasonHandler admin.AdminCreateLotCanceledReasonHandler
 	// AdminAdminCreateTopicHandler sets the operation handler for the admin create topic operation
 	AdminAdminCreateTopicHandler admin.AdminCreateTopicHandler
+	// AdminAdminDeclineLotHandler sets the operation handler for the admin decline lot operation
+	AdminAdminDeclineLotHandler admin.AdminDeclineLotHandler
 	// AdminAdminDeleteLotCanceledReasonHandler sets the operation handler for the admin delete lot canceled reason operation
 	AdminAdminDeleteLotCanceledReasonHandler admin.AdminDeleteLotCanceledReasonHandler
 	// AdminAdminDeleteReviewHandler sets the operation handler for the admin delete review operation
@@ -422,6 +427,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminCreateTopicHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCreateTopicHandler")
+	}
+	if o.AdminAdminDeclineLotHandler == nil {
+		unregistered = append(unregistered, "admin.AdminDeclineLotHandler")
 	}
 	if o.AdminAdminDeleteLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteLotCanceledReasonHandler")
@@ -669,6 +677,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/admin/settings/topics"] = admin.NewAdminCreateTopic(o.context, o.AdminAdminCreateTopicHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/lots/{id}/decline"] = admin.NewAdminDeclineLot(o.context, o.AdminAdminDeclineLotHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}

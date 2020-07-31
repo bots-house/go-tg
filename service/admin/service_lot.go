@@ -7,6 +7,7 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 )
 
 type LotStatusesCount struct {
@@ -222,6 +223,25 @@ func NewLotUploadedFileSlice(files core.LotFileSlice) []*LotUploadedFile {
 		result[i] = newLotUploadedFile(file)
 	}
 	return result
+}
+
+func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.LotID, reason string) error {
+	if err := srv.IsAdmin(user); err != nil {
+		return err
+	}
+
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get lot")
+	}
+	lot.DeclineReason = null.StringFrom(reason)
+	lot.Status = core.LotStatusDeclined
+
+	if err := srv.Lot.Update(ctx, lot); err != nil {
+		return errors.Wrap(err, "update lot")
+	}
+
+	return nil
 }
 
 func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {

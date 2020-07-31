@@ -175,6 +175,49 @@ func init() {
         }
       ]
     },
+    "/admin/lots/{id}/decline": {
+      "put": {
+        "description": "Отклонить лот.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Decline Lot",
+        "operationId": "adminDeclineLot",
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        },
+        {
+          "type": "string",
+          "description": "Причина.",
+          "name": "reason",
+          "in": "query",
+          "required": true
+        }
+      ]
+    },
     "/admin/reviews": {
       "get": {
         "description": "Получить список отзывов.",
@@ -4411,6 +4454,49 @@ func init() {
           "description": "ID лота.",
           "name": "id",
           "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/lots/{id}/decline": {
+      "put": {
+        "description": "Отклонить лот.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Decline Lot",
+        "operationId": "adminDeclineLot",
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        },
+        {
+          "type": "string",
+          "description": "Причина.",
+          "name": "reason",
+          "in": "query",
           "required": true
         }
       ]

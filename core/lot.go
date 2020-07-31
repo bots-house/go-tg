@@ -207,6 +207,9 @@ type Lot struct {
 	// Optional.
 	CanceledReasonID LotCanceledReasonID
 
+	// Decline reason text.
+	DeclineReason null.String
+
 	// Bio of channel
 	Bio null.String
 

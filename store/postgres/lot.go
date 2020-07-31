@@ -183,6 +183,7 @@ func (store *LotStore) toRow(lot *core.Lot) (*dal.Lot, error) {
 		PublishedAt:           lot.PublishedAt,
 		ViewsTelegram:         lot.Views.Telegram,
 		ViewsSite:             lot.Views.Site,
+		DeclineReason:         lot.DeclineReason,
 	}, nil
 }
 
@@ -239,6 +240,7 @@ func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
 			Telegram: row.ViewsTelegram,
 			Site:     row.ViewsSite,
 		},
+		DeclineReason: row.DeclineReason,
 	}, nil
 }
 

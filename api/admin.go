@@ -268,6 +268,19 @@ func (h *Handler) adminDeleteLotCanceledReason(params adminops.AdminDeleteLotCan
 	return adminops.NewAdminDeleteLotCanceledReasonNoContent()
 }
 
+func (h *Handler) adminDeclineLot(params adminops.AdminDeclineLotParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	lotID := core.LotID(int(params.ID))
+
+	if err := h.Admin.DeclineLot(ctx, identity.GetUser(), lotID, params.Reason); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminDeclineLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminDeclineLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminDeclineLotNoContent()
+}
+
 func (h *Handler) adminGetLot(params adminops.AdminGetLotParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	id := core.LotID(int(params.ID))

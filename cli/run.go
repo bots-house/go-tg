@@ -249,16 +249,25 @@ func run(ctx context.Context) error {
 
 	resolverCache := tg.NewResolverCache(resolver, time.Minute*30)
 
+	proxyDoer, err := newProxyDoer(ctx, cfg)
+	if err != nil {
+		return errors.Wrap(err, "new proxy doer")
+	}
+	telemetr := &stat.TelegramTelemetr{
+		Doer: proxyDoer,
+	}
+
 	catalogSrv := &catalog.Service{
-		Topic:    pg.Topic,
-		Lot:      pg.Lot,
-		LotTopic: pg.LotTopic,
-		Resolver: resolverCache,
-		Storage:  strg,
-		Txier:    pg.Tx,
-		User:     pg.User,
-		Favorite: pg.Favorite,
-		LotFile:  pg.LotFile,
+		Topic:        pg.Topic,
+		Lot:          pg.Lot,
+		LotTopic:     pg.LotTopic,
+		Resolver:     resolverCache,
+		Storage:      strg,
+		Txier:        pg.Tx,
+		User:         pg.User,
+		Favorite:     pg.Favorite,
+		LotFile:      pg.LotFile,
+		TelegramStat: telemetr,
 	}
 
 	adminSrv := &admin.Service{
@@ -307,6 +316,7 @@ func run(ctx context.Context) error {
 		LotFavorite:       pg.Favorite,
 		Storage:           strg,
 		Settings:          pg.Settings,
+		TelegramStat:      telemetr,
 		Gateways:          gateways,
 		AdminNotify:       notifications,
 		LotCanceledReason: pg.LotCanceledReason,
@@ -335,11 +345,6 @@ func run(ctx context.Context) error {
 		Views:        viewsSrv,
 	}
 
-	proxyDoer, err := newProxyDoer(ctx, cfg)
-	if err != nil {
-		return errors.Wrap(err, "new proxy doer")
-	}
-
 	// setup server
 	var (
 		srv *http.Server
@@ -363,9 +368,7 @@ func run(ctx context.Context) error {
 				Doer:      proxyDoer,
 			},
 
-			TelegramStat: &stat.TelegramTelemetr{
-				Doer: proxyDoer,
-			},
+			TelegramStat: telemetr,
 
 			Location: time.Local,
 

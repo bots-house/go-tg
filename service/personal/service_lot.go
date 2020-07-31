@@ -4,7 +4,11 @@ import (
 	"context"
 	"io"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"github.com/bots-house/birzzha/pkg/log"
+	"github.com/bots-house/birzzha/pkg/stat"
 
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
@@ -143,6 +147,17 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 
 	price := core.NewLotPrice(in.Price, in.IsBargain)
 
+	var dailyCoverage int
+	tStat, err := srv.TelegramStat.Get(ctx, strconv.FormatInt(core.MTProtoPrivateID(in.TelegramID), 10))
+	switch {
+	case err == nil:
+		dailyCoverage = tStat.ViewsPerPostDaily
+	case err.Error() == stat.ErrChannelNotFound.Error():
+		//nothing to do, some channels don't have telemetr
+	default:
+		log.Warn(ctx, "telemetr returned error while adding new lot", "err", err)
+	}
+
 	lot := core.NewLot(
 		user.ID,
 		in.TelegramID,
@@ -150,7 +165,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		price,
 		in.Comment,
 		info.MembersCount,
-		info.DailyCoverage,
+		dailyCoverage,
 		null.NewInt(in.MonthlyIncome, in.MonthlyIncome != 0),
 	)
 

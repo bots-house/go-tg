@@ -2,6 +2,7 @@ package personal
 
 import (
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/stat"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
@@ -18,6 +19,7 @@ type Service struct {
 	AdminNotify       *admin.Notifications
 	LotCanceledReason core.LotCanceledReasonStore
 	LotFile           core.LotFileStore
+	TelegramStat      stat.Telegram
 
 	Storage  storage.Storage
 	Settings core.SettingsStore

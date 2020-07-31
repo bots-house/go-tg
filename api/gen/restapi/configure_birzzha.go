@@ -21,7 +21,8 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml007199693 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/ty/9fw59_y54dz_3j7bv46bcjmh0000gn/T/swagger.yml115575166 --principal authz.Identity --exclude-main
+
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -199,6 +200,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.PersonalAreaGetChangePriceInvoiceHandler == nil {
 		api.PersonalAreaGetChangePriceInvoiceHandler = personal_area.GetChangePriceInvoiceHandlerFunc(func(params personal_area.GetChangePriceInvoiceParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetChangePriceInvoice has not yet been implemented")
+		})
+	}
+	if api.CatalogGetDailyCoverageHandler == nil {
+		api.CatalogGetDailyCoverageHandler = catalog.GetDailyCoverageHandlerFunc(func(params catalog.GetDailyCoverageParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetDailyCoverage has not yet been implemented")
 		})
 	}
 	if api.PersonalAreaGetFavoriteLotsHandler == nil {

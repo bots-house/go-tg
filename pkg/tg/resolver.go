@@ -24,9 +24,6 @@ type Channel struct {
 
 	// Description of channel
 	Description string
-
-	// Average views count in channel
-	DailyCoverage int
 }
 
 // Group represents telegram group or supergroups

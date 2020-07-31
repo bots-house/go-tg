@@ -1,6 +1,14 @@
 package stat
 
-import "context"
+import (
+	"context"
+
+	"github.com/bots-house/birzzha/core"
+)
+
+var (
+	ErrChannelNotFound = core.NewError("channel_not_found", "channel not found")
+)
 
 type TelegramStats struct {
 	ViewsPerPostAvg   int

@@ -23,7 +23,7 @@ func TestBotResolver_Resolve(t *testing.T) {
 				return 3, nil
 			},
 		}
-		expResult := &ResolveResult{Channel: &Channel{ID: -1001345340953, Name: "Test channel", MembersCount: 3, DailyCoverage: 3}}
+		expResult := &ResolveResult{Channel: &Channel{ID: -1001345340953, Name: "Test channel", MembersCount: 3}}
 
 		//WHEN
 		bot := BotResolver{Client: api}

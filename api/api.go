@@ -85,6 +85,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	//api.BotGetFileHandler = botops.GetFileHandlerFunc(h.getBotFile)
 
 	// catalog
+	api.CatalogGetDailyCoverageHandler = catalogops.GetDailyCoverageHandlerFunc(h.getDailyCoverage)
 	api.CatalogGetTopicsHandler = catalogops.GetTopicsHandlerFunc(h.getTopics)
 	api.CatalogResolveTelegramHandler = catalogops.ResolveTelegramHandlerFunc(h.resolveTelegram)
 	api.CatalogGetFilterBoundariesHandler = catalogops.GetFilterBoundariesHandlerFunc(h.getFilterBoundaries)

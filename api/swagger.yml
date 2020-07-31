@@ -365,6 +365,41 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /tg/daily-coverage:
+    get:
+      summary: Get daily coverage
+      operationId: getDailyCoverage
+      tags: [catalog]
+      description: |
+        Получения прироста количества просмотров за сутки. Обязательно указать channel_id
+
+        ### Возможные ошибки
+        | Status | Code | Description |
+        |:---------|:--------------|:-----------------|
+        | 400 | `channel_not_found` | Канал не найден |
+        | 500 | `internal_error` | Внутреняя ошибка сервера |
+
+      security: []
+      parameters:
+        - in: query
+          name: channel_id
+          type: integer
+          required: true
+          description: id канала
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/DailyCoverage"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /tg/resolve:
     get:
       summary: Resolve Telegram Identity
@@ -468,7 +503,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-
   /lots:
     get:
       summary: Get Lots
@@ -2168,6 +2202,15 @@ definitions:
           maxLength: 3
         description: Список ID файлов.
 
+  DailyCoverage:
+    type: object
+    required:
+      - views
+    properties:
+      views:
+        type: integer
+        description: количество прироста просмотров за сутки по каналу
+
   TelegramResolveResult:
     type: object
     description: Сущность соотвествующая запросу.
@@ -2181,7 +2224,6 @@ definitions:
           - avatar
           - members_count
           - username
-          - daily_average
           - description
         properties:
           id:
@@ -2202,9 +2244,6 @@ definitions:
           username:
             type: string
             description: username канала (может быть null)
-          daily_average:
-            type: integer
-            description: Среднее кол-во просмотров в день
       group:
         type: object
         description: Групповой чат
@@ -2214,7 +2253,6 @@ definitions:
           - avatar
           - members_count
           - username
-          - daily_average
           - description
         properties:
           id:

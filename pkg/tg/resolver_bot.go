@@ -7,7 +7,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"regexp"
 	"strings"
 
@@ -85,8 +84,6 @@ func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResul
 				MembersCount: membersCount,
 				Username:     chat.UserName,
 				Description:  chat.Description,
-				// TODO: real data
-				DailyCoverage: 1 + rand.Intn(membersCount),
 			},
 		}
 		if avatarFileID != "" {

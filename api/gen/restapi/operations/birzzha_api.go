@@ -136,6 +136,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		PersonalAreaGetChangePriceInvoiceHandler: personal_area.GetChangePriceInvoiceHandlerFunc(func(params personal_area.GetChangePriceInvoiceParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetChangePriceInvoice has not yet been implemented")
 		}),
+		CatalogGetDailyCoverageHandler: catalog.GetDailyCoverageHandlerFunc(func(params catalog.GetDailyCoverageParams) middleware.Responder {
+			return middleware.NotImplemented("operation catalog.GetDailyCoverage has not yet been implemented")
+		}),
 		PersonalAreaGetFavoriteLotsHandler: personal_area.GetFavoriteLotsHandlerFunc(func(params personal_area.GetFavoriteLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetFavoriteLots has not yet been implemented")
 		}),
@@ -310,6 +313,8 @@ type BirzzhaAPI struct {
 	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// PersonalAreaGetChangePriceInvoiceHandler sets the operation handler for the get change price invoice operation
 	PersonalAreaGetChangePriceInvoiceHandler personal_area.GetChangePriceInvoiceHandler
+	// CatalogGetDailyCoverageHandler sets the operation handler for the get daily coverage operation
+	CatalogGetDailyCoverageHandler catalog.GetDailyCoverageHandler
 	// PersonalAreaGetFavoriteLotsHandler sets the operation handler for the get favorite lots operation
 	PersonalAreaGetFavoriteLotsHandler personal_area.GetFavoriteLotsHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
@@ -510,6 +515,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.PersonalAreaGetChangePriceInvoiceHandler == nil {
 		unregistered = append(unregistered, "personal_area.GetChangePriceInvoiceHandler")
+	}
+	if o.CatalogGetDailyCoverageHandler == nil {
+		unregistered = append(unregistered, "catalog.GetDailyCoverageHandler")
 	}
 	if o.PersonalAreaGetFavoriteLotsHandler == nil {
 		unregistered = append(unregistered, "personal_area.GetFavoriteLotsHandler")
@@ -789,6 +797,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/{id}/change-price-invoice"] = personal_area.NewGetChangePriceInvoice(o.context, o.PersonalAreaGetChangePriceInvoiceHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/tg/daily-coverage"] = catalog.NewGetDailyCoverage(o.context, o.CatalogGetDailyCoverageHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

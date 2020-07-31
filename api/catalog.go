@@ -102,6 +102,18 @@ func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Ident
 	return catalogops.NewGetLotsOK().WithPayload(models.NewLotList(h.Storage, lots))
 }
 
+func (h *Handler) getDailyCoverage(params catalogops.GetDailyCoverageParams) middleware.Responder {
+	count, err := h.Catalog.GetDailyCoverage(params.ChannelID)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return catalogops.NewGetDailyCoverageBadRequest().WithPayload(models.NewError(err2))
+		}
+		return catalogops.NewGetDailyCoverageInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+
+	return catalogops.NewGetDailyCoverageOK().WithPayload(models.NewDailyCoverage(int64(count)))
+}
+
 func (h *Handler) resolveTelegram(params catalogops.ResolveTelegramParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 

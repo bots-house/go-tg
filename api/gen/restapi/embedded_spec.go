@@ -1750,6 +1750,46 @@ func init() {
         }
       }
     },
+    "/tg/daily-coverage": {
+      "get": {
+        "security": [],
+        "description": "Получения прироста количества просмотров за сутки. Обязательно указать channel_id\n\n### Возможные ошибки\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `channel_not_found` + "`" + ` | Канал не найден |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get daily coverage",
+        "operationId": "getDailyCoverage",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "id канала",
+            "name": "channel_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyCoverage"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/tg/resolve": {
       "get": {
         "security": [],
@@ -2796,6 +2836,19 @@ func init() {
         "price": {
           "x-order": 1,
           "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "DailyCoverage": {
+      "type": "object",
+      "required": [
+        "views"
+      ],
+      "properties": {
+        "views": {
+          "description": "количество прироста просмотров за сутки по каналу",
+          "type": "integer",
+          "x-order": 0
         }
       }
     },
@@ -4101,7 +4154,6 @@ func init() {
             "avatar",
             "members_count",
             "username",
-            "daily_average",
             "description"
           ],
           "properties": {
@@ -4109,11 +4161,6 @@ func init() {
               "description": "URL аватарки канала (может быть null)",
               "type": "string",
               "x-order": 2
-            },
-            "daily_average": {
-              "description": "Среднее кол-во просмотров в день",
-              "type": "integer",
-              "x-order": 6
             },
             "description": {
               "description": "Описание",
@@ -4152,7 +4199,6 @@ func init() {
             "avatar",
             "members_count",
             "username",
-            "daily_average",
             "description"
           ],
           "properties": {
@@ -6122,6 +6168,46 @@ func init() {
         }
       }
     },
+    "/tg/daily-coverage": {
+      "get": {
+        "security": [],
+        "description": "Получения прироста количества просмотров за сутки. Обязательно указать channel_id\n\n### Возможные ошибки\n| Status | Code | Description |\n|:---------|:--------------|:-----------------|\n| 400 | ` + "`" + `channel_not_found` + "`" + ` | Канал не найден |\n| 500 | ` + "`" + `internal_error` + "`" + ` | Внутреняя ошибка сервера |\n",
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get daily coverage",
+        "operationId": "getDailyCoverage",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "id канала",
+            "name": "channel_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyCoverage"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/tg/resolve": {
       "get": {
         "security": [],
@@ -7216,6 +7302,19 @@ func init() {
         }
       },
       "x-order": 2
+    },
+    "DailyCoverage": {
+      "type": "object",
+      "required": [
+        "views"
+      ],
+      "properties": {
+        "views": {
+          "description": "количество прироста просмотров за сутки по каналу",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
     },
     "Error": {
       "type": "object",
@@ -8545,7 +8644,6 @@ func init() {
             "avatar",
             "members_count",
             "username",
-            "daily_average",
             "description"
           ],
           "properties": {
@@ -8553,11 +8651,6 @@ func init() {
               "description": "URL аватарки канала (может быть null)",
               "type": "string",
               "x-order": 2
-            },
-            "daily_average": {
-              "description": "Среднее кол-во просмотров в день",
-              "type": "integer",
-              "x-order": 6
             },
             "description": {
               "description": "Описание",
@@ -8596,7 +8689,6 @@ func init() {
             "avatar",
             "members_count",
             "username",
-            "daily_average",
             "description"
           ],
           "properties": {
@@ -8644,7 +8736,6 @@ func init() {
         "avatar",
         "members_count",
         "username",
-        "daily_average",
         "description"
       ],
       "properties": {
@@ -8652,11 +8743,6 @@ func init() {
           "description": "URL аватарки канала (может быть null)",
           "type": "string",
           "x-order": 2
-        },
-        "daily_average": {
-          "description": "Среднее кол-во просмотров в день",
-          "type": "integer",
-          "x-order": 6
         },
         "description": {
           "description": "Описание",
@@ -8695,7 +8781,6 @@ func init() {
         "avatar",
         "members_count",
         "username",
-        "daily_average",
         "description"
       ],
       "properties": {

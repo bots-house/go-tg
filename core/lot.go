@@ -96,6 +96,9 @@ func (lm *LotMetrics) refreshPricePerMember(price int) {
 }
 
 func (lm *LotMetrics) refreshPricePerView(price int) {
+	if lm.DailyCoverage == 0 {
+		return
+	}
 	v := float64(price) / float64(lm.DailyCoverage)
 	lm.PricePerView = math.Round(v*100) / 100
 }

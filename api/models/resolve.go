@@ -19,7 +19,6 @@ func newResolveResultChannel(in *tg.Channel) *models.TelegramResolveResultChanne
 		Description:  swag.String(in.Description),
 		MembersCount: swag.Int64(int64(in.MembersCount)),
 		Username:     swag.String(in.Username),
-		DailyAverage: swag.Int64(int64(in.DailyCoverage)),
 	}
 }
 

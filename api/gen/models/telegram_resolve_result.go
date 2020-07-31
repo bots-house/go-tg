@@ -124,10 +124,6 @@ type TelegramResolveResultChannel struct {
 	// username канала (может быть null)
 	// Required: true
 	Username *string `json:"username"`
-
-	// Среднее кол-во просмотров в день
-	// Required: true
-	DailyAverage *int64 `json:"daily_average"`
 }
 
 // Validate validates this telegram resolve result channel
@@ -155,10 +151,6 @@ func (m *TelegramResolveResultChannel) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateUsername(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateDailyAverage(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -216,15 +208,6 @@ func (m *TelegramResolveResultChannel) validateMembersCount(formats strfmt.Regis
 func (m *TelegramResolveResultChannel) validateUsername(formats strfmt.Registry) error {
 
 	if err := validate.Required("channel"+"."+"username", "body", m.Username); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *TelegramResolveResultChannel) validateDailyAverage(formats strfmt.Registry) error {
-
-	if err := validate.Required("channel"+"."+"daily_average", "body", m.DailyAverage); err != nil {
 		return err
 	}
 

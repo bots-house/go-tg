@@ -39,7 +39,7 @@ func (wrk *Worker) taskUpdateLandingAvgChannelReach(ctx context.Context, landing
 		return errors.Wrap(err, "get settings")
 	}
 
-	id := settings.Channel.MTProtoPrivateID()
+	id := core.MTProtoPrivateID(settings.Channel.PrivateID)
 
 	stats, err := wrk.TelegramStat.Get(ctx, strconv.FormatInt(id, 10))
 	if err != nil {

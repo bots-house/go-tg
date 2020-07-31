@@ -1306,6 +1306,31 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+    
+    put:
+      parameters:
+        - name: lot
+          in: body
+          schema:
+            $ref: "#/definitions/InputAdminLot"
+          required: true
+
+      summary: Update Lot
+      description: Модерация лота.
+      operationId: adminUpdateLot
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
 
   /admin/settings:
     get:
@@ -2958,6 +2983,36 @@ definitions:
         $ref: "#/definitions/LandingChannel"
       reviews:
         $ref: "#/definitions/ReviewList"
+
+  
+  InputAdminLot:
+    type: object
+    required:
+      - topics
+      - price
+      - monthly_income
+      - comment
+      - extra
+    properties:
+      topics:
+        type: array
+        items:
+          type: integer
+          minLength: 1
+          maxLength: 3
+      price:
+        type: integer
+        description: Цена.
+      monthly_income:
+        type: integer
+        description: Доход.
+      comment:
+        type: string
+        description: Комментарий.
+      extra:
+        type: array
+        items:
+          $ref: "#/definitions/LotExtraResource"
 
   AdminFullLot:
     type: object

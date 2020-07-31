@@ -179,6 +179,14 @@ func (srv *Service) GetLots(
 	}, nil
 }
 
+type InputAdminLot struct {
+	Comment string
+	Price   int
+	Extra   []*core.LotExtraResource
+	Topics  []core.TopicID
+	Income  int
+}
+
 type FullLot struct {
 	*core.Lot
 	User  *core.User
@@ -242,6 +250,39 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 	}
 
 	return nil
+}
+
+func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotID, in InputAdminLot) error {
+	if err := srv.IsAdmin(user); err != nil {
+		return err
+	}
+
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get lot")
+	}
+
+	_, err = srv.Topic.Query().ID(in.Topics...).All(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get topics")
+	}
+
+	return srv.Txier(ctx, func(ctx context.Context) error {
+		if err := srv.LotTopic.Set(ctx, id, in.Topics); err != nil {
+			return errors.Wrap(err, "set lot topics")
+		}
+
+		lot.Comment = in.Comment
+		lot.Price.Current = in.Price
+		lot.Metrics.MonthlyIncome = null.IntFrom(in.Income)
+		lot.ExtraResources = in.Extra
+
+		if err := srv.Lot.Update(ctx, lot); err != nil {
+			return errors.Wrap(err, "update lot")
+		}
+		return nil
+	})
+
 }
 
 func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {

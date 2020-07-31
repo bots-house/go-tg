@@ -4,6 +4,7 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/store"
 )
 
 type Service struct {
@@ -18,6 +19,8 @@ type Service struct {
 	Landing           core.LandingStore
 	Favorite          core.FavoriteStore
 	BotLinkBuilder    *core.BotLinkBuilder
+
+	Txier store.Txier
 
 	Storage        storage.Storage
 	AvatarResolver tg.AvatarResolver

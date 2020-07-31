@@ -50,6 +50,26 @@ func newLotExtraResourceSlice(in []*core.LotExtraResource) []*models.LotExtraRes
 	return result
 }
 
+func toLotExtraResource(in *models.LotExtraResource) *core.LotExtraResource {
+	return &core.LotExtraResource{
+		URL:         swag.StringValue(in.URL),
+		Title:       swag.StringValue(in.Title),
+		Image:       swag.StringValue(in.Image),
+		Description: swag.StringValue(in.Description),
+		Domain:      swag.StringValue(in.Domain),
+	}
+}
+
+func ToLotExtraResourceSlice(in []*models.LotExtraResource) []*core.LotExtraResource {
+	result := make([]*core.LotExtraResource, len(in))
+
+	for i, v := range in {
+		result[i] = toLotExtraResource(v)
+	}
+
+	return result
+}
+
 func NewOwnedLotSlice(s storage.Storage, lots []*personal.OwnedLot) []*models.OwnedLot {
 	items := make([]*models.OwnedLot, len(lots))
 
@@ -306,6 +326,13 @@ func NewPersonalItemLotSlice(s storage.Storage, in core.LotSlice) []*models.LotL
 	return result
 }
 
+func ToTopicIDs(in []int64) []core.TopicID {
+	out := make([]core.TopicID, len(in))
+	for i, id := range in {
+		out[i] = core.TopicID(id)
+	}
+	return out
+}
 func NewAdminLotUploadedFile(s storage.Storage, in *admin.LotUploadedFile) *models.LotUploadedFile {
 	return &models.LotUploadedFile{
 		ID:   swag.Int64(int64(in.ID)),

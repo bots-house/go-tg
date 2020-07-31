@@ -88,6 +88,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminGetUsersHandler: admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
 		}),
+		AdminAdminUpdateLotHandler: admin.AdminUpdateLotHandlerFunc(func(params admin.AdminUpdateLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateLot has not yet been implemented")
+		}),
 		AdminAdminUpdateLotCanceledReasonHandler: admin.AdminUpdateLotCanceledReasonHandlerFunc(func(params admin.AdminUpdateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateLotCanceledReason has not yet been implemented")
 		}),
@@ -275,6 +278,8 @@ type BirzzhaAPI struct {
 	AdminAdminGetSettingsHandler admin.AdminGetSettingsHandler
 	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
 	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
+	// AdminAdminUpdateLotHandler sets the operation handler for the admin update lot operation
+	AdminAdminUpdateLotHandler admin.AdminUpdateLotHandler
 	// AdminAdminUpdateLotCanceledReasonHandler sets the operation handler for the admin update lot canceled reason operation
 	AdminAdminUpdateLotCanceledReasonHandler admin.AdminUpdateLotCanceledReasonHandler
 	// AdminAdminUpdateReviewHandler sets the operation handler for the admin update review operation
@@ -457,6 +462,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminGetUsersHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetUsersHandler")
+	}
+	if o.AdminAdminUpdateLotHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateLotHandler")
 	}
 	if o.AdminAdminUpdateLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateLotCanceledReasonHandler")
@@ -717,6 +725,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/users"] = admin.NewAdminGetUsers(o.context, o.AdminAdminGetUsersHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/lots/{id}"] = admin.NewAdminUpdateLot(o.context, o.AdminAdminUpdateLotHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

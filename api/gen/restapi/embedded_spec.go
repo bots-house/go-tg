@@ -165,6 +165,41 @@ func init() {
           }
         }
       },
+      "put": {
+        "description": "Модерация лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Lot",
+        "operationId": "adminUpdateLot",
+        "parameters": [
+          {
+            "name": "lot",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminLot"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "parameters": [
         {
           "type": "integer",
@@ -2938,6 +2973,49 @@ func init() {
         "type": "Identity"
       }
     },
+    "InputAdminLot": {
+      "type": "object",
+      "required": [
+        "topics",
+        "price",
+        "monthly_income",
+        "comment",
+        "extra"
+      ],
+      "properties": {
+        "comment": {
+          "description": "Комментарий.",
+          "type": "string",
+          "x-order": 3
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 4
+        },
+        "monthly_income": {
+          "description": "Доход.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "price": {
+          "description": "Цена.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 0
+        }
+      }
+    },
     "InputAuth": {
       "description": "Данный полученные с [Telegram Login Widget](https://core.telegram.org/widgets/login) и [LoginUrl](https://core.telegram.org/bots/api#loginurl).",
       "required": [
@@ -4433,6 +4511,41 @@ func init() {
             "schema": {
               "$ref": "#/definitions/AdminFullLot"
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Модерация лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Lot",
+        "operationId": "adminUpdateLot",
+        "parameters": [
+          {
+            "name": "lot",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputAdminLot"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request",
@@ -7277,6 +7390,49 @@ func init() {
           "package": "github.com/bots-house/birzzha/api/authz"
         },
         "type": "Identity"
+      }
+    },
+    "InputAdminLot": {
+      "type": "object",
+      "required": [
+        "topics",
+        "price",
+        "monthly_income",
+        "comment",
+        "extra"
+      ],
+      "properties": {
+        "comment": {
+          "description": "Комментарий.",
+          "type": "string",
+          "x-order": 3
+        },
+        "extra": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LotExtraResource"
+          },
+          "x-order": 4
+        },
+        "monthly_income": {
+          "description": "Доход.",
+          "type": "integer",
+          "x-order": 2
+        },
+        "price": {
+          "description": "Цена.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "maxLength": 3,
+            "minLength": 1
+          },
+          "x-order": 0
+        }
       }
     },
     "InputAuth": {

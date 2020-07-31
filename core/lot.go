@@ -449,6 +449,8 @@ const (
 	LotFieldMonthlyIncome
 	LotFieldPaybackPeriod
 	LotFieldCreatedAt
+	LotFieldPaidAt
+	LotFieldPublishedAt
 )
 
 var (
@@ -461,6 +463,8 @@ var (
 		"monthly_income":   LotFieldMonthlyIncome,
 		"payback_period":   LotFieldPaybackPeriod,
 		"created_at":       LotFieldCreatedAt,
+		"paid_at":          LotFieldPaidAt,
+		"published_at":     LotFieldPublishedAt,
 	}
 
 	lotFieldToString = mirrorStringToLotField(stringToLotField)

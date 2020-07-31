@@ -65,6 +65,28 @@ func (s *Space) Add(
 	return name, nil
 }
 
+func (s *Space) Delete(
+	ctx context.Context,
+	path string,
+) error {
+	_, err := s.Client.DeleteObjectWithContext(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(path),
+	})
+	if err != nil {
+		return errors.Wrap(err, "delete object")
+	}
+
+	// if err := s.Client.WaitUntilObjectExistsWithContext(ctx, &s3.HeadObjectInput{
+	// 	Bucket: aws.String(s.Bucket),
+	// 	Key:    aws.String(path),
+	// }); err != nil {
+	// 	return errors.Wrap(err, "wait until object exists")
+	// }
+
+	return nil
+}
+
 func (s *Space) PublicURL(p string) string {
 	return strings.Join([]string{s.PublicPrefix, p}, "/")
 }

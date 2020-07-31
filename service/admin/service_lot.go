@@ -6,6 +6,7 @@ import (
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/store"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
 )
@@ -118,6 +119,26 @@ func (srv *Service) lotsQuery(id core.UserID, status string) (core.LotStoreQuery
 	return query, nil
 }
 
+func (srv *Service) lotsSortQuery(status string, query core.LotStoreQuery) (core.LotStoreQuery, error) {
+	if status != "" {
+		parsedStatus, err := core.ParseLotStatus(status)
+		if err != nil {
+			return nil, errors.Wrap(err, "parse status")
+		}
+		switch parsedStatus {
+		case core.LotStatusPaid:
+			query = query.SortBy(core.LotFieldPaidAt, store.SortTypeDesc)
+		case core.LotStatusPublished:
+			query = query.SortBy(core.LotFieldPublishedAt, store.SortTypeDesc)
+		default:
+			query = query.SortBy(core.LotFieldCreatedAt, store.SortTypeDesc)
+		}
+	} else {
+		query = query.SortBy(core.LotFieldCreatedAt, store.SortTypeDesc)
+	}
+	return query, nil
+}
+
 func (srv *Service) getLotsCount(ctx context.Context, id core.UserID, status string) (int, error) {
 	query, err := srv.lotsQuery(id, status)
 	if err != nil {
@@ -139,6 +160,11 @@ func (srv *Service) GetLots(
 	}
 
 	query, err := srv.lotsQuery(id, status)
+	if err != nil {
+		return nil, err
+	}
+
+	query, err = srv.lotsSortQuery(status, query)
 	if err != nil {
 		return nil, err
 	}

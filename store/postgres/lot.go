@@ -719,7 +719,6 @@ func (lsq *LotStoreQuery) Count(ctx context.Context) (int, error) {
 func (lsq *LotStoreQuery) All(ctx context.Context) (core.LotSlice, error) {
 	lsq.eager()
 	executor := shared.GetExecutorOrDefault(ctx, lsq.store.ContextExecutor)
-	ctx = boil.WithDebug(ctx, true)
 	rows, err := dal.Lots(lsq.mods...).All(ctx, executor)
 	if err != nil {
 		return nil, err

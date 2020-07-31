@@ -1212,7 +1212,6 @@ paths:
       - name: reason
         in: query
         type: string
-        required: true
         description: Причина.
     
     put:

@@ -18,7 +18,7 @@ import (
 type AdminDeclineLotURL struct {
 	ID int64
 
-	Reason string
+	Reason *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -61,7 +61,10 @@ func (o *AdminDeclineLotURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
-	reasonQ := o.Reason
+	var reasonQ string
+	if o.Reason != nil {
+		reasonQ = *o.Reason
+	}
 	if reasonQ != "" {
 		qs.Set("reason", reasonQ)
 	}

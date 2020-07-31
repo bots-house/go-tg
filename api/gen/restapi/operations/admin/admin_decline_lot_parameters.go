@@ -13,7 +13,6 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // NewAdminDeclineLotParams creates a new AdminDeclineLotParams object
@@ -38,10 +37,9 @@ type AdminDeclineLotParams struct {
 	*/
 	ID int64
 	/*Причина.
-	  Required: true
 	  In: query
 	*/
-	Reason string
+	Reason *string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -92,21 +90,18 @@ func (o *AdminDeclineLotParams) bindID(rawData []string, hasKey bool, formats st
 
 // bindReason binds and validates parameter Reason from query.
 func (o *AdminDeclineLotParams) bindReason(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	if !hasKey {
-		return errors.Required("reason", "query", rawData)
-	}
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
 	}
 
-	// Required: true
+	// Required: false
 	// AllowEmptyValue: false
-	if err := validate.RequiredString("reason", "query", raw); err != nil {
-		return err
+	if raw == "" { // empty values pass all other validations
+		return nil
 	}
 
-	o.Reason = raw
+	o.Reason = &raw
 
 	return nil
 }

@@ -291,7 +291,7 @@ func (h *Handler) adminDeclineLot(params adminops.AdminDeclineLotParams, identit
 	ctx := params.HTTPRequest.Context()
 	lotID := core.LotID(int(params.ID))
 
-	if err := h.Admin.DeclineLot(ctx, identity.GetUser(), lotID, params.Reason); err != nil {
+	if err := h.Admin.DeclineLot(ctx, identity.GetUser(), lotID, swag.StringValue(params.Reason)); err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeclineLotBadRequest().WithPayload(models.NewError(err2))
 		}

@@ -248,8 +248,7 @@ func init() {
           "type": "string",
           "description": "Причина.",
           "name": "reason",
-          "in": "query",
-          "required": true
+          "in": "query"
         }
       ]
     },
@@ -4609,8 +4608,7 @@ func init() {
           "type": "string",
           "description": "Причина.",
           "name": "reason",
-          "in": "query",
-          "required": true
+          "in": "query"
         }
       ]
     },

@@ -31,7 +31,9 @@ go run main.go -config .env.local
 
 
 ## Инструменты
-  - Установите jq. На MacOS `brew install jq`.
+  - Установите jq. 
+     - MacOS: `brew install jq`;
+     - Ubuntu/Debian: `sudo apt-get install jq`; 
 
 ### Генерация слоя DAL
 

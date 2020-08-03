@@ -1,0 +1,20 @@
+name: Automation
+
+on:
+  pull_request:
+
+jobs:
+  automation:
+    name: Automation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set assignee
+        uses: samspills/assign-pr-to-author@v1.0
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Set labels
+        uses: actions/labeler@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"

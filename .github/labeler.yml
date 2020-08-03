@@ -1,0 +1,18 @@
+"scope: ci": .github/workflows/**
+"scope: api": api/**
+"scope: bot": bot/**
+"scope: cli": 
+  - cli/**
+  - main.go
+
+"scope: pkg": pkg/**
+"scope: store": store/**
+"scope: worker": worker/**
+
+"scope: logic": 
+  - core/**
+  - service/**
+
+"dependencies":
+  - go.mod
+  - go.sum

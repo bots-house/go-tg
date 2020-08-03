@@ -8,14 +8,24 @@ sqlboiler_download_url = https://api.github.com/repos/volatiletech/sqlboiler/tar
 
 golangci_lint_version = 1.27.0
 
+
+run: services
+	go run main.go -config .env.local
+
+run-server: services
+	go run main.go -config .env.local -server 
+
+run-worker: services
+	go run main.go -config .env.local -worker
+
+services:
+	docker-compose up --no-recreate --detach
+
 psql:
 	docker-compose exec postgres psql -U brz
 
 redis-cli:
 	docker-compose exec redis redis-cli
-
-run:
-	go run main.go
 
 lint: .bin/golangci-lint
 		.bin/golangci-lint run --config .golangci.yml

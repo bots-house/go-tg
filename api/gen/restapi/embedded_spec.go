@@ -2137,6 +2137,8 @@ func init() {
         "metrics",
         "in_favorites",
         "created_at",
+        "canceled_reason",
+        "declined_reason",
         "topics",
         "views",
         "extra",
@@ -2165,6 +2167,11 @@ func init() {
           "type": "string",
           "x-order": 5
         },
+        "canceled_reason": {
+          "description": "Текст причины снятия лота.",
+          "type": "string",
+          "x-order": 21
+        },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
@@ -2174,6 +2181,11 @@ func init() {
           "description": "Дата создания",
           "type": "integer",
           "x-order": 11
+        },
+        "declined_reason": {
+          "description": "Текст причины отмены лота.",
+          "type": "string",
+          "x-order": 22
         },
         "extra": {
           "type": "array",
@@ -2375,6 +2387,7 @@ func init() {
         "join_link",
         "status",
         "canceled_reason",
+        "declined_reason",
         "price",
         "topics",
         "created_at",
@@ -2403,6 +2416,11 @@ func init() {
           "description": "Дата создания.",
           "type": "integer",
           "x-order": 11
+        },
+        "declined_reason": {
+          "description": "Текст причины отклонения лота.",
+          "type": "string",
+          "x-order": 16
         },
         "external_id": {
           "description": "Внешний ID.",
@@ -6563,6 +6581,8 @@ func init() {
         "metrics",
         "in_favorites",
         "created_at",
+        "canceled_reason",
+        "declined_reason",
         "topics",
         "views",
         "extra",
@@ -6591,6 +6611,11 @@ func init() {
           "type": "string",
           "x-order": 5
         },
+        "canceled_reason": {
+          "description": "Текст причины снятия лота.",
+          "type": "string",
+          "x-order": 21
+        },
         "comment": {
           "description": "Комментарий к лоту",
           "type": "string",
@@ -6600,6 +6625,11 @@ func init() {
           "description": "Дата создания",
           "type": "integer",
           "x-order": 11
+        },
+        "declined_reason": {
+          "description": "Текст причины отмены лота.",
+          "type": "string",
+          "x-order": 22
         },
         "extra": {
           "type": "array",
@@ -6801,6 +6831,7 @@ func init() {
         "join_link",
         "status",
         "canceled_reason",
+        "declined_reason",
         "price",
         "topics",
         "created_at",
@@ -6829,6 +6860,11 @@ func init() {
           "description": "Дата создания.",
           "type": "integer",
           "x-order": 11
+        },
+        "declined_reason": {
+          "description": "Текст причины отклонения лота.",
+          "type": "string",
+          "x-order": 16
         },
         "external_id": {
           "description": "Внешний ID.",

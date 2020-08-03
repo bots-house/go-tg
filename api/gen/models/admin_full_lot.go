@@ -102,6 +102,14 @@ type AdminFullLot struct {
 	// Дата публикации.
 	// Required: true
 	PublishedAt *int64 `json:"published_at"`
+
+	// Текст причины снятия лота.
+	// Required: true
+	CanceledReason *string `json:"canceled_reason"`
+
+	// Текст причины отмены лота.
+	// Required: true
+	DeclinedReason *string `json:"declined_reason"`
 }
 
 // Validate validates this admin full lot
@@ -189,6 +197,14 @@ func (m *AdminFullLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePublishedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCanceledReason(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDeclinedReason(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -452,6 +468,24 @@ func (m *AdminFullLot) validateApprovedAt(formats strfmt.Registry) error {
 func (m *AdminFullLot) validatePublishedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateCanceledReason(formats strfmt.Registry) error {
+
+	if err := validate.Required("canceled_reason", "body", m.CanceledReason); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateDeclinedReason(formats strfmt.Registry) error {
+
+	if err := validate.Required("declined_reason", "body", m.DeclinedReason); err != nil {
 		return err
 	}
 

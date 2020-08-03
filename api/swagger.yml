@@ -2796,6 +2796,7 @@ definitions:
       - join_link
       - status
       - canceled_reason
+      - declined_reason
       - price
       - topics
       - created_at
@@ -2859,6 +2860,9 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/AdminLotUploadedFile"
+      declined_reason:
+        type: string
+        description: Текст причины отклонения лота.
 
   InputTopic:
     type: object
@@ -3066,6 +3070,8 @@ definitions:
       - metrics
       - in_favorites
       - created_at
+      - canceled_reason
+      - declined_reason
       - topics
       - views
       - extra
@@ -3144,3 +3150,9 @@ definitions:
       published_at:
         type: integer
         description: Дата публикации.  
+      canceled_reason:
+        type: string
+        description: Текст причины снятия лота.
+      declined_reason:
+        type: string
+        description: Текст причины отмены лота.

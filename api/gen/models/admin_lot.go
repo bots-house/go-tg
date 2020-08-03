@@ -84,6 +84,10 @@ type AdminLot struct {
 	// files
 	// Required: true
 	Files []*AdminLotUploadedFile `json:"files"`
+
+	// Текст причины отклонения лота.
+	// Required: true
+	DeclinedReason *string `json:"declined_reason"`
 }
 
 // Validate validates this admin lot
@@ -151,6 +155,10 @@ func (m *AdminLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateFiles(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDeclinedReason(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -388,6 +396,15 @@ func (m *AdminLot) validateFiles(formats strfmt.Registry) error {
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *AdminLot) validateDeclinedReason(formats strfmt.Registry) error {
+
+	if err := validate.Required("declined_reason", "body", m.DeclinedReason); err != nil {
+		return err
 	}
 
 	return nil

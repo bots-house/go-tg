@@ -248,20 +248,21 @@ func newAdminLotUploadedFileSlice(s storage.Storage, in core.LotFileSlice) []*mo
 
 func newAdminLot(s storage.Storage, in *admin.LotItem) *models.AdminLot {
 	adminLot := &models.AdminLot{
-		ID:          swag.Int64(int64(in.ID)),
-		ExternalID:  swag.Int64(int64(in.ID)),
-		Name:        swag.String(in.Name),
-		Status:      swag.String(in.Status.String()),
-		Price:       newLotPrice(in.Price),
-		Topics:      NewTopicIDSlice(in.TopicIDs),
-		CreatedAt:   timeToUnix(in.CreatedAt),
-		PaidAt:      nullTimeToUnix(in.PaidAt),
-		ApprovedAt:  nullTimeToUnix(in.ApprovedAt),
-		PublishedAt: nullTimeToUnix(in.PublishedAt),
-		Files:       newAdminLotUploadedFileSlice(s, in.Files),
-		User:        NewUser(s, in.Owner),
-		Username:    nullStringToString(in.Username),
-		JoinLink:    swag.String(in.Link()),
+		ID:             swag.Int64(int64(in.ID)),
+		ExternalID:     swag.Int64(int64(in.ID)),
+		Name:           swag.String(in.Name),
+		Status:         swag.String(in.Status.String()),
+		Price:          newLotPrice(in.Price),
+		Topics:         NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:      timeToUnix(in.CreatedAt),
+		PaidAt:         nullTimeToUnix(in.PaidAt),
+		ApprovedAt:     nullTimeToUnix(in.ApprovedAt),
+		PublishedAt:    nullTimeToUnix(in.PublishedAt),
+		Files:          newAdminLotUploadedFileSlice(s, in.Files),
+		User:           NewUser(s, in.Owner),
+		Username:       nullStringToString(in.Username),
+		JoinLink:       swag.String(in.Link()),
+		DeclinedReason: nullStringToString(in.DeclineReason),
 	}
 	if in.Avatar.Valid {
 		adminLot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
@@ -352,29 +353,34 @@ func NewAdminLotUploadedFileSlice(s storage.Storage, in []*admin.LotUploadedFile
 
 func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot {
 	lot := &models.AdminFullLot{
-		ID:           swag.Int64(int64(in.ID)),
-		Name:         swag.String(in.Name),
-		Username:     nullStringToString(in.Username),
-		Link:         swag.String(in.Link()),
-		Price:        newLotPrice(in.Price),
-		Comment:      swag.String(in.Comment),
-		Metrics:      newLotMetrics(in.Metrics),
-		Topics:       NewTopicIDSlice(in.TopicIDs),
-		CreatedAt:    timeToUnix(in.CreatedAt),
-		Bio:          nullStringToString(in.Bio),
-		User:         newLotOwner(s, in.User),
-		TgstatLink:   swag.String(in.TgstatLink()),
-		TelemetrLink: swag.String(in.TelemetrLink()),
-		Views:        swag.Int64(int64(in.Views)),
-		Extra:        newLotExtraResourceSlice(in.ExtraResources),
-		Files:        NewAdminLotUploadedFileSlice(s, in.Files),
-		PaidAt:       nullTimeToUnix(in.PaidAt),
-		ApprovedAt:   nullTimeToUnix(in.ApprovedAt),
-		PublishedAt:  nullTimeToUnix(in.PublishedAt),
+		ID:             swag.Int64(int64(in.ID)),
+		Name:           swag.String(in.Name),
+		Username:       nullStringToString(in.Username),
+		Link:           swag.String(in.Link()),
+		Price:          newLotPrice(in.Price),
+		Comment:        swag.String(in.Comment),
+		Metrics:        newLotMetrics(in.Metrics),
+		Topics:         NewTopicIDSlice(in.TopicIDs),
+		CreatedAt:      timeToUnix(in.CreatedAt),
+		Bio:            nullStringToString(in.Bio),
+		User:           newLotOwner(s, in.User),
+		TgstatLink:     swag.String(in.TgstatLink()),
+		TelemetrLink:   swag.String(in.TelemetrLink()),
+		Views:          swag.Int64(int64(in.Views)),
+		Extra:          newLotExtraResourceSlice(in.ExtraResources),
+		Files:          NewAdminLotUploadedFileSlice(s, in.Files),
+		PaidAt:         nullTimeToUnix(in.PaidAt),
+		ApprovedAt:     nullTimeToUnix(in.ApprovedAt),
+		PublishedAt:    nullTimeToUnix(in.PublishedAt),
+		DeclinedReason: nullStringToString(in.DeclineReason),
 	}
 
 	if in.Avatar.Valid {
 		lot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	}
+
+	if in.CanceledReason != nil {
+		lot.CanceledReason = swag.String(in.CanceledReason.Why)
 	}
 	return lot
 }

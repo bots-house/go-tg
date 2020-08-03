@@ -215,9 +215,10 @@ type InputAdminLot struct {
 
 type FullLot struct {
 	*core.Lot
-	User  *core.User
-	Views int
-	Files []*LotUploadedFile
+	User           *core.User
+	Views          int
+	CanceledReason *core.LotCanceledReason
+	Files          []*LotUploadedFile
 }
 
 func (fl *FullLot) TgstatLink() string {
@@ -326,15 +327,21 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 		return nil, errors.Wrap(err, "get user")
 	}
 
+	canceledReason, err := srv.LotCanceledReason.Query().ID(lot.CanceledReasonID).One(ctx)
+	if err != core.ErrLotCanceledReasonNotFound && err != nil {
+		return nil, errors.Wrap(err, "get canceled reason")
+	}
+
 	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get lot files")
 	}
 
 	return &FullLot{
-		Lot:   lot,
-		User:  usr,
-		Views: lot.Views.Total(),
-		Files: NewLotUploadedFileSlice(files),
+		Lot:            lot,
+		User:           usr,
+		Views:          lot.Views.Total(),
+		Files:          NewLotUploadedFileSlice(files),
+		CanceledReason: canceledReason,
 	}, nil
 }

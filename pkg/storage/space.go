@@ -21,6 +21,7 @@ type Space struct {
 	Client       *s3.S3
 	Bucket       string
 	PublicPrefix string
+	GlobalDir    string
 }
 
 var (
@@ -29,7 +30,7 @@ var (
 
 func (s *Space) Add(
 	ctx context.Context,
-	dir string,
+	subDir string,
 	body io.Reader,
 	ext string,
 ) (string, error) {
@@ -40,7 +41,7 @@ func (s *Space) Add(
 		ext = "." + ext
 	}
 
-	name := path.Join(dir, id+ext)
+	name := path.Join(s.GlobalDir, subDir, id+ext)
 
 	contentType := mime.TypeByExtension(ext)
 
@@ -91,7 +92,7 @@ func (s *Space) PublicURL(p string) string {
 	return strings.Join([]string{s.PublicPrefix, p}, "/")
 }
 
-func (s *Space) AddByURL(ctx context.Context, dir string, url string) (string, error) {
+func (s *Space) AddByURL(ctx context.Context, subDir string, url string) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", errors.Wrap(err, "create request")
@@ -122,5 +123,5 @@ func (s *Space) AddByURL(ctx context.Context, dir string, url string) (string, e
 		}
 	}
 
-	return s.Add(ctx, dir, res.Body, ext)
+	return s.Add(ctx, subDir, res.Body, ext)
 }

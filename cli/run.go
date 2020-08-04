@@ -76,6 +76,7 @@ func newStorage(cfg Config) (*storage.Space, error) {
 		Client:       s3Client,
 		Bucket:       cfg.S3Bucket,
 		PublicPrefix: cfg.S3PublicPrefix,
+		GlobalDir:    cfg.S3GlobalDir,
 	}, nil
 }
 

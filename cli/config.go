@@ -25,6 +25,7 @@ type Config struct {
 	S3SecretKey string `required:"true" split_words:"true"`
 	S3Bucket    string `required:"true" split_words:"true"`
 	S3Secure    bool   `required:"true" split_words:"true"`
+	S3GlobalDir string `required:"true" split_words:"true"`
 
 	S3PublicPrefix string `required:"true" split_words:"true"`
 

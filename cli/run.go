@@ -38,6 +38,7 @@ import (
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/payment/interkassa"
 	"github.com/bots-house/birzzha/service/personal"
+	"github.com/bots-house/birzzha/service/posting"
 	"github.com/bots-house/birzzha/service/views"
 	"github.com/bots-house/birzzha/store/postgres"
 	"github.com/bots-house/birzzha/worker"
@@ -270,6 +271,14 @@ func run(ctx context.Context) error {
 		TelegramStat: telemetr,
 	}
 
+	postingSrv := &posting.Service{
+		Lot:      pg.Lot,
+		Settings: pg.Settings,
+		Topic:    pg.Topic,
+		User:     pg.User,
+		TgClient: tgClient,
+	}
+
 	adminSrv := &admin.Service{
 		Review:            pg.Review,
 		Settings:          pg.Settings,
@@ -287,6 +296,7 @@ func run(ctx context.Context) error {
 		AvatarResolver: tg.AvatarResolver{
 			Client: http.DefaultClient,
 		},
+		Posting: postingSrv,
 	}
 
 	landingSrv := &landing.Service{

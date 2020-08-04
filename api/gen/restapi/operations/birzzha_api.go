@@ -79,6 +79,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminGetLotsHandler: admin.AdminGetLotsHandlerFunc(func(params admin.AdminGetLotsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetLots has not yet been implemented")
 		}),
+		AdminAdminGetPostTextHandler: admin.AdminGetPostTextHandlerFunc(func(params admin.AdminGetPostTextParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetPostText has not yet been implemented")
+		}),
 		AdminAdminGetReviewsHandler: admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
 		}),
@@ -87,6 +90,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		AdminAdminGetUsersHandler: admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		}),
+		AdminAdminSendPostPreviewHandler: admin.AdminSendPostPreviewHandlerFunc(func(params admin.AdminSendPostPreviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminSendPostPreview has not yet been implemented")
 		}),
 		AdminAdminUpdateLotHandler: admin.AdminUpdateLotHandlerFunc(func(params admin.AdminUpdateLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateLot has not yet been implemented")
@@ -275,12 +281,16 @@ type BirzzhaAPI struct {
 	AdminAdminGetLotStatusesHandler admin.AdminGetLotStatusesHandler
 	// AdminAdminGetLotsHandler sets the operation handler for the admin get lots operation
 	AdminAdminGetLotsHandler admin.AdminGetLotsHandler
+	// AdminAdminGetPostTextHandler sets the operation handler for the admin get post text operation
+	AdminAdminGetPostTextHandler admin.AdminGetPostTextHandler
 	// AdminAdminGetReviewsHandler sets the operation handler for the admin get reviews operation
 	AdminAdminGetReviewsHandler admin.AdminGetReviewsHandler
 	// AdminAdminGetSettingsHandler sets the operation handler for the admin get settings operation
 	AdminAdminGetSettingsHandler admin.AdminGetSettingsHandler
 	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
 	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
+	// AdminAdminSendPostPreviewHandler sets the operation handler for the admin send post preview operation
+	AdminAdminSendPostPreviewHandler admin.AdminSendPostPreviewHandler
 	// AdminAdminUpdateLotHandler sets the operation handler for the admin update lot operation
 	AdminAdminUpdateLotHandler admin.AdminUpdateLotHandler
 	// AdminAdminUpdateLotCanceledReasonHandler sets the operation handler for the admin update lot canceled reason operation
@@ -459,6 +469,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminGetLotsHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetLotsHandler")
 	}
+	if o.AdminAdminGetPostTextHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetPostTextHandler")
+	}
 	if o.AdminAdminGetReviewsHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetReviewsHandler")
 	}
@@ -467,6 +480,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminGetUsersHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetUsersHandler")
+	}
+	if o.AdminAdminSendPostPreviewHandler == nil {
+		unregistered = append(unregistered, "admin.AdminSendPostPreviewHandler")
 	}
 	if o.AdminAdminUpdateLotHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateLotHandler")
@@ -724,6 +740,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/admin/lots/{id}/text"] = admin.NewAdminGetPostText(o.context, o.AdminAdminGetPostTextHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/admin/reviews"] = admin.NewAdminGetReviews(o.context, o.AdminAdminGetReviewsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -733,6 +753,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/users"] = admin.NewAdminGetUsers(o.context, o.AdminAdminGetUsersHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/admin/posting/preview"] = admin.NewAdminSendPostPreview(o.context, o.AdminAdminSendPostPreviewHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

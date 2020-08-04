@@ -252,6 +252,82 @@ func init() {
         }
       ]
     },
+    "/admin/lots/{id}/text": {
+      "get": {
+        "description": "Получить отрендеренный текст поста.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Post Text",
+        "operationId": "adminGetPostText",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminPostText"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/posting/preview": {
+      "post": {
+        "description": "Получить отрендеренный текст поста в ЛС.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Send Post Preview",
+        "operationId": "adminSendPostPreview",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostText"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/admin/reviews": {
       "get": {
         "description": "Получить список отзывов.",
@@ -2537,6 +2613,19 @@ func init() {
         },
         "url": {
           "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "AdminPostText": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "description": "Отрендеренный текст лота.",
           "type": "string",
           "x-order": 0
         }
@@ -4063,6 +4152,17 @@ func init() {
         }
       }
     },
+    "PostText": {
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
     "Review": {
       "description": "Отзыв.",
       "required": [
@@ -4675,6 +4775,82 @@ func init() {
           "in": "query"
         }
       ]
+    },
+    "/admin/lots/{id}/text": {
+      "get": {
+        "description": "Получить отрендеренный текст поста.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Post Text",
+        "operationId": "adminGetPostText",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminPostText"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/posting/preview": {
+      "post": {
+        "description": "Получить отрендеренный текст поста в ЛС.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Send Post Preview",
+        "operationId": "adminSendPostPreview",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostText"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/admin/reviews": {
       "get": {
@@ -6981,6 +7157,19 @@ func init() {
         },
         "url": {
           "description": "Ссылка на файл.",
+          "type": "string",
+          "x-order": 0
+        }
+      }
+    },
+    "AdminPostText": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "description": "Отрендеренный текст лота.",
           "type": "string",
           "x-order": 0
         }
@@ -8567,6 +8756,17 @@ func init() {
             "success",
             "failed"
           ],
+          "x-order": 0
+        }
+      }
+    },
+    "PostText": {
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
           "x-order": 0
         }
       }

@@ -268,6 +268,32 @@ func (h *Handler) adminDeleteLotCanceledReason(params adminops.AdminDeleteLotCan
 	return adminops.NewAdminDeleteLotCanceledReasonNoContent()
 }
 
+func (h *Handler) adminGetPostText(params adminops.AdminGetPostTextParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.LotID(int(params.ID))
+
+	result, err := h.Admin.GetPostText(ctx, identity.GetUser(), id)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetPostTextBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminGetPostTextOK().WithPayload(models.NewPostText(result))
+}
+
+func (h *Handler) adminSendPostPreview(params adminops.AdminSendPostPreviewParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	if err := h.Admin.SendPostPreview(ctx, identity.GetUser(), swag.StringValue(params.Post.Text)); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminSendPostPreviewBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminSendPostPreviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminSendPostPreviewOK()
+}
+
 func (h *Handler) adminUpdateLot(params adminops.AdminUpdateLotParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	id := core.LotID(int(params.ID))

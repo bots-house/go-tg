@@ -21,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml499312488 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml302299644 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -106,6 +106,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation admin.AdminGetLots has not yet been implemented")
 		})
 	}
+	if api.AdminAdminGetPostTextHandler == nil {
+		api.AdminAdminGetPostTextHandler = admin.AdminGetPostTextHandlerFunc(func(params admin.AdminGetPostTextParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetPostText has not yet been implemented")
+		})
+	}
 	if api.AdminAdminGetReviewsHandler == nil {
 		api.AdminAdminGetReviewsHandler = admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
@@ -119,6 +124,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminGetUsersHandler == nil {
 		api.AdminAdminGetUsersHandler = admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		})
+	}
+	if api.AdminAdminSendPostPreviewHandler == nil {
+		api.AdminAdminSendPostPreviewHandler = admin.AdminSendPostPreviewHandlerFunc(func(params admin.AdminSendPostPreviewParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminSendPostPreview has not yet been implemented")
 		})
 	}
 	if api.AdminAdminUpdateLotHandler == nil {

@@ -1364,6 +1364,59 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /admin/lots/{id}/text:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID лота.
+        type: integer
+      
+    get:
+      summary: Get Post Text
+      description: Получить отрендеренный текст поста.
+      operationId: adminGetPostText
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminPostText"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+    
+  /admin/posting/preview:
+    post:
+      summary: Send Post Preview
+      description: Получить отрендеренный текст поста в ЛС.
+      operationId: adminSendPostPreview
+      tags: [admin]
+
+
+      parameters:
+        - in: body
+          name: post
+          required: true
+          schema:
+            $ref: "#/definitions/PostText"
+
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
 
   /admin/settings:
     get:
@@ -3024,6 +3077,16 @@ definitions:
         $ref: "#/definitions/LandingChannel"
       reviews:
         $ref: "#/definitions/ReviewList"
+  
+
+  AdminPostText:
+    type: object
+    required:
+      - text
+    properties:
+      text:
+        type: string
+        description: Отрендеренный текст лота.
 
   
   InputAdminLot:
@@ -3054,6 +3117,13 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/LotExtraResource"
+
+  PostText:
+    required:
+      - text
+    properties:
+      text:
+        type: string
 
   AdminFullLot:
     type: object

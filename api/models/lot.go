@@ -327,6 +327,12 @@ func NewPersonalItemLotSlice(s storage.Storage, in core.LotSlice) []*models.LotL
 	return result
 }
 
+func NewPostText(in string) *models.AdminPostText {
+	return &models.AdminPostText{
+		Text: swag.String(in),
+	}
+}
+
 func ToTopicIDs(in []int64) []core.TopicID {
 	out := make([]core.TopicID, len(in))
 	for i, id := range in {

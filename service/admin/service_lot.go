@@ -2,9 +2,11 @@ package admin
 
 import (
 	"context"
+
 	"fmt"
 
 	"github.com/bots-house/birzzha/core"
+
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/store"
 	"github.com/pkg/errors"
@@ -260,6 +262,20 @@ func NewLotUploadedFileSlice(files core.LotFileSlice) []*LotUploadedFile {
 	return result
 }
 
+func (srv *Service) GetPostText(ctx context.Context, user *core.User, id core.LotID) (string, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return "", err
+	}
+	return srv.Posting.GetText(ctx, id)
+}
+
+func (srv *Service) SendPostPreview(ctx context.Context, user *core.User, post string) error {
+	if err := srv.IsAdmin(user); err != nil {
+		return err
+	}
+	return srv.Posting.SendPreview(ctx, user, post)
+}
+
 func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.LotID, reason string) error {
 	if err := srv.IsAdmin(user); err != nil {
 		return err
@@ -269,6 +285,7 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 	if err != nil {
 		return errors.Wrap(err, "get lot")
 	}
+
 	lot.DeclineReason = null.StringFrom(reason)
 	lot.Status = core.LotStatusDeclined
 

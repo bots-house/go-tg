@@ -55,5 +55,6 @@ require (
 	go.opentelemetry.io/otel v0.9.0 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
+	golang.org/x/text v0.3.3
 
 )

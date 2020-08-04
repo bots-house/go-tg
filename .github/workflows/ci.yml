@@ -8,9 +8,6 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Configure git for private modules          
-        run: git config --global url."https://${{ secrets.GO_MODULES_USERNAME }}:${{ secrets.GO_MODULES_TOKEN }}@github.com".insteadOf "https://github.com"  
-      
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v1

@@ -6,13 +6,7 @@
 
 ## Настройка окружения
 
-В проект используется приватные зависимости, для того чтобы они подтянулись с GitHub по ssh, нужно выполнить команду:
-
-```bash
-git config --global url."git@github.com:".insteadOf "https://github.com/"
-```
-
-Так же нужно установить Go и docker-compose.
+Нужно установить Go и docker-compose.
 
 После того как проект будет склонен локально, нужно скопировать `.env.example`, как `.env` и прописать упущенные значения: 
   - `BRZ_BOT_TOKEN`: токен бота, нужно создать его в [BotFather](https://t.me/BotFather)

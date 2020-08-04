@@ -168,6 +168,12 @@ func run(ctx context.Context) error {
 
 	log.Info(ctx, "open db", "dsn", cfg.Database)
 
+	//create time zone
+	timezone, err := time.LoadLocation(cfg.Timezone)
+	if err != nil {
+		return errors.Wrapf(err, "failed to load timezone=%s", timezone)
+	}
+
 	// open and ping db
 	db, err := sql.Open("postgres", cfg.Database)
 	if err != nil {
@@ -373,6 +379,10 @@ func run(ctx context.Context) error {
 			Lot:      pg.Lot,
 			Settings: pg.Settings,
 
+			Resolver: resolver,
+
+			Storage: strg,
+
 			SiteStat: &stat.SiteYandexMetrika{
 				CounterID: cfg.YandexMetrikaCounterID,
 				Doer:      proxyDoer,
@@ -380,9 +390,10 @@ func run(ctx context.Context) error {
 
 			TelegramStat: telemetr,
 
-			Location: time.Local,
+			Location: timezone,
 
 			UpdateLandingSpec: cfg.WorkerUpdateLandingCron,
+			UpdateLotsSpec:    cfg.WorkerUpdateLotListCron,
 		}
 	}
 

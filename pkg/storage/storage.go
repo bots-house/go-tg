@@ -5,6 +5,10 @@ import (
 	"io"
 )
 
+const (
+	LotDir = "lot"
+)
+
 // Storage of files.
 type Storage interface {
 	// Add file to storage.

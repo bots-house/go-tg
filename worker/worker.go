@@ -7,6 +7,8 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/stat"
+	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
@@ -16,12 +18,17 @@ type Worker struct {
 	Lot      core.LotStore
 	Settings core.SettingsStore
 
+	Resolver tg.Resolver
+
+	Storage storage.Storage
+
 	SiteStat     stat.Site
 	TelegramStat stat.Telegram
 
 	Location *time.Location
 
 	UpdateLandingSpec string
+	UpdateLotsSpec    string
 
 	cron *cron.Cron
 }
@@ -45,6 +52,7 @@ func (wrk *Worker) setupCron(ctx context.Context) error {
 	}
 
 	if wrk.Location != nil {
+		log.Debug(ctx, "worker time zone set", "timezone", wrk.Location)
 		opts = append(opts, cron.WithLocation(wrk.Location))
 	}
 
@@ -65,6 +73,11 @@ func (wrk *Worker) setupCronJobs(ctx context.Context) error {
 		Spec string
 		Do   func()
 	}{
+		{
+			"update lots",
+			wrk.UpdateLotsSpec,
+			wrk.wrap(ctx, wrk.taskUpdateLotList),
+		},
 		{
 			"update landing",
 			wrk.UpdateLandingSpec,

@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bots-house/birzzha/pkg/storage"
+
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/stat"
 
@@ -88,7 +90,6 @@ var (
 
 const (
 	uploadLotFileMaxSizeInBytes = 6 * 1024 * 1024
-	lotDir                      = "lot"
 )
 
 func (srv *Service) newOwnedLot(lot *core.Lot, files []*OwnedLotUploadedFile) (*OwnedLot, error) {
@@ -177,7 +178,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		lot.Username = null.NewString(info.Username, info.Username != "")
 	}
 	if info.Avatar != "" {
-		avatar, err := srv.Storage.AddByURL(ctx, lotDir, info.Avatar)
+		avatar, err := srv.Storage.AddByURL(ctx, storage.LotDir, info.Avatar)
 		if err != nil {
 			return nil, errors.Wrap(err, "add by url")
 		}
@@ -314,7 +315,7 @@ func (srv *Service) UploadLotFile(
 		return nil, ErrLotFileExtensionIsWrong
 	}
 
-	path, err := srv.Storage.Add(ctx, lotDir, body, ext)
+	path, err := srv.Storage.Add(ctx, storage.LotDir, body, ext)
 	if err != nil {
 		return nil, errors.Wrap(err, "upload lot file")
 	}

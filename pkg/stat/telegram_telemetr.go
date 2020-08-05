@@ -112,6 +112,8 @@ func (tm *TelegramTelemetr) Get(ctx context.Context, query string) (*TelegramSta
 
 func convertTelemetrRespField(v interface{}) (int, error) {
 	switch v := v.(type) {
+	case nil:
+		return 0, nil
 	case float64:
 		return int(v), nil
 	case int:

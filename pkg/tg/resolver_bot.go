@@ -51,19 +51,10 @@ func (r *BotResolver) Resolve(ctx context.Context, query string) (*ResolveResult
 }
 
 func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResult, error) {
-	// common fields
-
-	// avatar (for all types)
-	var avatarFileID string
-	if chat.Photo != nil {
-		avatarFileID = chat.Photo.BigFileID
-	}
-
 	var (
 		// members count for groups and supergroups
 		membersCount int
-
-		err error
+		err          error
 	)
 
 	if chat.IsChannel() || chat.IsGroup() || chat.IsSuperGroup() {
@@ -76,37 +67,48 @@ func (r *BotResolver) getResolveResultByChat(chat *tgbotapi.Chat) (*ResolveResul
 		}
 	}
 
-	if chat.IsChannel() {
-		result := &ResolveResult{
-			Channel: &Channel{
-				ID:           chat.ID,
-				Name:         chat.Title,
-				MembersCount: membersCount,
-				Username:     chat.UserName,
-				Description:  chat.Description,
-			},
-		}
-		if avatarFileID != "" {
-			result.Channel.Avatar = r.PublicURL(avatarFileID)
-		}
-		return result, nil
-
-	} else if chat.IsGroup() || chat.IsSuperGroup() {
-		result := &ResolveResult{
-			Group: &Group{
-				ID:           chat.ID,
-				Name:         chat.Title,
-				MembersCount: membersCount,
-				Username:     chat.UserName,
-				Description:  chat.Description,
-			},
-		}
-		if avatarFileID != "" {
-			result.Group.Avatar = r.PublicURL(avatarFileID)
-		}
+	switch {
+	case chat.IsChannel():
+		return r.getChannelChatResult(chat, membersCount), nil
+	case chat.IsGroup() || chat.IsSuperGroup():
+		return r.getGroupChatResult(chat, membersCount), nil
 	}
 
 	return nil, errors.New("unknown type")
+}
+
+func (r *BotResolver) getChannelChatResult(chat *tgbotapi.Chat, membersCount int) *ResolveResult {
+	result := &ResolveResult{
+		Channel: &Channel{
+			ID:           chat.ID,
+			Name:         chat.Title,
+			MembersCount: membersCount,
+			Username:     chat.UserName,
+			Description:  chat.Description,
+		},
+	}
+	if chat.Photo != nil {
+		result.Channel.Avatar = r.PublicURL(chat.Photo.BigFileID)
+	}
+
+	return result
+}
+
+func (r *BotResolver) getGroupChatResult(chat *tgbotapi.Chat, membersCount int) *ResolveResult {
+	result := &ResolveResult{
+		Group: &Group{
+			ID:           chat.ID,
+			Name:         chat.Title,
+			MembersCount: membersCount,
+			Username:     chat.UserName,
+			Description:  chat.Description,
+		},
+	}
+	if chat.Photo != nil {
+		result.Group.Avatar = r.PublicURL(chat.Photo.BigFileID)
+	}
+
+	return result
 }
 
 func (r *BotResolver) ResolveByID(ctx context.Context, id int64) (*ResolveResult, error) {

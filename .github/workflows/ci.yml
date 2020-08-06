@@ -4,6 +4,29 @@ on:
   pull_request:
 
 jobs:
+  lint-docker:
+    name: Lint Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint Dockerfile
+        uses: brpaz/hadolint-action@master
+        with:
+          config: "hadolint.yaml"
+          dockerfile: "Dockerfile"
+  lint-swagger:
+    name: Lint Swagger
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Install dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install make jq
+      - uses: actions/checkout@v2
+      - name: Lint swagger.yml file
+        run:
+          make lint-swagger
+        shell: bash
   lint:
     name: Lint
     runs-on: ubuntu-latest

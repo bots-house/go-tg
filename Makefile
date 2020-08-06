@@ -27,8 +27,13 @@ psql:
 redis-cli:
 	docker-compose exec redis redis-cli
 
-lint: .bin/golangci-lint
+lint: lint-go lint-swagger
+
+lint-go: .bin/golangci-lint
 		.bin/golangci-lint run --config .golangci.yml
+
+lint-swagger: .bin/swagger
+	.bin/swagger validate ./api/swagger.yml --stop-on-error
 
 generate:  generate-dal generate-api
 

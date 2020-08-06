@@ -312,14 +312,12 @@ func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotI
 	}
 
 	if err := srv.Txier(ctx, func(ctx context.Context) error {
-		if err := srv.LotTopic.Set(ctx, id, in.Topics); err != nil {
-			return errors.Wrap(err, "set lot topics")
-		}
 
 		lot.Comment = in.Comment
 		lot.Price.Current = in.Price
 		lot.Metrics.MonthlyIncome = null.IntFrom(in.Income)
 		lot.ExtraResources = in.Extra
+		lot.TopicIDs = in.Topics
 
 		if err := srv.Lot.Update(ctx, lot); err != nil {
 			return errors.Wrap(err, "update lot")
@@ -342,6 +340,11 @@ func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotI
 	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get lot files")
+	}
+
+	lot, err = srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot")
 	}
 
 	return &FullLot{

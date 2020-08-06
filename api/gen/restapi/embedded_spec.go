@@ -184,7 +184,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
           },
           "400": {
             "description": "Bad Request",
@@ -4708,7 +4711,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
           },
           "400": {
             "description": "Bad Request",

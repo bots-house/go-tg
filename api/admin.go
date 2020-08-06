@@ -298,19 +298,20 @@ func (h *Handler) adminUpdateLot(params adminops.AdminUpdateLotParams, identity 
 	ctx := params.HTTPRequest.Context()
 	id := core.LotID(int(params.ID))
 
-	if err := h.Admin.UpdateLot(ctx, identity.GetUser(), id, admin.InputAdminLot{
+	result, err := h.Admin.UpdateLot(ctx, identity.GetUser(), id, admin.InputAdminLot{
 		Comment: swag.StringValue(params.Lot.Comment),
 		Price:   int(swag.Int64Value(params.Lot.Price)),
 		Extra:   models.ToLotExtraResourceSlice(params.Lot.Extra),
 		Topics:  models.ToTopicIDs(params.Lot.Topics),
 		Income:  int(swag.Int64Value(params.Lot.MonthlyIncome)),
-	}); err != nil {
+	})
+	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateLotBadRequest().WithPayload(models.NewError(err2))
 		}
 		return adminops.NewAdminUpdateLotInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
-	return adminops.NewAdminUpdateLotOK()
+	return adminops.NewAdminUpdateLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
 }
 
 func (h *Handler) adminDeclineLot(params adminops.AdminDeclineLotParams, identity *authz.Identity) middleware.Responder {

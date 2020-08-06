@@ -1355,6 +1355,8 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            $ref: "#/definitions/AdminFullLot"
         400:
           description: Bad Request
           schema:

@@ -296,22 +296,22 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 	return nil
 }
 
-func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotID, in InputAdminLot) error {
+func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotID, in InputAdminLot) (*FullLot, error) {
 	if err := srv.IsAdmin(user); err != nil {
-		return err
+		return nil, err
 	}
 
 	lot, err := srv.Lot.Query().ID(id).One(ctx)
 	if err != nil {
-		return errors.Wrap(err, "get lot")
+		return nil, errors.Wrap(err, "get lot")
 	}
 
 	_, err = srv.Topic.Query().ID(in.Topics...).All(ctx)
 	if err != nil {
-		return errors.Wrap(err, "get topics")
+		return nil, errors.Wrap(err, "get topics")
 	}
 
-	return srv.Txier(ctx, func(ctx context.Context) error {
+	if err := srv.Txier(ctx, func(ctx context.Context) error {
 		if err := srv.LotTopic.Set(ctx, id, in.Topics); err != nil {
 			return errors.Wrap(err, "set lot topics")
 		}
@@ -325,8 +325,32 @@ func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotI
 			return errors.Wrap(err, "update lot")
 		}
 		return nil
-	})
+	}); err != nil {
+		return nil, err
+	}
 
+	usr, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user")
+	}
+
+	canceledReason, err := srv.LotCanceledReason.Query().ID(lot.CanceledReasonID).One(ctx)
+	if err != core.ErrLotCanceledReasonNotFound && err != nil {
+		return nil, errors.Wrap(err, "get canceled reason")
+	}
+
+	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot files")
+	}
+
+	return &FullLot{
+		Lot:            lot,
+		User:           usr,
+		Views:          lot.Views.Total(),
+		Files:          NewLotUploadedFileSlice(files),
+		CanceledReason: canceledReason,
+	}, nil
 }
 
 func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {

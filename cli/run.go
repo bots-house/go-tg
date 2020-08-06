@@ -50,9 +50,12 @@ var logger = log.NewLogger(true, true)
 
 const envPrefix = "BRZ"
 
-func Run(ctx context.Context) {
+func Run(ctx context.Context, revision string) {
 
 	ctx = log.WithLogger(ctx, logger)
+
+	log.Info(ctx, "start", "revision", revision)
+
 	if err := run(ctx); err != nil {
 		log.Error(ctx, "fatal error", "err", err)
 		os.Exit(1)

@@ -9,6 +9,8 @@ import (
 	"github.com/bots-house/birzzha/cli"
 )
 
+var revision = "unknown"
+
 func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
@@ -22,5 +24,5 @@ func main() {
 		cancel()
 	}()
 
-	cli.Run(ctx)
+	cli.Run(ctx, revision)
 }

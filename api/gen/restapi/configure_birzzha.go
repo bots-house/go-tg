@@ -16,12 +16,13 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/health"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml318919136 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/s8/y6wl2zqx0l7cvcv1f_jz6v300000gn/T/swagger.yml033236245 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -229,6 +230,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.CatalogGetFilterBoundariesHandler == nil {
 		api.CatalogGetFilterBoundariesHandler = catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
+		})
+	}
+	if api.HealthGetHealthHandler == nil {
+		api.HealthGetHealthHandler = health.GetHealthHandlerFunc(func(params health.GetHealthParams) middleware.Responder {
+			return middleware.NotImplemented("operation health.GetHealth has not yet been implemented")
 		})
 	}
 	if api.LandingGetLandingHandler == nil {

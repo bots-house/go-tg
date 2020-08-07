@@ -1092,6 +1092,31 @@ func init() {
         }
       }
     },
+    "/health": {
+      "get": {
+        "security": [],
+        "description": "Проверка доступности сервиса для приема запросов.\n",
+        "tags": [
+          "health"
+        ],
+        "summary": "Get Health",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Health"
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "$ref": "#/definitions/Health"
+            }
+          }
+        }
+      }
+    },
     "/landing": {
       "get": {
         "security": [],
@@ -3163,6 +3188,57 @@ func init() {
           "description": "Количество просмотров.",
           "type": "integer",
           "x-order": 14
+        }
+      }
+    },
+    "Health": {
+      "description": "Результат проверки состояния зависимостей сервиса.",
+      "type": "object",
+      "required": [
+        "ok",
+        "postgres",
+        "redis"
+      ],
+      "properties": {
+        "ok": {
+          "description": "True, если все сервисы живи",
+          "type": "boolean",
+          "x-order": 0
+        },
+        "postgres": {
+          "description": "Postgres",
+          "x-order": 1,
+          "$ref": "#/definitions/HealthCheck"
+        },
+        "redis": {
+          "description": "Redis",
+          "x-order": 2,
+          "$ref": "#/definitions/HealthCheck"
+        }
+      }
+    },
+    "HealthCheck": {
+      "type": "object",
+      "required": [
+        "ok",
+        "took"
+      ],
+      "properties": {
+        "err": {
+          "description": "Текст ошибки проверки состояния",
+          "type": "string",
+          "x-order": 1
+        },
+        "ok": {
+          "description": "True, если зависимость доступна",
+          "type": "boolean",
+          "x-order": 0
+        },
+        "took": {
+          "description": "Время которое заняла проверка",
+          "type": "string",
+          "format": "duration",
+          "x-order": 2
         }
       }
     },
@@ -5750,6 +5826,31 @@ func init() {
         }
       }
     },
+    "/health": {
+      "get": {
+        "security": [],
+        "description": "Проверка доступности сервиса для приема запросов.\n",
+        "tags": [
+          "health"
+        ],
+        "summary": "Get Health",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Health"
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "$ref": "#/definitions/Health"
+            }
+          }
+        }
+      }
+    },
     "/landing": {
       "get": {
         "security": [],
@@ -7867,6 +7968,57 @@ func init() {
           "description": "Количество просмотров.",
           "type": "integer",
           "x-order": 14
+        }
+      }
+    },
+    "Health": {
+      "description": "Результат проверки состояния зависимостей сервиса.",
+      "type": "object",
+      "required": [
+        "ok",
+        "postgres",
+        "redis"
+      ],
+      "properties": {
+        "ok": {
+          "description": "True, если все сервисы живи",
+          "type": "boolean",
+          "x-order": 0
+        },
+        "postgres": {
+          "description": "Postgres",
+          "x-order": 1,
+          "$ref": "#/definitions/HealthCheck"
+        },
+        "redis": {
+          "description": "Redis",
+          "x-order": 2,
+          "$ref": "#/definitions/HealthCheck"
+        }
+      }
+    },
+    "HealthCheck": {
+      "type": "object",
+      "required": [
+        "ok",
+        "took"
+      ],
+      "properties": {
+        "err": {
+          "description": "Текст ошибки проверки состояния",
+          "type": "string",
+          "x-order": 1
+        },
+        "ok": {
+          "description": "True, если зависимость доступна",
+          "type": "boolean",
+          "x-order": 0
+        },
+        "took": {
+          "description": "Время которое заняла проверка",
+          "type": "string",
+          "format": "duration",
+          "x-order": 2
         }
       }
     },

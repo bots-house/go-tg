@@ -1707,6 +1707,26 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /health:
+    get:
+      summary: Get Health
+      operationId: getHealth
+      
+      tags: [health] 
+      description: |
+        Проверка доступности сервиса для приема запросов.
+      security: []
+       
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Health"
+        503:
+          description: Service Unavailable 
+          schema:
+            $ref: "#/definitions/Health"
 
 definitions:
   AdminSettingsLandingInput:
@@ -3306,4 +3326,38 @@ definitions:
       published_at:
         type: integer
         description: Время публикации поста.
-      
+  
+  Health:
+    type: object
+    description: Результат проверки состояния зависимостей сервиса.
+    required:
+      - ok 
+      - postgres
+      - redis
+    properties:
+      ok:
+        type: boolean
+        description: True, если все сервисы живи
+      postgres: 
+        description: Postgres
+        $ref: '#/definitions/HealthCheck'
+      redis:
+        description: Redis
+        $ref: '#/definitions/HealthCheck'
+  
+  HealthCheck:
+    type: object
+    required:
+      - ok 
+      - took
+    properties:
+      ok:
+        type: boolean
+        description: True, если зависимость доступна 
+      err:
+        type: string
+        description: Текст ошибки проверки состояния
+      took:
+        description: Время которое заняла проверка
+        type: string
+        format: duration

@@ -24,6 +24,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/auth"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
+	"github.com/bots-house/birzzha/api/gen/restapi/operations/health"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
@@ -153,6 +154,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		CatalogGetFilterBoundariesHandler: catalog.GetFilterBoundariesHandlerFunc(func(params catalog.GetFilterBoundariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetFilterBoundaries has not yet been implemented")
+		}),
+		HealthGetHealthHandler: health.GetHealthHandlerFunc(func(params health.GetHealthParams) middleware.Responder {
+			return middleware.NotImplemented("operation health.GetHealth has not yet been implemented")
 		}),
 		LandingGetLandingHandler: landing.GetLandingHandlerFunc(func(params landing.GetLandingParams) middleware.Responder {
 			return middleware.NotImplemented("operation landing.GetLanding has not yet been implemented")
@@ -334,6 +338,8 @@ type BirzzhaAPI struct {
 	PersonalAreaGetFavoriteLotsHandler personal_area.GetFavoriteLotsHandler
 	// CatalogGetFilterBoundariesHandler sets the operation handler for the get filter boundaries operation
 	CatalogGetFilterBoundariesHandler catalog.GetFilterBoundariesHandler
+	// HealthGetHealthHandler sets the operation handler for the get health operation
+	HealthGetHealthHandler health.GetHealthHandler
 	// LandingGetLandingHandler sets the operation handler for the get landing operation
 	LandingGetLandingHandler landing.GetLandingHandler
 	// CatalogGetLotHandler sets the operation handler for the get lot operation
@@ -548,6 +554,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.CatalogGetFilterBoundariesHandler == nil {
 		unregistered = append(unregistered, "catalog.GetFilterBoundariesHandler")
+	}
+	if o.HealthGetHealthHandler == nil {
+		unregistered = append(unregistered, "health.GetHealthHandler")
 	}
 	if o.LandingGetLandingHandler == nil {
 		unregistered = append(unregistered, "landing.GetLandingHandler")
@@ -845,6 +854,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/filter-boundaries"] = catalog.NewGetFilterBoundaries(o.context, o.CatalogGetFilterBoundariesHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/health"] = health.NewGetHealth(o.context, o.HealthGetHealthHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

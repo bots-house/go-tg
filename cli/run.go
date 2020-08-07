@@ -26,6 +26,7 @@ import (
 	"github.com/bots-house/birzzha/api"
 	"github.com/bots-house/birzzha/bot"
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/health"
 	"github.com/bots-house/birzzha/pkg/kv"
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/stat"
@@ -154,12 +155,14 @@ func run(ctx context.Context) error {
 
 	// parse flags
 	var (
-		flagWorker, flagServer bool
-		flagConfig             string
+		flagWorker, flagServer, flagHealth bool
+		flagConfig                         string
 	)
 
 	flag.BoolVar(&flagWorker, "worker", false, "run only server")
 	flag.BoolVar(&flagServer, "server", false, "run only worker")
+	flag.BoolVar(&flagHealth, "health", false, "run health check")
+
 	flag.StringVar(&flagConfig, "config", "", "path to env file")
 
 	flag.Parse()
@@ -168,6 +171,10 @@ func run(ctx context.Context) error {
 	cfg, err := parseConfig(flagConfig)
 	if err != nil {
 		return errors.Wrap(err, "parse config")
+	}
+
+	if flagHealth {
+		return runHealthcheck(ctx, cfg)
 	}
 
 	log.Info(ctx, "open db", "dsn", cfg.Database)
@@ -354,6 +361,11 @@ func run(ctx context.Context) error {
 		SiteViewExpiration: cfg.SiteViewExpiration,
 	}
 
+	healthSrv := &health.Service{
+		Postgres: db,
+		Redis:    rds,
+	}
+
 	handler := api.Handler{
 		Auth:         authSrv,
 		Admin:        adminSrv,
@@ -366,6 +378,7 @@ func run(ctx context.Context) error {
 		Landing:      landingSrv,
 		Logger:       log.GetLogger(ctx),
 		Views:        viewsSrv,
+		Health:       healthSrv,
 	}
 
 	// setup server

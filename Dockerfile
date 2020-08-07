@@ -34,6 +34,8 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /zoneinfo.zip /
 COPY --from=builder /bin/birzzha /bin/birzzha
 
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "/bin/birzzha", "-health" ]
+
 EXPOSE 8000
 
 ENTRYPOINT [ "/bin/birzzha" ]

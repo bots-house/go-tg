@@ -11,6 +11,7 @@ import (
 	personalops "github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 
+	"github.com/bots-house/birzzha/pkg/health"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/admin"
@@ -21,6 +22,7 @@ import (
 
 	adminops "github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	botops "github.com/bots-house/birzzha/api/gen/restapi/operations/bot"
+	healthops "github.com/bots-house/birzzha/api/gen/restapi/operations/health"
 
 	landingops "github.com/bots-house/birzzha/api/gen/restapi/operations/landing"
 	kitlog "github.com/go-kit/kit/log"
@@ -47,6 +49,7 @@ type Handler struct {
 	Landing      *landing.Service
 	Views        *views.Service
 	Logger       kitlog.Logger
+	Health       *health.Service
 }
 
 func (h Handler) newAPI() *operations.BirzzhaAPI {
@@ -144,6 +147,9 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminDeleteLotCanceledReasonHandler = adminops.AdminDeleteLotCanceledReasonHandlerFunc(h.adminDeleteLotCanceledReason)
 
 	api.AdminAdminCreatePostHandler = adminops.AdminCreatePostHandlerFunc(h.adminCreatePost)
+
+	// health
+	api.HealthGetHealthHandler = healthops.GetHealthHandlerFunc(h.getHealth)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

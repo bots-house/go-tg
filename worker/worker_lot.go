@@ -54,7 +54,7 @@ func (wrk *Worker) taskUpdateLot(ctx context.Context, lot *core.Lot) error {
 	tStat, err := wrk.TelegramStat.Get(ctx, strconv.FormatInt(core.MTProtoPrivateID(lot.ExternalID), 10))
 	switch {
 	case err == nil:
-		dailyCoverage = tStat.ViewsPerPostDaily
+		dailyCoverage = tStat.ViewsPerPostAvg
 	default:
 		dailyCoverage = lot.Metrics.DailyCoverage
 		if err.Error() != stat.ErrChannelNotFound.Error() {

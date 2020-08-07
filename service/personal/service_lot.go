@@ -152,7 +152,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 	tStat, err := srv.TelegramStat.Get(ctx, strconv.FormatInt(core.MTProtoPrivateID(in.TelegramID), 10))
 	switch {
 	case err == nil:
-		dailyCoverage = tStat.ViewsPerPostDaily
+		dailyCoverage = tStat.ViewsPerPostAvg
 	case err.Error() == stat.ErrChannelNotFound.Error():
 		//nothing to do, some channels don't have telemetr
 	default:

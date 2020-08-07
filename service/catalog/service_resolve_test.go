@@ -15,7 +15,7 @@ func TestService_GetDailyCoverage(t *testing.T) {
 		s := Service{
 			TelegramStat: telegramStatMock{get: func(ctx context.Context, query string) (stats *stat.TelegramStats, err error) {
 				assert.Equal(t, query, "1129109101", "must be with cut prefix -100")
-				return &stat.TelegramStats{ViewsPerPostDaily: 100}, nil
+				return &stat.TelegramStats{ViewsPerPostAvg: 100}, nil
 			}},
 		}
 		//WHEN

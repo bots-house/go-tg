@@ -24,5 +24,5 @@ func (srv *Service) GetDailyCoverage(channel int64) (int, error) {
 		return 0, err
 	}
 
-	return stats.ViewsPerPostDaily, nil
+	return stats.ViewsPerPostAvg, nil
 }

@@ -39,7 +39,7 @@ require (
 	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
-	github.com/otiai10/opengraph v1.1.1
+	github.com/otiai10/opengraph v1.1.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/remind101/migrate v0.0.0-20170729031349-52c1edff7319

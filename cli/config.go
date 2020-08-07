@@ -62,6 +62,8 @@ type Config struct {
 
 	// Run each 15 minutes
 	WorkerUpdateLandingCron string `default:"0,15,30,45 * * * *" split_words:"true"`
+
+	WorkerPublishPostsCron  string `default:"*/1 * * * *" split_words:"true"`
 	WorkerUpdateLotListCron string `default:"0 0 * * *" split_words:"true"`
 
 	Timezone string `default:"Europe/Kiev"`

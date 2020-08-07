@@ -16,6 +16,7 @@ import (
 type LotStatusesCount struct {
 	Created   int
 	Paid      int
+	Scheduled int
 	Published int
 	Declined  int
 	Canceled  int
@@ -34,23 +35,26 @@ type LotItemList struct {
 }
 
 func (srv *Service) newLotStatusesCount(statuses core.LotsCountByStatusSlice) *LotStatusesCount {
-	lotStatusesCount := &LotStatusesCount{}
+	result := &LotStatusesCount{}
 
 	for _, s := range statuses {
 		switch s.Status {
-		case "created":
-			lotStatusesCount.Created = s.Count
-		case "paid":
-			lotStatusesCount.Paid = s.Count
-		case "published":
-			lotStatusesCount.Published = s.Count
-		case "declined":
-			lotStatusesCount.Declined = s.Count
-		case "canceled":
-			lotStatusesCount.Canceled = s.Count
+		case core.LotStatusCreated:
+			result.Created = s.Count
+		case core.LotStatusPaid:
+			result.Paid = s.Count
+		case core.LotStatusScheduled:
+			result.Scheduled = s.Count
+		case core.LotStatusPublished:
+			result.Published = s.Count
+		case core.LotStatusDeclined:
+			result.Declined = s.Count
+		case core.LotStatusCanceled:
+			result.Canceled = s.Count
 		}
 	}
-	return lotStatusesCount
+
+	return result
 }
 
 func (srv *Service) GetLotStatusesCount(ctx context.Context, user *core.User, id core.UserID) (*LotStatusesCount, error) {

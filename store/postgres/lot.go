@@ -332,44 +332,63 @@ func (store *LotStore) CountByUser(ctx context.Context, ids ...core.UserID) (cor
 func (store *LotStore) LotsCountByStatus(ctx context.Context, filter *core.LotsCountByStatusFilter) (core.LotsCountByStatusSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
 
-	var rows *sql.Rows
-	var err error
+	var (
+		rows *sql.Rows
+		err  error
+	)
+
+	// about nolint checkout linter bug: https://github.com/golangci/golangci-lint/issues/943
 
 	if filter != nil && filter.UserID != 0 {
+		//nolint:rowserrcheck
 		rows, err = executor.QueryContext(ctx, `
 			select lot.status, count(lot.id) from lot where owner_id = $1 group by lot.status;`,
 			int(filter.UserID),
 		)
-		if rowsErr := rows.Err(); rowsErr != nil {
-			return nil, errors.Wrap(rowsErr, "rows err")
-		}
 	} else {
+		//nolint:rowserrcheck
 		rows, err = executor.QueryContext(ctx, `
 			select lot.status, count(lot.id) from lot group by lot.status;
 		`)
-		if rowsErr := rows.Err(); rowsErr != nil {
-			return nil, errors.Wrap(rowsErr, "rows err")
-		}
 	}
+
 	if err != nil {
 		return nil, errors.Wrap(err, "query rows")
 	}
 
 	defer rows.Close()
-	var lotsCountByStatusSlice core.LotsCountByStatusSlice
+
+	result := make(core.LotsCountByStatusSlice, 0, 6)
 
 	for rows.Next() {
-		item := &core.LotsCountByStatus{}
+		var (
+			status string
+			count  int
+		)
+
 		if err := rows.Scan(
-			&item.Status,
-			&item.Count,
+			&status,
+			&count,
 		); err != nil {
 			return nil, errors.Wrap(err, "scan")
 		}
-		lotsCountByStatusSlice = append(lotsCountByStatusSlice, item)
+
+		sts, err := core.ParseLotStatus(status)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse status: %v", status)
+		}
+
+		result = append(result, &core.LotsCountByStatus{
+			Status: sts,
+			Count:  count,
+		})
 	}
 
-	return lotsCountByStatusSlice, nil
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows err")
+	}
+
+	return result, nil
 }
 
 func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int, error) {

@@ -331,6 +331,46 @@ func init() {
         }
       }
     },
+    "/admin/posts": {
+      "post": {
+        "description": "Создать пост для публикации.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Post",
+        "operationId": "adminCreatePost",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputPost"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/admin/reviews": {
       "get": {
         "description": "Получить список отзывов.",
@@ -3273,6 +3313,36 @@ func init() {
         }
       }
     },
+    "InputPost": {
+      "type": "object",
+      "required": [
+        "lot_id",
+        "text",
+        "disable_web_page_preview"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "InputTopic": {
       "description": "Категория лота",
       "type": "object",
@@ -3810,13 +3880,14 @@ func init() {
         "paid",
         "published",
         "declined",
-        "canceled"
+        "canceled",
+        "scheduled"
       ],
       "properties": {
         "canceled": {
           "description": "Количество отмененных лотов.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "created": {
           "description": "Количество созданых лотов.",
@@ -3824,7 +3895,7 @@ func init() {
           "x-order": 0
         },
         "declined": {
-          "description": "Количество отвергнутых лотов.",
+          "description": "Количество отклоненных лотов.",
           "type": "integer",
           "x-order": 3
         },
@@ -3837,6 +3908,11 @@ func init() {
           "description": "Количество опубликованых лотов.",
           "type": "integer",
           "x-order": 2
+        },
+        "scheduled": {
+          "description": "Количество лотов запланированных к публикации.",
+          "type": "integer",
+          "x-order": 4
         }
       }
     },
@@ -4152,6 +4228,49 @@ func init() {
             "failed"
           ],
           "x-order": 0
+        }
+      }
+    },
+    "Post": {
+      "type": "object",
+      "required": [
+        "id",
+        "lot_id",
+        "text",
+        "disable_web_page_preview",
+        "scheduled_at",
+        "published_at"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID поста.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "published_at": {
+          "description": "Время публикации поста.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -4842,6 +4961,46 @@ func init() {
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/posts": {
+      "post": {
+        "description": "Создать пост для публикации.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Post",
+        "operationId": "adminCreatePost",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputPost"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
           },
           "400": {
             "description": "Bad Request",
@@ -7858,6 +8017,36 @@ func init() {
         }
       }
     },
+    "InputPost": {
+      "type": "object",
+      "required": [
+        "lot_id",
+        "text",
+        "disable_web_page_preview"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 2
+        },
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "InputTopic": {
       "description": "Категория лота",
       "type": "object",
@@ -8395,13 +8584,14 @@ func init() {
         "paid",
         "published",
         "declined",
-        "canceled"
+        "canceled",
+        "scheduled"
       ],
       "properties": {
         "canceled": {
           "description": "Количество отмененных лотов.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "created": {
           "description": "Количество созданых лотов.",
@@ -8409,7 +8599,7 @@ func init() {
           "x-order": 0
         },
         "declined": {
-          "description": "Количество отвергнутых лотов.",
+          "description": "Количество отклоненных лотов.",
           "type": "integer",
           "x-order": 3
         },
@@ -8422,6 +8612,11 @@ func init() {
           "description": "Количество опубликованых лотов.",
           "type": "integer",
           "x-order": 2
+        },
+        "scheduled": {
+          "description": "Количество лотов запланированных к публикации.",
+          "type": "integer",
+          "x-order": 4
         }
       }
     },
@@ -8763,6 +8958,49 @@ func init() {
             "failed"
           ],
           "x-order": 0
+        }
+      }
+    },
+    "Post": {
+      "type": "object",
+      "required": [
+        "id",
+        "lot_id",
+        "text",
+        "disable_web_page_preview",
+        "scheduled_at",
+        "published_at"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 3
+        },
+        "id": {
+          "description": "ID поста.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 1
+        },
+        "published_at": {
+          "description": "Время публикации поста.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 2
         }
       }
     },

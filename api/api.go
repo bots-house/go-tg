@@ -142,6 +142,8 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminCreateLotCanceledReasonHandler = adminops.AdminCreateLotCanceledReasonHandlerFunc(h.adminCreateLotCanceledReason)
 	api.AdminAdminUpdateLotCanceledReasonHandler = adminops.AdminUpdateLotCanceledReasonHandlerFunc(h.adminUpdateLotCanceledReason)
 	api.AdminAdminDeleteLotCanceledReasonHandler = adminops.AdminDeleteLotCanceledReasonHandlerFunc(h.adminDeleteLotCanceledReason)
+
+	api.AdminAdminCreatePostHandler = adminops.AdminCreatePostHandlerFunc(h.adminCreatePost)
 }
 
 func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {

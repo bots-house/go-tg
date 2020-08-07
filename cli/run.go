@@ -286,6 +286,8 @@ func run(ctx context.Context) error {
 		Settings: pg.Settings,
 		Topic:    pg.Topic,
 		User:     pg.User,
+		Post:     pg.Post,
+		Txier:    pg.Tx,
 		TgClient: tgClient,
 	}
 
@@ -307,6 +309,7 @@ func run(ctx context.Context) error {
 			Client: http.DefaultClient,
 		},
 		Posting: postingSrv,
+		Post:    pg.Post,
 	}
 
 	landingSrv := &landing.Service{
@@ -397,7 +400,9 @@ func run(ctx context.Context) error {
 			Location: timezone,
 
 			UpdateLandingSpec: cfg.WorkerUpdateLandingCron,
+			PublishPostsSpec:  cfg.WorkerPublishPostsCron,
 			UpdateLotsSpec:    cfg.WorkerUpdateLotListCron,
+			Posting:           postingSrv,
 		}
 	}
 

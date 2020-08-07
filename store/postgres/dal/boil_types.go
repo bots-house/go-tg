@@ -58,6 +58,7 @@ const (
 	LotStatusPublished = "published"
 	LotStatusDeclined  = "declined"
 	LotStatusCanceled  = "canceled"
+	LotStatusScheduled = "scheduled"
 )
 
 // Enum values for payment_gateway

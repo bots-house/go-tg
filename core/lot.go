@@ -117,6 +117,7 @@ type LotStatus int8
 const (
 	LotStatusCreated LotStatus = iota + 1
 	LotStatusPaid
+	LotStatusScheduled
 	LotStatusPublished
 	LotStatusDeclined
 	LotStatusCanceled
@@ -131,6 +132,7 @@ var (
 	lotStatusToString = map[LotStatus]string{
 		LotStatusCreated:   "created",
 		LotStatusPaid:      "paid",
+		LotStatusScheduled: "scheduled",
 		LotStatusPublished: "published",
 		LotStatusDeclined:  "declined",
 		LotStatusCanceled:  "canceled",
@@ -306,7 +308,7 @@ func (lots LotSlice) CanceledReasonIDs() []LotCanceledReasonID {
 }
 
 type LotsCountByStatus struct {
-	Status string
+	Status LotStatus
 	Count  int
 }
 

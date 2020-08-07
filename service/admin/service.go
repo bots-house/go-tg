@@ -19,6 +19,7 @@ type Service struct {
 	LotCanceledReason core.LotCanceledReasonStore
 	Landing           core.LandingStore
 	Favorite          core.FavoriteStore
+	Post              core.PostStore
 	BotLinkBuilder    *core.BotLinkBuilder
 	Posting           *posting.Service
 

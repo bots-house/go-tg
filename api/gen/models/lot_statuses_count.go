@@ -29,9 +29,13 @@ type LotStatusesCount struct {
 	// Required: true
 	Published *int64 `json:"published"`
 
-	// Количество отвергнутых лотов.
+	// Количество отклоненных лотов.
 	// Required: true
 	Declined *int64 `json:"declined"`
+
+	// Количество лотов запланированных к публикации.
+	// Required: true
+	Scheduled *int64 `json:"scheduled"`
 
 	// Количество отмененных лотов.
 	// Required: true
@@ -55,6 +59,10 @@ func (m *LotStatusesCount) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDeclined(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduled(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -98,6 +106,15 @@ func (m *LotStatusesCount) validatePublished(formats strfmt.Registry) error {
 func (m *LotStatusesCount) validateDeclined(formats strfmt.Registry) error {
 
 	if err := validate.Required("declined", "body", m.Declined); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *LotStatusesCount) validateScheduled(formats strfmt.Registry) error {
+
+	if err := validate.Required("scheduled", "body", m.Scheduled); err != nil {
 		return err
 	}
 

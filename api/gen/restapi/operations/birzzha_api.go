@@ -55,6 +55,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminCreateLotCanceledReasonHandler: admin.AdminCreateLotCanceledReasonHandlerFunc(func(params admin.AdminCreateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateLotCanceledReason has not yet been implemented")
 		}),
+		AdminAdminCreatePostHandler: admin.AdminCreatePostHandlerFunc(func(params admin.AdminCreatePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminCreatePost has not yet been implemented")
+		}),
 		AdminAdminCreateTopicHandler: admin.AdminCreateTopicHandlerFunc(func(params admin.AdminCreateTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateTopic has not yet been implemented")
 		}),
@@ -265,6 +268,8 @@ type BirzzhaAPI struct {
 
 	// AdminAdminCreateLotCanceledReasonHandler sets the operation handler for the admin create lot canceled reason operation
 	AdminAdminCreateLotCanceledReasonHandler admin.AdminCreateLotCanceledReasonHandler
+	// AdminAdminCreatePostHandler sets the operation handler for the admin create post operation
+	AdminAdminCreatePostHandler admin.AdminCreatePostHandler
 	// AdminAdminCreateTopicHandler sets the operation handler for the admin create topic operation
 	AdminAdminCreateTopicHandler admin.AdminCreateTopicHandler
 	// AdminAdminDeclineLotHandler sets the operation handler for the admin decline lot operation
@@ -444,6 +449,9 @@ func (o *BirzzhaAPI) Validate() error {
 
 	if o.AdminAdminCreateLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCreateLotCanceledReasonHandler")
+	}
+	if o.AdminAdminCreatePostHandler == nil {
+		unregistered = append(unregistered, "admin.AdminCreatePostHandler")
 	}
 	if o.AdminAdminCreateTopicHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCreateTopicHandler")
@@ -705,6 +713,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/admin/settings/lot-canceled-reasons"] = admin.NewAdminCreateLotCanceledReason(o.context, o.AdminAdminCreateLotCanceledReasonHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/admin/posts"] = admin.NewAdminCreatePost(o.context, o.AdminAdminCreatePostHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

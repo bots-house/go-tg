@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/bots-house/birzzha/api/authz"
 	adminops "github.com/bots-house/birzzha/api/gen/restapi/operations/admin"
 	"github.com/bots-house/birzzha/api/models"
@@ -340,4 +342,27 @@ func (h *Handler) adminGetLot(params adminops.AdminGetLotParams, identity *authz
 	}
 
 	return adminops.NewAdminGetLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
+}
+
+func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	in := &admin.PostInput{
+		LotID:                 core.LotID(swag.Int64Value(params.Post.LotID)),
+		Text:                  swag.StringValue(params.Post.Text),
+		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
+	}
+	if params.Post.ScheduledAt != 0 {
+		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)
+	} else {
+		in.ScheduledAt = time.Now()
+	}
+
+	result, err := h.Admin.CreatePost(ctx, identity.GetUser(), in)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminCreatePostBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminCreatePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminCreatePostCreated().WithPayload(models.NewPost(result))
 }

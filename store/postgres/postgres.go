@@ -28,6 +28,7 @@ type Postgres struct {
 	Favorite          *FavoriteStore
 	LotFile           *LotFileStore
 	Landing           *LandingStore
+	Post              *PostStore
 }
 
 // NewPostgres create postgres based database with all stores.
@@ -42,6 +43,7 @@ func NewPostgres(db *sql.DB) *Postgres {
 		Favorite:          &FavoriteStore{ContextExecutor: db},
 		LotCanceledReason: &LotCanceledReasonStore{ContextExecutor: db},
 		LotFile:           &LotFileStore{ContextExecutor: db},
+		Post:              &PostStore{ContextExecutor: db},
 	}
 
 	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx, executor: db}

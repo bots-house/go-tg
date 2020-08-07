@@ -21,7 +21,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml853369769 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml318919136 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -64,6 +64,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminCreateLotCanceledReasonHandler == nil {
 		api.AdminAdminCreateLotCanceledReasonHandler = admin.AdminCreateLotCanceledReasonHandlerFunc(func(params admin.AdminCreateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateLotCanceledReason has not yet been implemented")
+		})
+	}
+	if api.AdminAdminCreatePostHandler == nil {
+		api.AdminAdminCreatePostHandler = admin.AdminCreatePostHandlerFunc(func(params admin.AdminCreatePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminCreatePost has not yet been implemented")
 		})
 	}
 	if api.AdminAdminCreateTopicHandler == nil {

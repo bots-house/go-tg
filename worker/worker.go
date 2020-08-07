@@ -9,6 +9,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/stat"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
+	"github.com/bots-house/birzzha/service/posting"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
@@ -17,6 +18,8 @@ type Worker struct {
 	Landing  core.LandingStore
 	Lot      core.LotStore
 	Settings core.SettingsStore
+
+	Posting *posting.Service
 
 	Resolver tg.Resolver
 
@@ -28,6 +31,7 @@ type Worker struct {
 	Location *time.Location
 
 	UpdateLandingSpec string
+	PublishPostsSpec  string
 	UpdateLotsSpec    string
 
 	cron *cron.Cron
@@ -82,6 +86,11 @@ func (wrk *Worker) setupCronJobs(ctx context.Context) error {
 			"update landing",
 			wrk.UpdateLandingSpec,
 			wrk.wrap(ctx, wrk.taskUpdateLanding),
+		},
+		{
+			"publish posts",
+			wrk.PublishPostsSpec,
+			wrk.wrap(ctx, wrk.taskPublishPosts),
 		},
 	} {
 		log.Debug(ctx, "setup worker cron job", "name", job.Name, "spec", job.Spec)

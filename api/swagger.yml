@@ -904,7 +904,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /lots/{id}/change-price:
     parameters:
       - name: id
@@ -921,7 +921,7 @@ paths:
           schema:
             $ref: "#/definitions/InputLotPrice"
 
-      description: | 
+      description: |
         Изменяет цену лота если он не опубликованный, в ином случае возвращает ошибку.
         Возможные ошибки:
           - `cant_change_lot_price_free` - Невозможно обновить цену лота бесплатно так как лот уже опубликован;
@@ -941,7 +941,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
 
   /lots/{id}/change-price-invoice:
     parameters:
@@ -969,7 +968,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /lots/{id}/change-price-payment:
     parameters:
       - name: id
@@ -1392,6 +1391,34 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /admin/posts:
+    post:
+      summary: Create Post
+      description: Создать пост для публикации.
+      operationId: adminCreatePost
+      tags: [admin]
+
+      parameters:
+        - in: body
+          name: post
+          required: true
+          schema:
+            $ref: "#/definitions/InputPost"
+      
+      responses:
+        201:
+          schema:
+            $ref: "#/definitions/Post"
+          description: Created
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
     
   /admin/posting/preview:
     post:
@@ -1439,7 +1466,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-  
+
   /admin/settings/prices:
     put:
       parameters:
@@ -1467,8 +1494,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-      
-    
+
   /admin/settings/channel:
     put:
       parameters:
@@ -1496,7 +1522,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
-          
 
   /admin/settings/landing:
     put:
@@ -1832,7 +1857,7 @@ definitions:
           enum:
             - interkassa
             - direct
-    
+
   InputChangePricePayment:
     type: object
     required:
@@ -1840,7 +1865,7 @@ definitions:
     properties:
       price:
         $ref: "#/definitions/Money"
-  
+
   InputLotPrice:
     type: object
     required:
@@ -1849,7 +1874,7 @@ definitions:
       price:
         type: integer
         description: Цена лота.
-      
+
   ChangePriceInvoice:
     type: object
     required:
@@ -2788,6 +2813,7 @@ definitions:
       - published
       - declined
       - canceled
+      - scheduled
     properties:
       created:
         type: integer
@@ -2800,7 +2826,10 @@ definitions:
         description: Количество опубликованых лотов.
       declined:
         type: integer
-        description: Количество отвергнутых лотов.
+        description: Количество отклоненных лотов.
+      scheduled:
+        type: integer
+        description: Количество лотов запланированных к публикации.
       canceled:
         type: integer
         description: Количество отмененных лотов.
@@ -3228,3 +3257,53 @@ definitions:
       declined_reason:
         type: string
         description: Текст причины отмены лота.
+  
+  InputPost:
+    type: object
+    required:
+      - lot_id
+      - text
+      - disable_web_page_preview
+    properties:
+      lot_id:
+        type: integer
+        description: ID лота.
+      text:
+        type: string
+        description: Текст поста.
+      disable_web_page_preview:
+        type: boolean
+        description: Отключить или выключить web page preview.
+      scheduled_at:
+        type: integer
+        description: Время планирования поста.
+
+  Post:
+    type: object
+    required:
+      - id
+      - lot_id
+      - text
+      - disable_web_page_preview
+      - scheduled_at
+      - published_at
+    properties:
+      id:
+        type: integer
+        description: ID поста.
+      lot_id:
+        type: integer
+        description: ID лота.
+      text:
+        type: string
+        description: Текст поста.
+      disable_web_page_preview:
+        type: boolean
+        description: Отключить или выключить web page preview.
+      scheduled_at:
+        type: integer
+        description: Время планирования поста.
+      published_at:
+        type: integer
+        description: Время публикации поста.
+      

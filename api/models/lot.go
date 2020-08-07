@@ -227,6 +227,7 @@ func NewLotStatusesCount(in *admin.LotStatusesCount) *models.LotStatusesCount {
 		Published: swag.Int64(int64(in.Published)),
 		Declined:  swag.Int64(int64(in.Declined)),
 		Canceled:  swag.Int64(int64(in.Canceled)),
+		Scheduled: swag.Int64(int64(in.Scheduled)),
 	}
 }
 

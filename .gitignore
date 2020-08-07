@@ -30,3 +30,5 @@ birzzha
 /.cache
 
 /test
+.vscode/
+.idea/

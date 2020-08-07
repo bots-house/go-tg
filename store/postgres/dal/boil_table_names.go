@@ -11,6 +11,7 @@ var TableNames = struct {
 	LotFile           string
 	LotTopic          string
 	Payment           string
+	Post              string
 	Review            string
 	Settings          string
 	Topic             string
@@ -24,6 +25,7 @@ var TableNames = struct {
 	LotFile:           "lot_file",
 	LotTopic:          "lot_topic",
 	Payment:           "payment",
+	Post:              "post",
 	Review:            "review",
 	Settings:          "settings",
 	Topic:             "topic",

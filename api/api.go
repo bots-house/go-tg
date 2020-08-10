@@ -10,6 +10,7 @@ import (
 	catalogops "github.com/bots-house/birzzha/api/gen/restapi/operations/catalog"
 	personalops "github.com/bots-house/birzzha/api/gen/restapi/operations/personal_area"
 	webhookops "github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
+	"github.com/bots-house/birzzha/pkg/rate"
 
 	"github.com/bots-house/birzzha/pkg/health"
 	"github.com/bots-house/birzzha/pkg/storage"
@@ -49,6 +50,7 @@ type Handler struct {
 	Landing      *landing.Service
 	Views        *views.Service
 	Logger       kitlog.Logger
+	RateLimitter *rate.Limitter
 	Health       *health.Service
 }
 
@@ -156,8 +158,16 @@ func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
 	etagMiddleware := middleware.Builder(func(handler http.Handler) http.Handler {
 		return etag.Handler(handler, false)
 	})
-
+	//bot
 	api.AddMiddlewareFor(http.MethodGet, "/bot", etagMiddleware)
+	//personal
+	api.AddMiddlewareFor(http.MethodPost, "/user/lots", h.RateLimitter.Default("/user/lots:post"))
+	api.AddMiddlewareFor(http.MethodPost, "/lots/file", h.RateLimitter.Default("/lots/file:post"))
+	//catalog
+	api.AddMiddlewareFor(http.MethodGet, "/tg/resolve", h.RateLimitter.Default("/tg/resolve:get"))
+	api.AddMiddlewareFor(http.MethodGet, "/tg/daily-coverage", h.RateLimitter.Default("/tg/daily-coverage:get"))
+	//auth
+	api.AddMiddlewareFor(http.MethodGet, "/auth/bot", h.RateLimitter.Default("/auth/bot:get"))
 }
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {

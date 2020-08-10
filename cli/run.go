@@ -11,6 +11,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/bots-house/birzzha/pkg/rate"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -367,6 +369,11 @@ func run(ctx context.Context) error {
 		Redis:    rds,
 	}
 
+	limiter, err := rate.NewLimitter(cfg.Redis, cfg.RedisMaxIdleConns)
+	if err != nil {
+		return err
+	}
+
 	handler := api.Handler{
 		Auth:         authSrv,
 		Admin:        adminSrv,
@@ -379,6 +386,7 @@ func run(ctx context.Context) error {
 		Landing:      landingSrv,
 		Logger:       log.GetLogger(ctx),
 		Views:        viewsSrv,
+		RateLimitter: limiter,
 		Health:       healthSrv,
 	}
 

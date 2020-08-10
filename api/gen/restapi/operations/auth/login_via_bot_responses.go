@@ -59,6 +59,50 @@ func (o *LoginViaBotFound) WriteResponse(rw http.ResponseWriter, producer runtim
 	rw.WriteHeader(302)
 }
 
+// LoginViaBotTooManyRequestsCode is the HTTP code returned for type LoginViaBotTooManyRequests
+const LoginViaBotTooManyRequestsCode int = 429
+
+/*LoginViaBotTooManyRequests Limit exceeded
+
+swagger:response loginViaBotTooManyRequests
+*/
+type LoginViaBotTooManyRequests struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewLoginViaBotTooManyRequests creates LoginViaBotTooManyRequests with default headers values
+func NewLoginViaBotTooManyRequests() *LoginViaBotTooManyRequests {
+
+	return &LoginViaBotTooManyRequests{}
+}
+
+// WithPayload adds the payload to the login via bot too many requests response
+func (o *LoginViaBotTooManyRequests) WithPayload(payload *models.Error) *LoginViaBotTooManyRequests {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the login via bot too many requests response
+func (o *LoginViaBotTooManyRequests) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *LoginViaBotTooManyRequests) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(429)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // LoginViaBotInternalServerErrorCode is the HTTP code returned for type LoginViaBotInternalServerError
 const LoginViaBotInternalServerErrorCode int = 500
 

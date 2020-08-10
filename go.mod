@@ -26,6 +26,7 @@ require (
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.10
+	github.com/go-redis/redis/v7 v7.4.0
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
@@ -48,15 +49,15 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/subosito/gotenv v1.2.0
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
-	github.com/volatiletech/null v8.0.0+incompatible // indirect
+	github.com/ulule/limiter/v3 v3.5.0
 	github.com/volatiletech/null/v8 v8.1.0
-	github.com/volatiletech/sqlboiler v3.7.1+incompatible // indirect
 	github.com/volatiletech/sqlboiler/v4 v4.2.0
 	github.com/volatiletech/strmangle v0.0.1
 	go.mongodb.org/mongo-driver v1.3.5 // indirect
-	go.opentelemetry.io/otel v0.9.0 // indirect
+	go.opentelemetry.io/otel v0.10.0 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
 	golang.org/x/text v0.3.3
+	google.golang.org/grpc v1.31.0 // indirect
 
 )

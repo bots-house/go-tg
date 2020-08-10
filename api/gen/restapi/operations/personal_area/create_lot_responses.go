@@ -101,6 +101,50 @@ func (o *CreateLotBadRequest) WriteResponse(rw http.ResponseWriter, producer run
 	}
 }
 
+// CreateLotTooManyRequestsCode is the HTTP code returned for type CreateLotTooManyRequests
+const CreateLotTooManyRequestsCode int = 429
+
+/*CreateLotTooManyRequests Limit exceeded
+
+swagger:response createLotTooManyRequests
+*/
+type CreateLotTooManyRequests struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewCreateLotTooManyRequests creates CreateLotTooManyRequests with default headers values
+func NewCreateLotTooManyRequests() *CreateLotTooManyRequests {
+
+	return &CreateLotTooManyRequests{}
+}
+
+// WithPayload adds the payload to the create lot too many requests response
+func (o *CreateLotTooManyRequests) WithPayload(payload *models.Error) *CreateLotTooManyRequests {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the create lot too many requests response
+func (o *CreateLotTooManyRequests) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *CreateLotTooManyRequests) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(429)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // CreateLotInternalServerErrorCode is the HTTP code returned for type CreateLotInternalServerError
 const CreateLotInternalServerErrorCode int = 500
 

@@ -101,6 +101,50 @@ func (o *GetDailyCoverageBadRequest) WriteResponse(rw http.ResponseWriter, produ
 	}
 }
 
+// GetDailyCoverageTooManyRequestsCode is the HTTP code returned for type GetDailyCoverageTooManyRequests
+const GetDailyCoverageTooManyRequestsCode int = 429
+
+/*GetDailyCoverageTooManyRequests Limit exceeded
+
+swagger:response getDailyCoverageTooManyRequests
+*/
+type GetDailyCoverageTooManyRequests struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetDailyCoverageTooManyRequests creates GetDailyCoverageTooManyRequests with default headers values
+func NewGetDailyCoverageTooManyRequests() *GetDailyCoverageTooManyRequests {
+
+	return &GetDailyCoverageTooManyRequests{}
+}
+
+// WithPayload adds the payload to the get daily coverage too many requests response
+func (o *GetDailyCoverageTooManyRequests) WithPayload(payload *models.Error) *GetDailyCoverageTooManyRequests {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get daily coverage too many requests response
+func (o *GetDailyCoverageTooManyRequests) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetDailyCoverageTooManyRequests) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(429)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // GetDailyCoverageInternalServerErrorCode is the HTTP code returned for type GetDailyCoverageInternalServerError
 const GetDailyCoverageInternalServerErrorCode int = 500
 

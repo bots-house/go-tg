@@ -101,6 +101,50 @@ func (o *ResolveTelegramBadRequest) WriteResponse(rw http.ResponseWriter, produc
 	}
 }
 
+// ResolveTelegramTooManyRequestsCode is the HTTP code returned for type ResolveTelegramTooManyRequests
+const ResolveTelegramTooManyRequestsCode int = 429
+
+/*ResolveTelegramTooManyRequests Limit exceeded
+
+swagger:response resolveTelegramTooManyRequests
+*/
+type ResolveTelegramTooManyRequests struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewResolveTelegramTooManyRequests creates ResolveTelegramTooManyRequests with default headers values
+func NewResolveTelegramTooManyRequests() *ResolveTelegramTooManyRequests {
+
+	return &ResolveTelegramTooManyRequests{}
+}
+
+// WithPayload adds the payload to the resolve telegram too many requests response
+func (o *ResolveTelegramTooManyRequests) WithPayload(payload *models.Error) *ResolveTelegramTooManyRequests {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the resolve telegram too many requests response
+func (o *ResolveTelegramTooManyRequests) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ResolveTelegramTooManyRequests) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(429)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // ResolveTelegramInternalServerErrorCode is the HTTP code returned for type ResolveTelegramInternalServerError
 const ResolveTelegramInternalServerErrorCode int = 500
 

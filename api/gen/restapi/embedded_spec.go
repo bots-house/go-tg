@@ -1031,6 +1031,12 @@ func init() {
               }
             }
           },
+          "429": {
+            "description": "Limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "schema": {
@@ -1384,6 +1390,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1925,6 +1937,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "429": {
+            "description": "Limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "schema": {
@@ -1964,6 +1982,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -2164,6 +2188,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -5761,6 +5791,12 @@ func init() {
               }
             }
           },
+          "429": {
+            "description": "Limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "schema": {
@@ -6118,6 +6154,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -6659,6 +6701,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "429": {
+            "description": "Limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "schema": {
@@ -6702,6 +6750,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -6906,6 +6960,12 @@ func init() {
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "429": {
+            "description": "Limit exceeded",
             "schema": {
               "$ref": "#/definitions/Error"
             }

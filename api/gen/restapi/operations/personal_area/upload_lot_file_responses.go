@@ -101,6 +101,50 @@ func (o *UploadLotFileBadRequest) WriteResponse(rw http.ResponseWriter, producer
 	}
 }
 
+// UploadLotFileTooManyRequestsCode is the HTTP code returned for type UploadLotFileTooManyRequests
+const UploadLotFileTooManyRequestsCode int = 429
+
+/*UploadLotFileTooManyRequests Limit exceeded
+
+swagger:response uploadLotFileTooManyRequests
+*/
+type UploadLotFileTooManyRequests struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewUploadLotFileTooManyRequests creates UploadLotFileTooManyRequests with default headers values
+func NewUploadLotFileTooManyRequests() *UploadLotFileTooManyRequests {
+
+	return &UploadLotFileTooManyRequests{}
+}
+
+// WithPayload adds the payload to the upload lot file too many requests response
+func (o *UploadLotFileTooManyRequests) WithPayload(payload *models.Error) *UploadLotFileTooManyRequests {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the upload lot file too many requests response
+func (o *UploadLotFileTooManyRequests) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *UploadLotFileTooManyRequests) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(429)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // UploadLotFileInternalServerErrorCode is the HTTP code returned for type UploadLotFileInternalServerError
 const UploadLotFileInternalServerErrorCode int = 500
 

@@ -25,7 +25,7 @@ func (wrk *Worker) taskUpdateLotList(ctx context.Context) error {
 		log.Debug(ctx, "updating lot", "lot_id", lot.ID)
 
 		if err := wrk.taskUpdateLot(ctx, lot); err != nil {
-			log.Error(ctx, "update lot task", "error", "lot_id", lot.ID)
+			log.Error(ctx, "update lot task", "error", err, "lot_id", lot.ID)
 			continue
 		}
 	}

@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"net/url"
 	"strconv"
-	"sync"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 
 	"github.com/benbjohnson/clock"
 	"github.com/bots-house/birzzha/core"
@@ -22,6 +23,8 @@ import (
 
 const (
 	userAvatarDir = "user"
+
+	loginViaBotKey = "login:via:bot:"
 )
 
 type Service struct {
@@ -31,9 +34,7 @@ type Service struct {
 	Storage        storage.Storage
 	Notifications  *admin.Notifications
 	BotLinkBuilder *core.BotLinkBuilder
-
-	botLogins     map[string]*LoginViaBotInfo
-	botLoginsLock sync.Mutex
+	Redis          redis.UniversalClient
 }
 
 var (
@@ -218,48 +219,33 @@ func (srv *Service) AuthorizeInBot(ctx context.Context, info *TelegramUserInfo) 
 	return user, nil
 }
 
-type LoginViaBotInfo struct {
-	CallbackURL string
-
-	createdAt time.Time
-}
-
-func (srv *Service) saveLoginViaBot(info *LoginViaBotInfo) string {
+func (srv *Service) saveLoginViaBot(ctx context.Context, callback string) (string, error) {
 	id := xid.New().String()
+	_, err := srv.Redis.Set(ctx, loginViaBotKey+id, callback, time.Minute*3).Result()
 
-	info.createdAt = time.Now()
-
-	srv.botLoginsLock.Lock()
-	if srv.botLogins == nil {
-		srv.botLogins = make(map[string]*LoginViaBotInfo)
-	}
-	srv.botLogins[id] = info
-	srv.botLoginsLock.Unlock()
-
-	return id
+	return id, errors.Wrap(err, "failed to save callback")
 }
 
-func (srv *Service) LoginViaBot(ctx context.Context, info *LoginViaBotInfo) (string, error) {
-	id := srv.saveLoginViaBot(info)
+func (srv *Service) LoginViaBot(ctx context.Context, callback string) (string, error) {
+	id, err := srv.saveLoginViaBot(ctx, callback)
+	if err != nil {
+		return "", err
+	}
 
 	return srv.BotLinkBuilder.LoginURL(id), nil
 }
 
 var ErrBotLoginNotFound = errors.New("bot login not found")
 
-func (srv *Service) PopLoginViaBot(ctx context.Context, id string) (*LoginViaBotInfo, error) {
-	srv.botLoginsLock.Lock()
-	defer srv.botLoginsLock.Unlock()
+func (srv *Service) PopLoginViaBot(ctx context.Context, id string) (string, error) {
+	callback, err := srv.Redis.Get(ctx, loginViaBotKey+id).Result()
 
-	v, ok := srv.botLogins[id]
-	if !ok {
-		return nil, ErrBotLoginNotFound
+	switch err {
+	case nil:
+		return callback, nil
+	case redis.Nil:
+		return "", ErrBotLoginNotFound
+	default:
+		return "", errors.Wrapf(err, "failed to get callback login=%s from redis", loginViaBotKey+id)
 	}
-
-	if srv.Clock.Since(v.createdAt) > time.Minute*3 {
-		delete(srv.botLogins, id)
-		return nil, ErrBotLoginNotFound
-	}
-
-	return v, nil
 }

@@ -42,9 +42,7 @@ func (h *Handler) getUser(params authops.GetUserParams, identity *authz.Identity
 func (h *Handler) loginViaBot(params authops.LoginViaBotParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
-	url, err := h.Auth.LoginViaBot(ctx, &auth.LoginViaBotInfo{
-		CallbackURL: params.CallbackURL,
-	})
+	url, err := h.Auth.LoginViaBot(ctx, params.CallbackURL)
 	if err != nil {
 		return authops.NewLoginViaBotInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}

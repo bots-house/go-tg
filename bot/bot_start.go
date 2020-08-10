@@ -110,7 +110,7 @@ func (bot *Bot) onStartContact(ctx context.Context, msg *tgbotapi.Message) error
 func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 	id := strings.TrimPrefix(msg.CommandArguments(), startLoginPrefix)
 
-	info, err := bot.authSrv.PopLoginViaBot(ctx, id)
+	callback, err := bot.authSrv.PopLoginViaBot(ctx, id)
 	if err == auth.ErrBotLoginNotFound {
 		return bot.send(bot.newAnswerMsg(msg, textStartLoginNotFound))
 	} else if err != nil {
@@ -123,7 +123,7 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 			tgbotapi.InlineKeyboardButton{
 				Text: "🔓 Авторизоватся",
 				LoginURL: &tgbotapi.LoginURL{
-					URL: info.CallbackURL,
+					URL: callback,
 				},
 			},
 		),
@@ -131,8 +131,8 @@ func (bot *Bot) onStartLogin(ctx context.Context, msg *tgbotapi.Message) error {
 
 	if err := bot.send(answ); err != nil {
 		if isBotDomainInvalidError(err) {
-			log.Warn(ctx, "user fallback for domain invalid", "callback_url", info.CallbackURL)
-			callbackURL, err := url.Parse(info.CallbackURL)
+			log.Warn(ctx, "user fallback for domain invalid", "callback_url", callback)
+			callbackURL, err := url.Parse(callback)
 			if err != nil {
 				return errors.Wrap(err, "parse callback url")
 			}

@@ -256,6 +256,7 @@ func run(ctx context.Context) error {
 		Storage:        strg,
 		BotLinkBuilder: botLinkBuilder,
 		Notifications:  notifications,
+		Redis:          rds,
 	}
 
 	resolver := &tg.BotResolver{

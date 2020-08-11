@@ -178,6 +178,7 @@ func (store *LotStore) toRow(lot *core.Lot) (*dal.Lot, error) {
 		MetricsPaybackPeriod:  lot.Metrics.PaybackPeriod,
 		ExtraResources:        null.JSONFrom(extra),
 		CreatedAt:             lot.CreatedAt,
+		ScheduledAt:           lot.ScheduledAt,
 		PaidAt:                lot.PaidAt,
 		ApprovedAt:            lot.ApprovedAt,
 		PublishedAt:           lot.PublishedAt,
@@ -235,6 +236,7 @@ func (store *LotStore) fromRow(row *dal.Lot) (*core.Lot, error) {
 		CreatedAt:      row.CreatedAt,
 		PaidAt:         row.PaidAt,
 		ApprovedAt:     row.ApprovedAt,
+		ScheduledAt:    row.ScheduledAt,
 		PublishedAt:    row.PublishedAt,
 		Views: core.LotViews{
 			Telegram: row.ViewsTelegram,
@@ -577,6 +579,8 @@ func (lsq *LotStoreQuery) SortBy(field core.LotField, typ store.SortType) core.L
 		orderBy = dal.LotColumns.PaidAt
 	case core.LotFieldPublishedAt:
 		orderBy = dal.LotColumns.PublishedAt
+	case core.LotFieldScheduledAt:
+		orderBy = dal.LotColumns.ScheduledAt
 	}
 
 	switch typ {

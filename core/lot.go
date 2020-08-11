@@ -247,6 +247,8 @@ type Lot struct {
 
 	// Time when lot was published in Telegram
 	PublishedAt null.Time
+
+	ScheduledAt null.Time
 }
 
 func (lot *Lot) CanCancel() bool {
@@ -456,6 +458,7 @@ const (
 	LotFieldCreatedAt
 	LotFieldPaidAt
 	LotFieldPublishedAt
+	LotFieldScheduledAt
 )
 
 var (
@@ -470,6 +473,7 @@ var (
 		"created_at":       LotFieldCreatedAt,
 		"paid_at":          LotFieldPaidAt,
 		"published_at":     LotFieldPublishedAt,
+		"scheduled_at":     LotFieldScheduledAt,
 	}
 
 	lotFieldToString = mirrorStringToLotField(stringToLotField)

@@ -109,7 +109,8 @@ func init() {
             "paid",
             "published",
             "declined",
-            "canceled"
+            "canceled",
+            "scheduled"
           ],
           "type": "string",
           "description": "Статус лота.",
@@ -2322,7 +2323,8 @@ func init() {
         "files",
         "paid_at",
         "approved_at",
-        "published_at"
+        "published_at",
+        "scheduled_at"
       ],
       "properties": {
         "approved_at": {
@@ -2344,7 +2346,7 @@ func init() {
         "canceled_reason": {
           "description": "Текст причины снятия лота.",
           "type": "string",
-          "x-order": 21
+          "x-order": 22
         },
         "comment": {
           "description": "Комментарий к лоту",
@@ -2359,7 +2361,7 @@ func init() {
         "declined_reason": {
           "description": "Текст причины отмены лота.",
           "type": "string",
-          "x-order": 22
+          "x-order": 23
         },
         "extra": {
           "type": "array",
@@ -2411,6 +2413,11 @@ func init() {
         },
         "published_at": {
           "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 21
+        },
+        "scheduled_at": {
+          "description": "Дата планирования.",
           "type": "integer",
           "x-order": 20
         },
@@ -2568,6 +2575,7 @@ func init() {
         "paid_at",
         "approved_at",
         "published_at",
+        "scheduled_at",
         "files"
       ],
       "properties": {
@@ -2594,7 +2602,7 @@ func init() {
         "declined_reason": {
           "description": "Текст причины отклонения лота.",
           "type": "string",
-          "x-order": 16
+          "x-order": 17
         },
         "external_id": {
           "description": "Внешний ID.",
@@ -2606,7 +2614,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/AdminLotUploadedFile"
           },
-          "x-order": 15
+          "x-order": 16
         },
         "id": {
           "description": "ID лота.",
@@ -2636,6 +2644,11 @@ func init() {
           "description": "Дата публикации.",
           "type": "integer",
           "x-order": 14
+        },
+        "scheduled_at": {
+          "description": "Дата планирования.",
+          "type": "integer",
+          "x-order": 15
         },
         "status": {
           "type": "string",
@@ -4861,7 +4874,8 @@ func init() {
             "paid",
             "published",
             "declined",
-            "canceled"
+            "canceled",
+            "scheduled"
           ],
           "type": "string",
           "description": "Статус лота.",
@@ -7094,7 +7108,8 @@ func init() {
         "files",
         "paid_at",
         "approved_at",
-        "published_at"
+        "published_at",
+        "scheduled_at"
       ],
       "properties": {
         "approved_at": {
@@ -7116,7 +7131,7 @@ func init() {
         "canceled_reason": {
           "description": "Текст причины снятия лота.",
           "type": "string",
-          "x-order": 21
+          "x-order": 22
         },
         "comment": {
           "description": "Комментарий к лоту",
@@ -7131,7 +7146,7 @@ func init() {
         "declined_reason": {
           "description": "Текст причины отмены лота.",
           "type": "string",
-          "x-order": 22
+          "x-order": 23
         },
         "extra": {
           "type": "array",
@@ -7183,6 +7198,11 @@ func init() {
         },
         "published_at": {
           "description": "Дата публикации.",
+          "type": "integer",
+          "x-order": 21
+        },
+        "scheduled_at": {
+          "description": "Дата планирования.",
           "type": "integer",
           "x-order": 20
         },
@@ -7340,6 +7360,7 @@ func init() {
         "paid_at",
         "approved_at",
         "published_at",
+        "scheduled_at",
         "files"
       ],
       "properties": {
@@ -7366,7 +7387,7 @@ func init() {
         "declined_reason": {
           "description": "Текст причины отклонения лота.",
           "type": "string",
-          "x-order": 16
+          "x-order": 17
         },
         "external_id": {
           "description": "Внешний ID.",
@@ -7378,7 +7399,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/AdminLotUploadedFile"
           },
-          "x-order": 15
+          "x-order": 16
         },
         "id": {
           "description": "ID лота.",
@@ -7408,6 +7429,11 @@ func init() {
           "description": "Дата публикации.",
           "type": "integer",
           "x-order": 14
+        },
+        "scheduled_at": {
+          "description": "Дата планирования.",
+          "type": "integer",
+          "x-order": 15
         },
         "status": {
           "type": "string",

@@ -85,13 +85,13 @@ func (srv *Service) newLotItem(
 	files core.LotFileSlice,
 	canceledReasons core.LotCanceledReasonSlice,
 ) *LotItem {
-
-	return &LotItem{
+	item := &LotItem{
 		Lot:            lot,
 		Owner:          owners.Find(lot.OwnerID),
 		Files:          files.FindByLotID(lot.ID),
 		CanceledReason: canceledReasons.Find(lot.CanceledReasonID),
 	}
+	return item
 }
 
 func (srv *Service) newLotItemSlice(
@@ -136,6 +136,8 @@ func (srv *Service) lotsSortQuery(status string, query core.LotStoreQuery) (core
 			query = query.SortBy(core.LotFieldPaidAt, store.SortTypeDesc)
 		case core.LotStatusPublished:
 			query = query.SortBy(core.LotFieldPublishedAt, store.SortTypeDesc)
+		case core.LotStatusScheduled:
+			query = query.SortBy(core.LotFieldScheduledAt, store.SortTypeAsc)
 		default:
 			query = query.SortBy(core.LotFieldCreatedAt, store.SortTypeDesc)
 		}

@@ -52,6 +52,7 @@ type Lot struct {
 	ViewsTelegram         int          `boil:"views_telegram" json:"views_telegram" toml:"views_telegram" yaml:"views_telegram"`
 	ViewsSite             int          `boil:"views_site" json:"views_site" toml:"views_site" yaml:"views_site"`
 	DeclineReason         null.String  `boil:"decline_reason" json:"decline_reason,omitempty" toml:"decline_reason" yaml:"decline_reason,omitempty"`
+	ScheduledAt           null.Time    `boil:"scheduled_at" json:"scheduled_at,omitempty" toml:"scheduled_at" yaml:"scheduled_at,omitempty"`
 
 	R *lotR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L lotL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -86,6 +87,7 @@ var LotColumns = struct {
 	ViewsTelegram         string
 	ViewsSite             string
 	DeclineReason         string
+	ScheduledAt           string
 }{
 	ID:                    "id",
 	OwnerID:               "owner_id",
@@ -115,6 +117,7 @@ var LotColumns = struct {
 	ViewsTelegram:         "views_telegram",
 	ViewsSite:             "views_site",
 	DeclineReason:         "decline_reason",
+	ScheduledAt:           "scheduled_at",
 }
 
 // Generated where
@@ -347,6 +350,7 @@ var LotWhere = struct {
 	ViewsTelegram         whereHelperint
 	ViewsSite             whereHelperint
 	DeclineReason         whereHelpernull_String
+	ScheduledAt           whereHelpernull_Time
 }{
 	ID:                    whereHelperint{field: "\"lot\".\"id\""},
 	OwnerID:               whereHelperint{field: "\"lot\".\"owner_id\""},
@@ -376,6 +380,7 @@ var LotWhere = struct {
 	ViewsTelegram:         whereHelperint{field: "\"lot\".\"views_telegram\""},
 	ViewsSite:             whereHelperint{field: "\"lot\".\"views_site\""},
 	DeclineReason:         whereHelpernull_String{field: "\"lot\".\"decline_reason\""},
+	ScheduledAt:           whereHelpernull_Time{field: "\"lot\".\"scheduled_at\""},
 }
 
 // LotRels is where relationship names are stored.
@@ -417,8 +422,8 @@ func (*lotR) NewStruct() *lotR {
 type lotL struct{}
 
 var (
-	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio", "views_telegram", "views_site", "decline_reason"}
-	lotColumnsWithoutDefault = []string{"owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio", "decline_reason"}
+	lotAllColumns            = []string{"id", "owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio", "views_telegram", "views_site", "decline_reason", "scheduled_at"}
+	lotColumnsWithoutDefault = []string{"owner_id", "external_id", "name", "avatar", "username", "join_link", "price_current", "price_previous", "price_is_bargain", "comment", "metrics_members_count", "metrics_daily_coverage", "metrics_monthly_income", "metrics_price_per_member", "metrics_price_per_view", "metrics_payback_period", "extra_resources", "created_at", "paid_at", "approved_at", "published_at", "status", "canceled_reason_id", "bio", "decline_reason", "scheduled_at"}
 	lotColumnsWithDefault    = []string{"id", "views_telegram", "views_site"}
 	lotPrimaryKeyColumns     = []string{"id"}
 )

@@ -81,6 +81,10 @@ type AdminLot struct {
 	// Required: true
 	PublishedAt *int64 `json:"published_at"`
 
+	// Дата планирования.
+	// Required: true
+	ScheduledAt *int64 `json:"scheduled_at"`
+
 	// files
 	// Required: true
 	Files []*AdminLotUploadedFile `json:"files"`
@@ -151,6 +155,10 @@ func (m *AdminLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePublishedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduledAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -370,6 +378,15 @@ func (m *AdminLot) validateApprovedAt(formats strfmt.Registry) error {
 func (m *AdminLot) validatePublishedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminLot) validateScheduledAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("scheduled_at", "body", m.ScheduledAt); err != nil {
 		return err
 	}
 

@@ -258,6 +258,7 @@ func newAdminLot(s storage.Storage, in *admin.LotItem) *models.AdminLot {
 		CreatedAt:      timeToUnix(in.CreatedAt),
 		PaidAt:         nullTimeToUnix(in.PaidAt),
 		ApprovedAt:     nullTimeToUnix(in.ApprovedAt),
+		ScheduledAt:    nullTimeToUnix(in.ScheduledAt),
 		PublishedAt:    nullTimeToUnix(in.PublishedAt),
 		Files:          newAdminLotUploadedFileSlice(s, in.Files),
 		User:           NewUser(s, in.Owner),
@@ -379,6 +380,7 @@ func NewAdminFullLot(s storage.Storage, in *admin.FullLot) *models.AdminFullLot 
 		PaidAt:         nullTimeToUnix(in.PaidAt),
 		ApprovedAt:     nullTimeToUnix(in.ApprovedAt),
 		PublishedAt:    nullTimeToUnix(in.PublishedAt),
+		ScheduledAt:    nullTimeToUnix(in.ScheduledAt),
 		DeclinedReason: nullStringToString(in.DeclineReason),
 	}
 

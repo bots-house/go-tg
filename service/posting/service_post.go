@@ -89,6 +89,7 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 
 			lot := lots.Find(post.LotID)
 			lot.Status = core.LotStatusPublished
+			lot.PublishedAt = post.PublishedAt
 			if err := srv.Lot.Update(ctx, lot); err != nil {
 				return errors.Wrap(err, "update lot")
 			}

@@ -156,7 +156,7 @@ func (o *AdminGetLotsParams) bindStatus(rawData []string, hasKey bool, formats s
 // validateStatus carries on validations for parameter Status
 func (o *AdminGetLotsParams) validateStatus(formats strfmt.Registry) error {
 
-	if err := validate.EnumCase("status", "query", *o.Status, []interface{}{"created", "paid", "published", "declined", "canceled"}, true); err != nil {
+	if err := validate.EnumCase("status", "query", *o.Status, []interface{}{"created", "paid", "published", "declined", "canceled", "scheduled"}, true); err != nil {
 		return err
 	}
 

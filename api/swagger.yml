@@ -1268,6 +1268,7 @@ paths:
           - published
           - declined
           - canceled
+          - scheduled
       - name: limit
         in: query
         type: integer
@@ -2898,6 +2899,7 @@ definitions:
       - paid_at
       - approved_at
       - published_at
+      - scheduled_at
       - files
     properties:
       id:
@@ -2951,6 +2953,9 @@ definitions:
       published_at:
         type: integer
         description: Дата публикации.
+      scheduled_at:
+        type: integer
+        description: Дата планирования.
       files:
         type: array
         items:
@@ -3194,6 +3199,7 @@ definitions:
       - paid_at
       - approved_at
       - published_at
+      - scheduled_at
     properties:
       id:
         type: integer
@@ -3259,6 +3265,9 @@ definitions:
       approved_at:
         type: integer
         description: Дата одобрения.
+      scheduled_at:
+        type: integer
+        description: Дата планирования.
       published_at:
         type: integer
         description: Дата публикации.  

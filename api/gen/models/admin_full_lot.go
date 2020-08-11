@@ -99,6 +99,10 @@ type AdminFullLot struct {
 	// Required: true
 	ApprovedAt *int64 `json:"approved_at"`
 
+	// Дата планирования.
+	// Required: true
+	ScheduledAt *int64 `json:"scheduled_at"`
+
 	// Дата публикации.
 	// Required: true
 	PublishedAt *int64 `json:"published_at"`
@@ -193,6 +197,10 @@ func (m *AdminFullLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateApprovedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduledAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -459,6 +467,15 @@ func (m *AdminFullLot) validatePaidAt(formats strfmt.Registry) error {
 func (m *AdminFullLot) validateApprovedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("approved_at", "body", m.ApprovedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AdminFullLot) validateScheduledAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("scheduled_at", "body", m.ScheduledAt); err != nil {
 		return err
 	}
 

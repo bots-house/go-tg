@@ -6,6 +6,7 @@ import (
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 )
 
 type PostInput struct {
@@ -40,6 +41,7 @@ func (srv *Service) CreatePost(ctx context.Context, user *core.User, in *PostInp
 		}
 
 		lot.Status = core.LotStatusScheduled
+		lot.ScheduledAt = null.TimeFrom(in.ScheduledAt)
 		if err := srv.Lot.Update(ctx, lot); err != nil {
 			return errors.Wrap(err, "update lot")
 		}

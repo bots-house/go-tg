@@ -41,22 +41,20 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
-    # services:
-    #   postgres:
-    #     image: postgres:12
-
-    #     env:
-    #       POSTGRES_USER: brz
-    #       POSTGRES_PASSWORD: brz
-    #       POSTGRES_DB: brz
-    #     ports:
-    #       - 5432/tcp
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: brz
+          POSTGRES_PASSWORD: brz
+          POSTGRES_DB: brz
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -81,6 +79,13 @@ jobs:
         run: go mod download
       - name: Try to build
         run: go build
+      - name: Run unit tests
+        run: go test -tags unit  ./... -v
+      - name: Run integration tests
+        env:
+          BRZ_TEST_DATABASE: postgres://brz:brz@localhost:${{ job.services.postgres.ports[5432] }}/brz?sslmode=disable
+        run: go test -tags integration  ./... -v
+
         # - name: Try to run
         # run: ./birzzha
         # env:

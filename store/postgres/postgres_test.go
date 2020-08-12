@@ -1,6 +1,9 @@
+//+build integration
+
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -33,5 +36,9 @@ func newPostgres(t *testing.T) *Postgres {
 		db.Close()
 	})
 
-	return NewPostgres(db)
+	postgre := NewPostgres(db)
+	if err := postgre.migrator.Up(context.Background()); err != nil {
+		t.Fatalf("failed to run migrations due to %v", err)
+	}
+	return postgre
 }

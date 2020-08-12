@@ -1412,6 +1412,90 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     
+    get:
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: Лимит.
+          required: False
+        - in: query
+          name: offset
+          type: integer
+          description: Офсет.
+          required: False
+
+      summary: Get Posts
+      description: Получить список постов.
+      operationId: adminGetPosts
+      tags: [admin]
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/PostListItem"
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+      
+  /admin/posts/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+        description: ID поста.
+    put:
+      summary: Update Post
+      description: Обновить данные поста.
+      operationId: adminUpdatePost
+      tags: [admin]
+
+      parameters:
+        - in: body
+          name: post
+          required: true
+          schema:
+            $ref: "#/definitions/InputPost"
+        
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/PostItem"
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+    
+    delete:
+      summary: Delete Post
+      description: Удалить пост.
+      operationId: adminDeletePost
+      tags: [admin]
+
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+    
   /admin/posting/preview:
     post:
       summary: Send Post Preview
@@ -3283,6 +3367,7 @@ definitions:
     required:
       - lot_id
       - text
+      - title
       - disable_web_page_preview
     properties:
       lot_id:
@@ -3291,6 +3376,9 @@ definitions:
       text:
         type: string
         description: Текст поста.
+      title:
+        type: string
+        description: Название поста.
       disable_web_page_preview:
         type: boolean
         description: Отключить или выключить web page preview.
@@ -3304,6 +3392,7 @@ definitions:
       - id
       - lot_id
       - text
+      - title
       - disable_web_page_preview
       - scheduled_at
       - published_at
@@ -3314,6 +3403,9 @@ definitions:
       lot_id:
         type: integer
         description: ID лота.
+      title:
+        type: string
+        description: Название поста.
       text:
         type: string
         description: Текст поста.
@@ -3326,6 +3418,79 @@ definitions:
       published_at:
         type: integer
         description: Время публикации поста.
+  
+  PostItem:
+    type: object
+    required:
+      - id
+      - lot
+      - text
+      - title
+      - disable_web_page_preview
+      - scheduled_at
+      - published_at
+    properties:
+      id:
+        type: integer
+        description: ID поста.
+      lot:
+        $ref: "#/definitions/PostLot"
+      text:
+        type: string
+        description: Текст поста.
+      title:
+        type: string
+        description: Название поста.
+      disable_web_page_preview:
+        type: boolean
+        description: Отключить или выключить web page preview.
+      scheduled_at:
+        type: integer
+        description: Время планирования поста.
+      published_at:
+        type: integer
+        description: Время публикации поста.
+  
+  PostLot:
+    type: object
+    required:
+      - id
+      - name
+      - username
+      - join_link
+      - avatar
+    properties:
+      id:
+        type: integer
+        description: ID лота.
+      name:
+        type: string
+        description: Название лота.
+      username:
+        type: string
+        description: Юзернейм.
+      join_link:
+        type: string
+        description: Ссылка.
+      avatar:
+        type: string
+        description: Аватарка.
+
+  
+  PostListItem:
+    type: object
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: Количество постов.
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/PostItem"
+      
   
   Health:
     type: object

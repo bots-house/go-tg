@@ -333,6 +333,48 @@ func init() {
       }
     },
     "/admin/posts": {
+      "get": {
+        "description": "Получить список постов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Posts",
+        "operationId": "adminGetPosts",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Лимит.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PostListItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Создать пост для публикации.",
         "tags": [
@@ -371,6 +413,80 @@ func init() {
           }
         }
       }
+    },
+    "/admin/posts/{id}": {
+      "put": {
+        "description": "Обновить данные поста.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Post",
+        "operationId": "adminUpdatePost",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PostItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удалить пост.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Post",
+        "operationId": "adminDeletePost",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID поста.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
     },
     "/admin/reviews": {
       "get": {
@@ -3437,13 +3553,14 @@ func init() {
       "required": [
         "lot_id",
         "text",
+        "title",
         "disable_web_page_preview"
       ],
       "properties": {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 2
+          "x-order": 3
         },
         "lot_id": {
           "description": "ID лота.",
@@ -3453,12 +3570,17 @@ func init() {
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 3
+          "x-order": 4
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
           "x-order": 1
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -4356,6 +4478,7 @@ func init() {
         "id",
         "lot_id",
         "text",
+        "title",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -4364,7 +4487,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 3
+          "x-order": 4
         },
         "id": {
           "description": "ID поста.",
@@ -4379,15 +4502,126 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "text": {
           "description": "Текст поста.",
+          "type": "string",
+          "x-order": 3
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
+    "PostItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "lot",
+        "text",
+        "title",
+        "disable_web_page_preview",
+        "scheduled_at",
+        "published_at"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID поста.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lot": {
+          "x-order": 1,
+          "$ref": "#/definitions/PostLot"
+        },
+        "published_at": {
+          "description": "Время публикации поста.",
+          "type": "integer",
+          "x-order": 6
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 2
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 3
+        }
+      }
+    },
+    "PostListItem": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PostItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Количество постов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "PostLot": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "username",
+        "join_link",
+        "avatar"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка.",
+          "type": "string",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Ссылка.",
+          "type": "string",
+          "x-order": 3
+        },
+        "name": {
+          "description": "Название лота.",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "Юзернейм.",
           "type": "string",
           "x-order": 2
         }
@@ -5098,6 +5332,48 @@ func init() {
       }
     },
     "/admin/posts": {
+      "get": {
+        "description": "Получить список постов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Posts",
+        "operationId": "adminGetPosts",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Лимит.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PostListItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Создать пост для публикации.",
         "tags": [
@@ -5136,6 +5412,80 @@ func init() {
           }
         }
       }
+    },
+    "/admin/posts/{id}": {
+      "put": {
+        "description": "Обновить данные поста.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Post",
+        "operationId": "adminUpdatePost",
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PostItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удалить пост.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Post",
+        "operationId": "adminDeletePost",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID поста.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
     },
     "/admin/reviews": {
       "get": {
@@ -8260,13 +8610,14 @@ func init() {
       "required": [
         "lot_id",
         "text",
+        "title",
         "disable_web_page_preview"
       ],
       "properties": {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 2
+          "x-order": 3
         },
         "lot_id": {
           "description": "ID лота.",
@@ -8276,12 +8627,17 @@ func init() {
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 3
+          "x-order": 4
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
           "x-order": 1
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -9205,6 +9561,7 @@ func init() {
         "id",
         "lot_id",
         "text",
+        "title",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -9213,7 +9570,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 3
+          "x-order": 4
         },
         "id": {
           "description": "ID поста.",
@@ -9228,15 +9585,126 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "text": {
           "description": "Текст поста.",
+          "type": "string",
+          "x-order": 3
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 2
+        }
+      }
+    },
+    "PostItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "lot",
+        "text",
+        "title",
+        "disable_web_page_preview",
+        "scheduled_at",
+        "published_at"
+      ],
+      "properties": {
+        "disable_web_page_preview": {
+          "description": "Отключить или выключить web page preview.",
+          "type": "boolean",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID поста.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "lot": {
+          "x-order": 1,
+          "$ref": "#/definitions/PostLot"
+        },
+        "published_at": {
+          "description": "Время публикации поста.",
+          "type": "integer",
+          "x-order": 6
+        },
+        "scheduled_at": {
+          "description": "Время планирования поста.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "text": {
+          "description": "Текст поста.",
+          "type": "string",
+          "x-order": 2
+        },
+        "title": {
+          "description": "Название поста.",
+          "type": "string",
+          "x-order": 3
+        }
+      }
+    },
+    "PostListItem": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PostItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Количество постов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
+    "PostLot": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "username",
+        "join_link",
+        "avatar"
+      ],
+      "properties": {
+        "avatar": {
+          "description": "Аватарка.",
+          "type": "string",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "join_link": {
+          "description": "Ссылка.",
+          "type": "string",
+          "x-order": 3
+        },
+        "name": {
+          "description": "Название лота.",
+          "type": "string",
+          "x-order": 1
+        },
+        "username": {
+          "description": "Юзернейм.",
           "type": "string",
           "x-order": 2
         }

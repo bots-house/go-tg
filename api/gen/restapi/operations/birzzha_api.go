@@ -68,6 +68,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminDeleteLotCanceledReasonHandler: admin.AdminDeleteLotCanceledReasonHandlerFunc(func(params admin.AdminDeleteLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteLotCanceledReason has not yet been implemented")
 		}),
+		AdminAdminDeletePostHandler: admin.AdminDeletePostHandlerFunc(func(params admin.AdminDeletePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeletePost has not yet been implemented")
+		}),
 		AdminAdminDeleteReviewHandler: admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
 		}),
@@ -86,6 +89,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminGetPostTextHandler: admin.AdminGetPostTextHandlerFunc(func(params admin.AdminGetPostTextParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetPostText has not yet been implemented")
 		}),
+		AdminAdminGetPostsHandler: admin.AdminGetPostsHandlerFunc(func(params admin.AdminGetPostsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetPosts has not yet been implemented")
+		}),
 		AdminAdminGetReviewsHandler: admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
 		}),
@@ -103,6 +109,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		AdminAdminUpdateLotCanceledReasonHandler: admin.AdminUpdateLotCanceledReasonHandlerFunc(func(params admin.AdminUpdateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateLotCanceledReason has not yet been implemented")
+		}),
+		AdminAdminUpdatePostHandler: admin.AdminUpdatePostHandlerFunc(func(params admin.AdminUpdatePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdatePost has not yet been implemented")
 		}),
 		AdminAdminUpdateReviewHandler: admin.AdminUpdateReviewHandlerFunc(func(params admin.AdminUpdateReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateReview has not yet been implemented")
@@ -280,6 +289,8 @@ type BirzzhaAPI struct {
 	AdminAdminDeclineLotHandler admin.AdminDeclineLotHandler
 	// AdminAdminDeleteLotCanceledReasonHandler sets the operation handler for the admin delete lot canceled reason operation
 	AdminAdminDeleteLotCanceledReasonHandler admin.AdminDeleteLotCanceledReasonHandler
+	// AdminAdminDeletePostHandler sets the operation handler for the admin delete post operation
+	AdminAdminDeletePostHandler admin.AdminDeletePostHandler
 	// AdminAdminDeleteReviewHandler sets the operation handler for the admin delete review operation
 	AdminAdminDeleteReviewHandler admin.AdminDeleteReviewHandler
 	// AdminAdminDeleteTopicHandler sets the operation handler for the admin delete topic operation
@@ -292,6 +303,8 @@ type BirzzhaAPI struct {
 	AdminAdminGetLotsHandler admin.AdminGetLotsHandler
 	// AdminAdminGetPostTextHandler sets the operation handler for the admin get post text operation
 	AdminAdminGetPostTextHandler admin.AdminGetPostTextHandler
+	// AdminAdminGetPostsHandler sets the operation handler for the admin get posts operation
+	AdminAdminGetPostsHandler admin.AdminGetPostsHandler
 	// AdminAdminGetReviewsHandler sets the operation handler for the admin get reviews operation
 	AdminAdminGetReviewsHandler admin.AdminGetReviewsHandler
 	// AdminAdminGetSettingsHandler sets the operation handler for the admin get settings operation
@@ -304,6 +317,8 @@ type BirzzhaAPI struct {
 	AdminAdminUpdateLotHandler admin.AdminUpdateLotHandler
 	// AdminAdminUpdateLotCanceledReasonHandler sets the operation handler for the admin update lot canceled reason operation
 	AdminAdminUpdateLotCanceledReasonHandler admin.AdminUpdateLotCanceledReasonHandler
+	// AdminAdminUpdatePostHandler sets the operation handler for the admin update post operation
+	AdminAdminUpdatePostHandler admin.AdminUpdatePostHandler
 	// AdminAdminUpdateReviewHandler sets the operation handler for the admin update review operation
 	AdminAdminUpdateReviewHandler admin.AdminUpdateReviewHandler
 	// AdminAdminUpdateSettingsChannelHandler sets the operation handler for the admin update settings channel operation
@@ -468,6 +483,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminDeleteLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteLotCanceledReasonHandler")
 	}
+	if o.AdminAdminDeletePostHandler == nil {
+		unregistered = append(unregistered, "admin.AdminDeletePostHandler")
+	}
 	if o.AdminAdminDeleteReviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteReviewHandler")
 	}
@@ -486,6 +504,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminGetPostTextHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetPostTextHandler")
 	}
+	if o.AdminAdminGetPostsHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetPostsHandler")
+	}
 	if o.AdminAdminGetReviewsHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetReviewsHandler")
 	}
@@ -503,6 +524,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminUpdateLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateLotCanceledReasonHandler")
+	}
+	if o.AdminAdminUpdatePostHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdatePostHandler")
 	}
 	if o.AdminAdminUpdateReviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateReviewHandler")
@@ -741,6 +765,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
+	o.handlers["DELETE"]["/admin/posts/{id}"] = admin.NewAdminDeletePost(o.context, o.AdminAdminDeletePostHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
 	o.handlers["DELETE"]["/admin/reviews/{id}"] = admin.NewAdminDeleteReview(o.context, o.AdminAdminDeleteReviewHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
@@ -765,6 +793,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/admin/posts"] = admin.NewAdminGetPosts(o.context, o.AdminAdminGetPostsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/admin/reviews"] = admin.NewAdminGetReviews(o.context, o.AdminAdminGetReviewsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -786,6 +818,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/admin/settings/lot-canceled-reason/{id}"] = admin.NewAdminUpdateLotCanceledReason(o.context, o.AdminAdminUpdateLotCanceledReasonHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/posts/{id}"] = admin.NewAdminUpdatePost(o.context, o.AdminAdminUpdatePostHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

@@ -583,12 +583,7 @@ func (lsq *LotStoreQuery) SortBy(field core.LotField, typ store.SortType) core.L
 		orderBy = dal.LotColumns.ScheduledAt
 	}
 
-	switch typ {
-	case store.SortTypeAsc:
-		orderBy += " ASC"
-	case store.SortTypeDesc:
-		orderBy += " DESC"
-	}
+	orderBy += store.SortTypeString(typ)
 
 	lsq.mods = append(lsq.mods, qm.OrderBy(orderBy))
 

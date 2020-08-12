@@ -350,6 +350,7 @@ func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identit
 		LotID:                 core.LotID(swag.Int64Value(params.Post.LotID)),
 		Text:                  swag.StringValue(params.Post.Text),
 		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
+		Title:                 swag.StringValue(params.Post.Title),
 	}
 	if params.Post.ScheduledAt != 0 {
 		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)
@@ -365,4 +366,54 @@ func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identit
 		return adminops.NewAdminCreatePostInternalServerError().WithPayload(models.NewInternalServerError(err))
 	}
 	return adminops.NewAdminCreatePostCreated().WithPayload(models.NewPost(result))
+}
+
+func (h *Handler) adminUpdatePost(params adminops.AdminUpdatePostParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	in := &admin.PostInput{
+		LotID:                 core.LotID(swag.Int64Value(params.Post.LotID)),
+		Text:                  swag.StringValue(params.Post.Text),
+		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
+		Title:                 swag.StringValue(params.Post.Title),
+	}
+	if params.Post.ScheduledAt != 0 {
+		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)
+	} else {
+		in.ScheduledAt = time.Now()
+	}
+
+	result, err := h.Admin.UpdatePost(ctx, identity.GetUser(), core.PostID(int(params.ID)), in)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdatePostBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdatePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdatePostOK().WithPayload(models.NewPostItem(h.Storage, result))
+}
+
+func (h *Handler) adminDeletePost(params adminops.AdminDeletePostParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+	id := core.PostID(int(params.ID))
+
+	if err := h.Admin.DeletePost(ctx, identity.GetUser(), id); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminDeletePostBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminDeletePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminDeletePostNoContent()
+}
+
+func (h *Handler) adminGetPosts(params adminops.AdminGetPostsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.GetPosts(ctx, identity.GetUser(), int(swag.Int64Value(params.Limit)), int(swag.Int64Value(params.Offset)))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetPostsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetPostsInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminGetPostsOK().WithPayload(models.NewFullPost(h.Storage, result))
 }

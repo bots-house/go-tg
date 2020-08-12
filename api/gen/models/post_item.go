@@ -12,26 +12,26 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// Post post
+// PostItem post item
 //
-// swagger:model Post
-type Post struct {
+// swagger:model PostItem
+type PostItem struct {
 
 	// ID поста.
 	// Required: true
 	ID *int64 `json:"id"`
 
-	// ID лота.
+	// lot
 	// Required: true
-	LotID *int64 `json:"lot_id"`
-
-	// Название поста.
-	// Required: true
-	Title *string `json:"title"`
+	Lot *PostLot `json:"lot"`
 
 	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`
+
+	// Название поста.
+	// Required: true
+	Title *string `json:"title"`
 
 	// Отключить или выключить web page preview.
 	// Required: true
@@ -46,23 +46,23 @@ type Post struct {
 	PublishedAt *int64 `json:"published_at"`
 }
 
-// Validate validates this post
-func (m *Post) Validate(formats strfmt.Registry) error {
+// Validate validates this post item
+func (m *PostItem) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateLotID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateTitle(formats); err != nil {
+	if err := m.validateLot(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateText(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTitle(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -84,7 +84,7 @@ func (m *Post) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Post) validateID(formats strfmt.Registry) error {
+func (m *PostItem) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
@@ -93,25 +93,25 @@ func (m *Post) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Post) validateLotID(formats strfmt.Registry) error {
+func (m *PostItem) validateLot(formats strfmt.Registry) error {
 
-	if err := validate.Required("lot_id", "body", m.LotID); err != nil {
+	if err := validate.Required("lot", "body", m.Lot); err != nil {
 		return err
+	}
+
+	if m.Lot != nil {
+		if err := m.Lot.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("lot")
+			}
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (m *Post) validateTitle(formats strfmt.Registry) error {
-
-	if err := validate.Required("title", "body", m.Title); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Post) validateText(formats strfmt.Registry) error {
+func (m *PostItem) validateText(formats strfmt.Registry) error {
 
 	if err := validate.Required("text", "body", m.Text); err != nil {
 		return err
@@ -120,7 +120,16 @@ func (m *Post) validateText(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Post) validateDisableWebPagePreview(formats strfmt.Registry) error {
+func (m *PostItem) validateTitle(formats strfmt.Registry) error {
+
+	if err := validate.Required("title", "body", m.Title); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *PostItem) validateDisableWebPagePreview(formats strfmt.Registry) error {
 
 	if err := validate.Required("disable_web_page_preview", "body", m.DisableWebPagePreview); err != nil {
 		return err
@@ -129,7 +138,7 @@ func (m *Post) validateDisableWebPagePreview(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Post) validateScheduledAt(formats strfmt.Registry) error {
+func (m *PostItem) validateScheduledAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("scheduled_at", "body", m.ScheduledAt); err != nil {
 		return err
@@ -138,7 +147,7 @@ func (m *Post) validateScheduledAt(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Post) validatePublishedAt(formats strfmt.Registry) error {
+func (m *PostItem) validatePublishedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("published_at", "body", m.PublishedAt); err != nil {
 		return err
@@ -148,7 +157,7 @@ func (m *Post) validatePublishedAt(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *Post) MarshalBinary() ([]byte, error) {
+func (m *PostItem) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -156,8 +165,8 @@ func (m *Post) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Post) UnmarshalBinary(b []byte) error {
-	var res Post
+func (m *PostItem) UnmarshalBinary(b []byte) error {
+	var res PostItem
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

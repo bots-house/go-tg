@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml919893579 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml913525896 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -87,6 +87,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation admin.AdminDeleteLotCanceledReason has not yet been implemented")
 		})
 	}
+	if api.AdminAdminDeletePostHandler == nil {
+		api.AdminAdminDeletePostHandler = admin.AdminDeletePostHandlerFunc(func(params admin.AdminDeletePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeletePost has not yet been implemented")
+		})
+	}
 	if api.AdminAdminDeleteReviewHandler == nil {
 		api.AdminAdminDeleteReviewHandler = admin.AdminDeleteReviewHandlerFunc(func(params admin.AdminDeleteReviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteReview has not yet been implemented")
@@ -117,6 +122,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation admin.AdminGetPostText has not yet been implemented")
 		})
 	}
+	if api.AdminAdminGetPostsHandler == nil {
+		api.AdminAdminGetPostsHandler = admin.AdminGetPostsHandlerFunc(func(params admin.AdminGetPostsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetPosts has not yet been implemented")
+		})
+	}
 	if api.AdminAdminGetReviewsHandler == nil {
 		api.AdminAdminGetReviewsHandler = admin.AdminGetReviewsHandlerFunc(func(params admin.AdminGetReviewsParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetReviews has not yet been implemented")
@@ -145,6 +155,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminUpdateLotCanceledReasonHandler == nil {
 		api.AdminAdminUpdateLotCanceledReasonHandler = admin.AdminUpdateLotCanceledReasonHandlerFunc(func(params admin.AdminUpdateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateLotCanceledReason has not yet been implemented")
+		})
+	}
+	if api.AdminAdminUpdatePostHandler == nil {
+		api.AdminAdminUpdatePostHandler = admin.AdminUpdatePostHandlerFunc(func(params admin.AdminUpdatePostParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdatePost has not yet been implemented")
 		})
 	}
 	if api.AdminAdminUpdateReviewHandler == nil {

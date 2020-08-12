@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/bots-house/birzzha/store"
 	"github.com/volatiletech/null/v8"
 )
 
@@ -21,6 +22,9 @@ type Post struct {
 	// Text of post
 	Text string
 
+	// Title of post
+	Title string
+
 	// Inline buttons of post
 	Buttons PostButtons
 
@@ -37,12 +41,14 @@ type Post struct {
 func NewPost(
 	lotID LotID,
 	text string,
+	title string,
 	disableWebPagePreview bool,
 	scheduledAt time.Time,
 ) *Post {
 	return &Post{
 		LotID:                 lotID,
 		Text:                  text,
+		Title:                 title,
 		DisableWebPagePreview: disableWebPagePreview,
 		ScheduledAt:           scheduledAt,
 		Buttons:               PostButtons{Like: true},
@@ -67,6 +73,44 @@ type PostButtons struct {
 	Like bool
 }
 
+type PostField int8
+
+const (
+	PostFieldScheduledAt PostField = iota + 1
+)
+
+var (
+	stringToPostField = map[string]PostField{
+		"scheduled_at": PostFieldScheduledAt,
+	}
+
+	postFieldToString = mirrorStringToPostField(stringToPostField)
+)
+
+func mirrorStringToPostField(in map[string]PostField) map[PostField]string {
+	result := make(map[PostField]string, len(in))
+
+	for k, v := range in {
+		result[v] = k
+	}
+
+	return result
+}
+
+var ErrInvalidPostField = NewError("invalid_post_field", "invalid post field")
+
+func ParsePostField(v string) (PostField, error) {
+	f, ok := stringToPostField[v]
+	if !ok {
+		return PostField(-1), ErrInvalidPostField
+	}
+	return f, nil
+}
+
+func (pf PostField) String() string {
+	return postFieldToString[pf]
+}
+
 type PostStore interface {
 	// Add post to store
 	Add(ctx context.Context, post *Post) error
@@ -74,6 +118,20 @@ type PostStore interface {
 	// Update post in store
 	Update(ctx context.Context, post *Post) error
 
+	// Delete post from store
+	Delete(ctx context.Context, id PostID) error
+
 	// Pull returns expired, not published scheduled posts
 	Pull(ctx context.Context) (PostSlice, error)
+
+	Query() PostStoreQuery
+}
+
+type PostStoreQuery interface {
+	ID(ids ...PostID) PostStoreQuery
+	Limit(limit int) PostStoreQuery
+	Offset(offset int) PostStoreQuery
+	SortBy(field PostField, typ store.SortType) PostStoreQuery
+	One(ctx context.Context) (*Post, error)
+	All(ctx context.Context) (PostSlice, error)
 }

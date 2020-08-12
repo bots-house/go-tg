@@ -25,6 +25,10 @@ type InputPost struct {
 	// Required: true
 	Text *string `json:"text"`
 
+	// Название поста.
+	// Required: true
+	Title *string `json:"title"`
+
 	// Отключить или выключить web page preview.
 	// Required: true
 	DisableWebPagePreview *bool `json:"disable_web_page_preview"`
@@ -42,6 +46,10 @@ func (m *InputPost) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateText(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTitle(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -67,6 +75,15 @@ func (m *InputPost) validateLotID(formats strfmt.Registry) error {
 func (m *InputPost) validateText(formats strfmt.Registry) error {
 
 	if err := validate.Required("text", "body", m.Text); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *InputPost) validateTitle(formats strfmt.Registry) error {
+
+	if err := validate.Required("title", "body", m.Title); err != nil {
 		return err
 	}
 

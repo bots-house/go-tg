@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"time"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/store"
 	"github.com/bots-house/birzzha/store/postgres/dal"
 	"github.com/bots-house/birzzha/store/postgres/shared"
 	"github.com/pkg/errors"
@@ -29,6 +31,7 @@ func (store *PostStore) toRow(post *core.Post) (*dal.Post, error) {
 		LotID:                 int(post.LotID),
 		Text:                  post.Text,
 		Buttons:               null.JSONFrom(buttons),
+		Title:                 post.Title,
 		ScheduledAt:           post.ScheduledAt,
 		PublishedAt:           post.PublishedAt,
 		DisableWebPagePreview: post.DisableWebPagePreview,
@@ -46,6 +49,7 @@ func (store *PostStore) fromRow(row *dal.Post) (*core.Post, error) {
 		ID:                    core.PostID(row.ID),
 		LotID:                 core.LotID(row.LotID),
 		Text:                  row.Text,
+		Title:                 row.Title,
 		Buttons:               buttons,
 		ScheduledAt:           row.ScheduledAt,
 		PublishedAt:           row.PublishedAt,
@@ -101,6 +105,18 @@ func (store *PostStore) Update(ctx context.Context, post *core.Post) error {
 	return nil
 }
 
+func (store *PostStore) Delete(ctx context.Context, id core.PostID) error {
+	rows, err := (&dal.Post{ID: int(id)}).Delete(ctx, shared.GetExecutorOrDefault(ctx, store.ContextExecutor))
+	if err != nil {
+		return errors.Wrap(err, "delete query")
+	}
+
+	if rows == 0 {
+		return core.ErrPostNotFound
+	}
+	return nil
+}
+
 func (store *PostStore) Pull(ctx context.Context) (core.PostSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
 
@@ -114,4 +130,69 @@ func (store *PostStore) Pull(ctx context.Context) (core.PostSlice, error) {
 	}
 
 	return store.fromRowSlice(rows)
+}
+
+func (store *PostStore) Query() core.PostStoreQuery {
+	return &PostStoreQuery{store: store}
+}
+
+type PostStoreQuery struct {
+	mods  []qm.QueryMod
+	store *PostStore
+}
+
+func (psq *PostStoreQuery) ID(ids ...core.PostID) core.PostStoreQuery {
+	idsInt := make([]int, len(ids))
+	for i, id := range ids {
+		idsInt[i] = int(id)
+	}
+
+	psq.mods = append(psq.mods, dal.PostWhere.ID.IN(idsInt))
+	return psq
+}
+
+func (psq *PostStoreQuery) SortBy(field core.PostField, typ store.SortType) core.PostStoreQuery {
+	var orderBy string
+
+	if field == core.PostFieldScheduledAt {
+		orderBy = dal.PostColumns.ScheduledAt
+	}
+
+	orderBy += store.SortTypeString(typ)
+
+	psq.mods = append(psq.mods, qm.OrderBy(orderBy))
+	return psq
+}
+
+func (psq *PostStoreQuery) Offset(v int) core.PostStoreQuery {
+	psq.mods = append(psq.mods, qm.Offset(v))
+	return psq
+}
+
+func (psq *PostStoreQuery) Limit(v int) core.PostStoreQuery {
+	psq.mods = append(psq.mods, qm.Limit(v))
+	return psq
+}
+
+func (psq *PostStoreQuery) One(ctx context.Context) (*core.Post, error) {
+	executor := shared.GetExecutorOrDefault(ctx, psq.store.ContextExecutor)
+
+	row, err := dal.Posts(psq.mods...).One(ctx, executor)
+	if err == sql.ErrNoRows {
+		return nil, core.ErrPostNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	return psq.store.fromRow(row)
+}
+
+func (psq *PostStoreQuery) All(ctx context.Context) (core.PostSlice, error) {
+	executor := shared.GetExecutorOrDefault(ctx, psq.store.ContextExecutor)
+	rows, err := dal.Posts(psq.mods...).All(ctx, executor)
+	if err != nil {
+		return nil, err
+	}
+
+	return psq.store.fromRowSlice(rows)
 }

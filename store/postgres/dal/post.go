@@ -31,6 +31,7 @@ type Post struct {
 	DisableWebPagePreview bool      `boil:"disable_web_page_preview" json:"disable_web_page_preview" toml:"disable_web_page_preview" yaml:"disable_web_page_preview"`
 	ScheduledAt           time.Time `boil:"scheduled_at" json:"scheduled_at" toml:"scheduled_at" yaml:"scheduled_at"`
 	PublishedAt           null.Time `boil:"published_at" json:"published_at,omitempty" toml:"published_at" yaml:"published_at,omitempty"`
+	Title                 string    `boil:"title" json:"title" toml:"title" yaml:"title"`
 
 	R *postR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L postL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -44,6 +45,7 @@ var PostColumns = struct {
 	DisableWebPagePreview string
 	ScheduledAt           string
 	PublishedAt           string
+	Title                 string
 }{
 	ID:                    "id",
 	LotID:                 "lot_id",
@@ -52,6 +54,7 @@ var PostColumns = struct {
 	DisableWebPagePreview: "disable_web_page_preview",
 	ScheduledAt:           "scheduled_at",
 	PublishedAt:           "published_at",
+	Title:                 "title",
 }
 
 // Generated where
@@ -64,6 +67,7 @@ var PostWhere = struct {
 	DisableWebPagePreview whereHelperbool
 	ScheduledAt           whereHelpertime_Time
 	PublishedAt           whereHelpernull_Time
+	Title                 whereHelperstring
 }{
 	ID:                    whereHelperint{field: "\"post\".\"id\""},
 	LotID:                 whereHelperint{field: "\"post\".\"lot_id\""},
@@ -72,6 +76,7 @@ var PostWhere = struct {
 	DisableWebPagePreview: whereHelperbool{field: "\"post\".\"disable_web_page_preview\""},
 	ScheduledAt:           whereHelpertime_Time{field: "\"post\".\"scheduled_at\""},
 	PublishedAt:           whereHelpernull_Time{field: "\"post\".\"published_at\""},
+	Title:                 whereHelperstring{field: "\"post\".\"title\""},
 }
 
 // PostRels is where relationship names are stored.
@@ -95,8 +100,8 @@ func (*postR) NewStruct() *postR {
 type postL struct{}
 
 var (
-	postAllColumns            = []string{"id", "lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at"}
-	postColumnsWithoutDefault = []string{"lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at"}
+	postAllColumns            = []string{"id", "lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title"}
+	postColumnsWithoutDefault = []string{"lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title"}
 	postColumnsWithDefault    = []string{"id"}
 	postPrimaryKeyColumns     = []string{"id"}
 )

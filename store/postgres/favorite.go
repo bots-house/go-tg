@@ -92,12 +92,7 @@ func (fsq *FavoriteStoreQuery) SortBy(field core.FavoriteField, typ store.SortTy
 		orderBy = dal.FavoriteColumns.CreatedAt
 	}
 
-	switch typ {
-	case store.SortTypeAsc:
-		orderBy += " ASC"
-	case store.SortTypeDesc:
-		orderBy += " DESC"
-	}
+	orderBy += store.SortTypeString(typ)
 
 	fsq.mods = append(fsq.mods, qm.OrderBy(orderBy))
 	return fsq

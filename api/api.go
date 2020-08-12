@@ -149,6 +149,9 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminDeleteLotCanceledReasonHandler = adminops.AdminDeleteLotCanceledReasonHandlerFunc(h.adminDeleteLotCanceledReason)
 
 	api.AdminAdminCreatePostHandler = adminops.AdminCreatePostHandlerFunc(h.adminCreatePost)
+	api.AdminAdminUpdatePostHandler = adminops.AdminUpdatePostHandlerFunc(h.adminUpdatePost)
+	api.AdminAdminDeletePostHandler = adminops.AdminDeletePostHandlerFunc(h.adminDeletePost)
+	api.AdminAdminGetPostsHandler = adminops.AdminGetPostsHandlerFunc(h.adminGetPosts)
 
 	// health
 	api.HealthGetHealthHandler = healthops.GetHealthHandlerFunc(h.getHealth)

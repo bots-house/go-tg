@@ -15,6 +15,7 @@ func NewSettings(in *admin.FullSettings) *models.AdminSettings {
 			Change:      newMoney(in.Prices.Change),
 			Cashier:     swag.String(in.CashierUsername),
 		},
+		Garant: NewSettingsGarant(in.Settings),
 		Channel: &models.AdminSettingsChannel{
 			ID:             swag.Int64(in.Channel.PrivateID),
 			JoinLink:       swag.String(in.Channel.PrivateLink),

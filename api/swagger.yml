@@ -3223,7 +3223,10 @@ definitions:
       - topics
       - lot_canceled_reasons
       - landing
+      - garant
     properties:
+      garant:
+        $ref: "#/definitions/AdminSettingsGarant"
       prices:
         $ref: "#/definitions/AdminSettingsPrices"
       channel:

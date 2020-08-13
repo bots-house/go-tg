@@ -19,6 +19,10 @@ import (
 // swagger:model AdminSettings
 type AdminSettings struct {
 
+	// garant
+	// Required: true
+	Garant *AdminSettingsGarant `json:"garant"`
+
 	// prices
 	// Required: true
 	Prices *AdminSettingsPrices `json:"prices"`
@@ -44,6 +48,10 @@ type AdminSettings struct {
 func (m *AdminSettings) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateGarant(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validatePrices(formats); err != nil {
 		res = append(res, err)
 	}
@@ -67,6 +75,24 @@ func (m *AdminSettings) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *AdminSettings) validateGarant(formats strfmt.Registry) error {
+
+	if err := validate.Required("garant", "body", m.Garant); err != nil {
+		return err
+	}
+
+	if m.Garant != nil {
+		if err := m.Garant.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("garant")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

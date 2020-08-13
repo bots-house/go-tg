@@ -2906,15 +2906,20 @@ func init() {
         "channel",
         "topics",
         "lot_canceled_reasons",
-        "landing"
+        "landing",
+        "garant"
       ],
       "properties": {
         "channel": {
-          "x-order": 1,
+          "x-order": 2,
           "$ref": "#/definitions/AdminSettingsChannel"
         },
+        "garant": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsGarant"
+        },
         "landing": {
-          "x-order": 4,
+          "x-order": 5,
           "$ref": "#/definitions/AdminSettingsLanding"
         },
         "lot_canceled_reasons": {
@@ -2922,10 +2927,10 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotCanceledReason"
           },
-          "x-order": 3
+          "x-order": 4
         },
         "prices": {
-          "x-order": 0,
+          "x-order": 1,
           "$ref": "#/definitions/AdminSettingsPrices"
         },
         "topics": {
@@ -2933,7 +2938,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/AdminTopic"
           },
-          "x-order": 2
+          "x-order": 3
         }
       }
     },
@@ -8062,15 +8067,20 @@ func init() {
         "channel",
         "topics",
         "lot_canceled_reasons",
-        "landing"
+        "landing",
+        "garant"
       ],
       "properties": {
         "channel": {
-          "x-order": 1,
+          "x-order": 2,
           "$ref": "#/definitions/AdminSettingsChannel"
         },
+        "garant": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsGarant"
+        },
         "landing": {
-          "x-order": 4,
+          "x-order": 5,
           "$ref": "#/definitions/AdminSettingsLanding"
         },
         "lot_canceled_reasons": {
@@ -8078,10 +8088,10 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotCanceledReason"
           },
-          "x-order": 3
+          "x-order": 4
         },
         "prices": {
-          "x-order": 0,
+          "x-order": 1,
           "$ref": "#/definitions/AdminSettingsPrices"
         },
         "topics": {
@@ -8089,7 +8099,7 @@ func init() {
           "items": {
             "$ref": "#/definitions/AdminTopic"
           },
-          "x-order": 2
+          "x-order": 3
         }
       }
     },

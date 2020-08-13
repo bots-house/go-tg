@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Rhymond/go-money v1.0.1
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/aws/aws-sdk-go v1.34.2
+	github.com/aws/aws-sdk-go v1.34.3
 	github.com/benbjohnson/clock v1.0.3
 	github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a
 	github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab

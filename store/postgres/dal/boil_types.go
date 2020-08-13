@@ -83,6 +83,7 @@ const (
 
 // Enum values for joined_from
 const (
-	JoinedFromSite = "site"
-	JoinedFromBot  = "bot"
+	JoinedFromSite   = "site"
+	JoinedFromBot    = "bot"
+	JoinedFromOldBot = "old_bot"
 )

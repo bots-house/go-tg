@@ -18,16 +18,14 @@ import (
 type InputPost struct {
 
 	// ID лота.
-	// Required: true
-	LotID *int64 `json:"lot_id"`
+	LotID int64 `json:"lot_id,omitempty"`
 
 	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`
 
 	// Название поста.
-	// Required: true
-	Title *string `json:"title"`
+	Title string `json:"title,omitempty"`
 
 	// Отключить или выключить web page preview.
 	// Required: true
@@ -41,15 +39,7 @@ type InputPost struct {
 func (m *InputPost) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateLotID(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateText(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateTitle(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -63,27 +53,9 @@ func (m *InputPost) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *InputPost) validateLotID(formats strfmt.Registry) error {
-
-	if err := validate.Required("lot_id", "body", m.LotID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *InputPost) validateText(formats strfmt.Registry) error {
 
 	if err := validate.Required("text", "body", m.Text); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *InputPost) validateTitle(formats strfmt.Registry) error {
-
-	if err := validate.Required("title", "body", m.Title); err != nil {
 		return err
 	}
 

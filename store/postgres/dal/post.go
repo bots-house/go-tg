@@ -24,14 +24,14 @@ import (
 
 // Post is an object representing the database table.
 type Post struct {
-	ID                    int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	LotID                 int       `boil:"lot_id" json:"lot_id" toml:"lot_id" yaml:"lot_id"`
-	Text                  string    `boil:"text" json:"text" toml:"text" yaml:"text"`
-	Buttons               null.JSON `boil:"buttons" json:"buttons,omitempty" toml:"buttons" yaml:"buttons,omitempty"`
-	DisableWebPagePreview bool      `boil:"disable_web_page_preview" json:"disable_web_page_preview" toml:"disable_web_page_preview" yaml:"disable_web_page_preview"`
-	ScheduledAt           time.Time `boil:"scheduled_at" json:"scheduled_at" toml:"scheduled_at" yaml:"scheduled_at"`
-	PublishedAt           null.Time `boil:"published_at" json:"published_at,omitempty" toml:"published_at" yaml:"published_at,omitempty"`
-	Title                 string    `boil:"title" json:"title" toml:"title" yaml:"title"`
+	ID                    int         `boil:"id" json:"id" toml:"id" yaml:"id"`
+	LotID                 null.Int    `boil:"lot_id" json:"lot_id,omitempty" toml:"lot_id" yaml:"lot_id,omitempty"`
+	Text                  string      `boil:"text" json:"text" toml:"text" yaml:"text"`
+	Buttons               null.JSON   `boil:"buttons" json:"buttons,omitempty" toml:"buttons" yaml:"buttons,omitempty"`
+	DisableWebPagePreview bool        `boil:"disable_web_page_preview" json:"disable_web_page_preview" toml:"disable_web_page_preview" yaml:"disable_web_page_preview"`
+	ScheduledAt           time.Time   `boil:"scheduled_at" json:"scheduled_at" toml:"scheduled_at" yaml:"scheduled_at"`
+	PublishedAt           null.Time   `boil:"published_at" json:"published_at,omitempty" toml:"published_at" yaml:"published_at,omitempty"`
+	Title                 null.String `boil:"title" json:"title,omitempty" toml:"title" yaml:"title,omitempty"`
 
 	R *postR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L postL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -61,22 +61,22 @@ var PostColumns = struct {
 
 var PostWhere = struct {
 	ID                    whereHelperint
-	LotID                 whereHelperint
+	LotID                 whereHelpernull_Int
 	Text                  whereHelperstring
 	Buttons               whereHelpernull_JSON
 	DisableWebPagePreview whereHelperbool
 	ScheduledAt           whereHelpertime_Time
 	PublishedAt           whereHelpernull_Time
-	Title                 whereHelperstring
+	Title                 whereHelpernull_String
 }{
 	ID:                    whereHelperint{field: "\"post\".\"id\""},
-	LotID:                 whereHelperint{field: "\"post\".\"lot_id\""},
+	LotID:                 whereHelpernull_Int{field: "\"post\".\"lot_id\""},
 	Text:                  whereHelperstring{field: "\"post\".\"text\""},
 	Buttons:               whereHelpernull_JSON{field: "\"post\".\"buttons\""},
 	DisableWebPagePreview: whereHelperbool{field: "\"post\".\"disable_web_page_preview\""},
 	ScheduledAt:           whereHelpertime_Time{field: "\"post\".\"scheduled_at\""},
 	PublishedAt:           whereHelpernull_Time{field: "\"post\".\"published_at\""},
-	Title:                 whereHelperstring{field: "\"post\".\"title\""},
+	Title:                 whereHelpernull_String{field: "\"post\".\"title\""},
 }
 
 // PostRels is where relationship names are stored.
@@ -228,7 +228,9 @@ func (postL) LoadLot(ctx context.Context, e boil.ContextExecutor, singular bool,
 		if object.R == nil {
 			object.R = &postR{}
 		}
-		args = append(args, object.LotID)
+		if !queries.IsNil(object.LotID) {
+			args = append(args, object.LotID)
+		}
 
 	} else {
 	Outer:
@@ -238,12 +240,14 @@ func (postL) LoadLot(ctx context.Context, e boil.ContextExecutor, singular bool,
 			}
 
 			for _, a := range args {
-				if a == obj.LotID {
+				if queries.Equal(a, obj.LotID) {
 					continue Outer
 				}
 			}
 
-			args = append(args, obj.LotID)
+			if !queries.IsNil(obj.LotID) {
+				args = append(args, obj.LotID)
+			}
 
 		}
 	}
@@ -293,7 +297,7 @@ func (postL) LoadLot(ctx context.Context, e boil.ContextExecutor, singular bool,
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if local.LotID == foreign.ID {
+			if queries.Equal(local.LotID, foreign.ID) {
 				local.R.Lot = foreign
 				if foreign.R == nil {
 					foreign.R = &lotR{}
@@ -334,7 +338,7 @@ func (o *Post) SetLot(ctx context.Context, exec boil.ContextExecutor, insert boo
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.LotID = related.ID
+	queries.Assign(&o.LotID, related.ID)
 	if o.R == nil {
 		o.R = &postR{
 			Lot: related,
@@ -351,6 +355,39 @@ func (o *Post) SetLot(ctx context.Context, exec boil.ContextExecutor, insert boo
 		related.R.Posts = append(related.R.Posts, o)
 	}
 
+	return nil
+}
+
+// RemoveLot relationship.
+// Sets o.R.Lot to nil.
+// Removes o from all passed in related items' relationships struct (Optional).
+func (o *Post) RemoveLot(ctx context.Context, exec boil.ContextExecutor, related *Lot) error {
+	var err error
+
+	queries.SetScanner(&o.LotID, nil)
+	if _, err = o.Update(ctx, exec, boil.Whitelist("lot_id")); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	if o.R != nil {
+		o.R.Lot = nil
+	}
+	if related == nil || related.R == nil {
+		return nil
+	}
+
+	for i, ri := range related.R.Posts {
+		if queries.Equal(o.LotID, ri.LotID) {
+			continue
+		}
+
+		ln := len(related.R.Posts)
+		if ln > 1 && i < ln-1 {
+			related.R.Posts[i] = related.R.Posts[ln-1]
+		}
+		related.R.Posts = related.R.Posts[:ln-1]
+		break
+	}
 	return nil
 }
 

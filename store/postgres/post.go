@@ -26,16 +26,20 @@ func (store *PostStore) toRow(post *core.Post) (*dal.Post, error) {
 		return nil, errors.Wrap(err, "marshal post buttons")
 	}
 
-	return &dal.Post{
+	row := &dal.Post{
 		ID:                    int(post.ID),
-		LotID:                 int(post.LotID),
 		Text:                  post.Text,
 		Buttons:               null.JSONFrom(buttons),
 		Title:                 post.Title,
 		ScheduledAt:           post.ScheduledAt,
 		PublishedAt:           post.PublishedAt,
 		DisableWebPagePreview: post.DisableWebPagePreview,
-	}, nil
+	}
+	if post.LotID != 0 {
+		row.LotID = null.IntFrom(int(post.LotID))
+	}
+
+	return row, nil
 }
 
 func (store *PostStore) fromRow(row *dal.Post) (*core.Post, error) {
@@ -45,16 +49,21 @@ func (store *PostStore) fromRow(row *dal.Post) (*core.Post, error) {
 		return nil, errors.Wrap(err, "unmarshal post buttons")
 	}
 
-	return &core.Post{
+	post := &core.Post{
 		ID:                    core.PostID(row.ID),
-		LotID:                 core.LotID(row.LotID),
 		Text:                  row.Text,
 		Title:                 row.Title,
 		Buttons:               buttons,
 		ScheduledAt:           row.ScheduledAt,
 		PublishedAt:           row.PublishedAt,
 		DisableWebPagePreview: row.DisableWebPagePreview,
-	}, nil
+	}
+
+	if row.LotID.Valid {
+		post.LotID = core.LotID(row.LotID.Int)
+	}
+
+	return post, nil
 }
 
 func (store *PostStore) fromRowSlice(rows dal.PostSlice) (core.PostSlice, error) {

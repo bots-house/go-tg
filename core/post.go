@@ -23,7 +23,7 @@ type Post struct {
 	Text string
 
 	// Title of post
-	Title string
+	Title null.String
 
 	// Inline buttons of post
 	Buttons PostButtons
@@ -41,7 +41,7 @@ type Post struct {
 func NewPost(
 	lotID LotID,
 	text string,
-	title string,
+	title null.String,
 	disableWebPagePreview bool,
 	scheduledAt time.Time,
 ) *Post {

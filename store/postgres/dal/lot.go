@@ -1238,7 +1238,7 @@ func (lotL) LoadPosts(ctx context.Context, e boil.ContextExecutor, singular bool
 			}
 
 			for _, a := range args {
-				if a == obj.ID {
+				if queries.Equal(a, obj.ID) {
 					continue Outer
 				}
 			}
@@ -1289,7 +1289,7 @@ func (lotL) LoadPosts(ctx context.Context, e boil.ContextExecutor, singular bool
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if local.ID == foreign.LotID {
+			if queries.Equal(local.ID, foreign.LotID) {
 				local.R.Posts = append(local.R.Posts, foreign)
 				if foreign.R == nil {
 					foreign.R = &postR{}
@@ -1720,7 +1720,7 @@ func (o *Lot) AddPosts(ctx context.Context, exec boil.ContextExecutor, insert bo
 	var err error
 	for _, rel := range related {
 		if insert {
-			rel.LotID = o.ID
+			queries.Assign(&rel.LotID, o.ID)
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -1741,7 +1741,7 @@ func (o *Lot) AddPosts(ctx context.Context, exec boil.ContextExecutor, insert bo
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			rel.LotID = o.ID
+			queries.Assign(&rel.LotID, o.ID)
 		}
 	}
 
@@ -1762,6 +1762,76 @@ func (o *Lot) AddPosts(ctx context.Context, exec boil.ContextExecutor, insert bo
 			rel.R.Lot = o
 		}
 	}
+	return nil
+}
+
+// SetPosts removes all previously related items of the
+// lot replacing them completely with the passed
+// in related items, optionally inserting them as new records.
+// Sets o.R.Lot's Posts accordingly.
+// Replaces o.R.Posts with related.
+// Sets related.R.Lot's Posts accordingly.
+func (o *Lot) SetPosts(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Post) error {
+	query := "update \"post\" set \"lot_id\" = null where \"lot_id\" = $1"
+	values := []interface{}{o.ID}
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, query)
+		fmt.Fprintln(writer, values)
+	}
+	_, err := exec.ExecContext(ctx, query, values...)
+	if err != nil {
+		return errors.Wrap(err, "failed to remove relationships before set")
+	}
+
+	if o.R != nil {
+		for _, rel := range o.R.Posts {
+			queries.SetScanner(&rel.LotID, nil)
+			if rel.R == nil {
+				continue
+			}
+
+			rel.R.Lot = nil
+		}
+
+		o.R.Posts = nil
+	}
+	return o.AddPosts(ctx, exec, insert, related...)
+}
+
+// RemovePosts relationships from objects passed in.
+// Removes related items from R.Posts (uses pointer comparison, removal does not keep order)
+// Sets related.R.Lot.
+func (o *Lot) RemovePosts(ctx context.Context, exec boil.ContextExecutor, related ...*Post) error {
+	var err error
+	for _, rel := range related {
+		queries.SetScanner(&rel.LotID, nil)
+		if rel.R != nil {
+			rel.R.Lot = nil
+		}
+		if _, err = rel.Update(ctx, exec, boil.Whitelist("lot_id")); err != nil {
+			return err
+		}
+	}
+	if o.R == nil {
+		return nil
+	}
+
+	for _, rel := range related {
+		for i, ri := range o.R.Posts {
+			if rel != ri {
+				continue
+			}
+
+			ln := len(o.R.Posts)
+			if ln > 1 && i < ln-1 {
+				o.R.Posts[i] = o.R.Posts[ln-1]
+			}
+			o.R.Posts = o.R.Posts[:ln-1]
+			break
+		}
+	}
+
 	return nil
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 )
 
 func (h *Handler) adminDeleteReview(params adminops.AdminDeleteReviewParams, identity *authz.Identity) middleware.Responder {
@@ -367,15 +368,17 @@ func (h *Handler) adminGetLot(params adminops.AdminGetLotParams, identity *authz
 func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	in := &admin.PostInput{
-		LotID:                 core.LotID(swag.Int64Value(params.Post.LotID)),
 		Text:                  swag.StringValue(params.Post.Text),
 		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
-		Title:                 swag.StringValue(params.Post.Title),
+		LotID:                 core.LotID(int(params.Post.LotID)),
 	}
 	if params.Post.ScheduledAt != 0 {
 		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)
 	} else {
 		in.ScheduledAt = time.Now()
+	}
+	if params.Post.Title != "" {
+		in.Title = null.StringFrom(params.Post.Title)
 	}
 
 	result, err := h.Admin.CreatePost(ctx, identity.GetUser(), in)
@@ -391,15 +394,17 @@ func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identit
 func (h *Handler) adminUpdatePost(params adminops.AdminUpdatePostParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	in := &admin.PostInput{
-		LotID:                 core.LotID(swag.Int64Value(params.Post.LotID)),
+		LotID:                 core.LotID(int(params.Post.LotID)),
 		Text:                  swag.StringValue(params.Post.Text),
 		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
-		Title:                 swag.StringValue(params.Post.Title),
 	}
 	if params.Post.ScheduledAt != 0 {
 		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)
 	} else {
 		in.ScheduledAt = time.Now()
+	}
+	if params.Post.Title != "" {
+		in.Title = null.StringFrom(params.Post.Title)
 	}
 
 	result, err := h.Admin.UpdatePost(ctx, identity.GetUser(), core.PostID(int(params.ID)), in)

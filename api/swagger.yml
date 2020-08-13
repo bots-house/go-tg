@@ -3460,9 +3460,7 @@ definitions:
   InputPost:
     type: object
     required:
-      - lot_id
       - text
-      - title
       - disable_web_page_preview
     properties:
       lot_id:
@@ -3518,9 +3516,9 @@ definitions:
     type: object
     required:
       - id
-      - lot
       - text
       - title
+      - lot
       - disable_web_page_preview
       - scheduled_at
       - published_at

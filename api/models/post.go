@@ -13,7 +13,7 @@ func NewPost(in *core.Post) *models.Post {
 		ID:                    swag.Int64(int64(in.ID)),
 		LotID:                 swag.Int64(int64(in.LotID)),
 		Text:                  swag.String(in.Text),
-		Title:                 swag.String(in.Title),
+		Title:                 nullStringToString(in.Title),
 		DisableWebPagePreview: swag.Bool(in.DisableWebPagePreview),
 		ScheduledAt:           timeToUnix(in.ScheduledAt),
 		PublishedAt:           nullTimeToUnix(in.PublishedAt),
@@ -24,21 +24,25 @@ func NewPostItem(s storage.Storage, in *admin.PostItem) *models.PostItem {
 	item := &models.PostItem{
 		ID:                    swag.Int64(int64(in.ID)),
 		Text:                  swag.String(in.Text),
-		Title:                 swag.String(in.Title),
+		Title:                 nullStringToString(in.Title),
 		DisableWebPagePreview: swag.Bool(in.DisableWebPagePreview),
 		ScheduledAt:           timeToUnix(in.ScheduledAt),
 		PublishedAt:           nullTimeToUnix(in.PublishedAt),
-		Lot: &models.PostLot{
-			ID:       swag.Int64(int64(in.LotID)),
-			Name:     swag.String(in.LotName),
-			Username: nullStringToString(in.Username),
-			JoinLink: nullStringToString(in.JoinLink),
-		},
 	}
 
-	if in.Avatar.Valid {
-		item.Lot.Avatar = swag.String(s.PublicURL(in.Avatar.String))
+	if in.Lot != nil {
+		item.Lot = &models.PostLot{
+			ID:       swag.Int64(int64(in.LotID)),
+			Name:     swag.String(in.Lot.Name),
+			Username: nullStringToString(in.Lot.Username),
+			JoinLink: nullStringToString(in.Lot.JoinLink),
+		}
+
+		if in.Lot.Avatar.Valid {
+			item.Lot.Avatar = swag.String(s.PublicURL(in.Lot.Avatar.String))
+		}
 	}
+
 	return item
 }
 

@@ -78,6 +78,15 @@ type SettingsPricesInput struct {
 	Cashier     string
 }
 
+type SettingsGarantInput struct {
+	Name                           string
+	Username                       string
+	ReviewsChannel                 string
+	Avatar                         string
+	PercentageDealOfDiscountPeriod float64
+	PercentageDeal                 float64
+}
+
 type SettingsChannelInput struct {
 	PrivateID      int64
 	PublicUsername string
@@ -126,6 +135,32 @@ func (srv *Service) UpdateSettingsPrice(ctx context.Context, user *core.User, in
 	settings.Prices.Change = input.Change
 
 	settings.CashierUsername = input.Cashier
+
+	if err := srv.Settings.Update(ctx, settings); err != nil {
+		return nil, errors.Wrap(err, "update settings")
+	}
+	return settings, nil
+}
+
+func (srv *Service) UpdateSettingsGarant(ctx context.Context, user *core.User, input *SettingsGarantInput) (*core.Settings, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return nil, err
+	}
+
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get settings")
+	}
+
+	settings.Garant.ReviewsChannel = input.ReviewsChannel
+	settings.Garant.Name = input.Name
+	settings.Garant.AvatarURL = null.NewString(input.Avatar, input.Avatar != "")
+	settings.Garant.Username = input.Username
+	settings.Garant.PercentageDeal = input.PercentageDeal
+	settings.Garant.PercentageDealDiscountPeriod = null.NewFloat64(input.PercentageDealOfDiscountPeriod, input.PercentageDealOfDiscountPeriod != 0)
+
+	settings.UpdatedAt = null.TimeFrom(time.Now())
+	settings.UpdatedBy = user.ID
 
 	if err := srv.Settings.Update(ctx, settings); err != nil {
 		return nil, errors.Wrap(err, "update settings")

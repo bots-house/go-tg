@@ -1543,6 +1543,33 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /admin/settings/garant:
+    put:
+      parameters:
+        - in: body
+          required: true
+          name: garant
+          description: гарант
+          schema:
+            $ref: "#/definitions/AdminSettingsGarantUpdate"
+      summary: Update Settings Garant
+      description: Обновления даных о гаранте
+      operationId: adminUpdateSettingsGarant
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminSettingsGarant"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /admin/settings/prices:
     put:
       parameters:
@@ -3071,6 +3098,65 @@ definitions:
         type: boolean
         description: True, если причина будет показана на странице лота (пока не используется)
 
+  AdminSettingsGarantUpdate:
+    type: object
+    required:
+      - name
+      - username
+      - reviews_channel
+      - percentage_deal
+    properties:
+      name:
+        type: string
+        description: имя гаранта
+      username:
+        type: string
+        description: username гаранта
+      reviews_channel:
+        type: string
+        description: username канала с отызывами
+      percentage_deal:
+        type: number
+        description: процент от сделки
+      percentage_deal_of_discount_period:
+        type: number
+        description: процент от сделки (на период скидки)
+      avatar_url:
+        type: string
+        format: url
+        description: ссылка на аватарку гаранта (может быть null)
+
+  AdminSettingsGarant:
+    type: object
+    required:
+      - name
+      - username
+      - reviews_channel
+      - percentage_deal
+      - percentage_deal_of_discount_period
+      - avatar_url
+    properties:
+      name:
+        type: string
+        description: имя гаранта
+      username:
+        type: string
+        description: username гаранта
+      reviews_channel:
+        type: string
+        description: username канала с отызывами
+      percentage_deal:
+        type: number
+        description: процент от сделки
+      percentage_deal_of_discount_period:
+        type: number
+        description: процент от сделки (на период скидки)
+      avatar_url:
+        type: string
+        format: url
+        description: ссылка на аватарку гаранта (может быть null)
+
+
   AdminSettingsPrices:
     type: object
     required:
@@ -3201,7 +3287,13 @@ definitions:
       - stats
       - channel
       - reviews
+      - application
+      - garant
     properties:
+      garant:
+        $ref: "#/definitions/AdminSettingsGarant"
+      application:
+        $ref: "#/definitions/Money"
       stats:
         $ref: "#/definitions/LandingStats"
       channel:

@@ -161,6 +161,26 @@ func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsP
 	return adminops.NewAdminUpdateSettingsPricesOK().WithPayload(models.NewSettingsPrices(result))
 }
 
+func (h *Handler) adminUpdateSettingsGarant(params adminops.AdminUpdateSettingsGarantParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.UpdateSettingsGarant(ctx, identity.User, &admin.SettingsGarantInput{
+		Name:                           swag.StringValue(params.Garant.Name),
+		Username:                       swag.StringValue(params.Garant.Username),
+		ReviewsChannel:                 swag.StringValue(params.Garant.ReviewsChannel),
+		Avatar:                         params.Garant.AvatarURL,
+		PercentageDealOfDiscountPeriod: params.Garant.PercentageDealOfDiscountPeriod,
+		PercentageDeal:                 swag.Float64Value(params.Garant.PercentageDeal),
+	})
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateSettingsGarantBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateSettingsGarantInternalServerError().WithPayload(models.NewInternalServerError(err))
+	}
+	return adminops.NewAdminUpdateSettingsGarantOK().WithPayload(models.NewSettingsGarant(result))
+}
+
 func (h *Handler) adminUpdateSettingsChannel(params adminops.AdminUpdateSettingsChannelParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 

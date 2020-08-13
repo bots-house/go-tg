@@ -42,6 +42,17 @@ func NewSettingsChannel(in *core.Settings) *models.AdminSettingsChannel {
 	}
 }
 
+func NewSettingsGarant(in *core.Settings) *models.AdminSettingsGarant {
+	return &models.AdminSettingsGarant{
+		Name:                           swag.String(in.Garant.Name),
+		Username:                       swag.String(in.Garant.Username),
+		ReviewsChannel:                 swag.String(in.Garant.ReviewsChannel),
+		AvatarURL:                      nullStringToString(in.Garant.AvatarURL),
+		PercentageDeal:                 swag.Float64(in.Garant.PercentageDeal),
+		PercentageDealOfDiscountPeriod: nullFloat64ToFloat64(in.Garant.PercentageDealDiscountPeriod),
+	}
+}
+
 func ToMoney(in *models.Money) *money.Money {
 	return money.New(
 		int64(swag.Float64Value(in.Amount)*100.0),

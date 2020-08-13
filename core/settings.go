@@ -18,7 +18,17 @@ type SettingsChannel struct {
 	PrivateID      int64
 }
 
+type Garant struct {
+	Name                         string
+	Username                     string
+	ReviewsChannel               string
+	PercentageDeal               float64
+	PercentageDealDiscountPeriod null.Float64
+	AvatarURL                    null.String
+}
+
 type Settings struct {
+	Garant          Garant
 	Prices          SettingsPrices
 	Channel         SettingsChannel
 	CashierUsername string
@@ -27,6 +37,12 @@ type Settings struct {
 }
 
 var DefaultSettings = &Settings{
+	Garant: Garant{
+		Name:           "Alex Dalakian",
+		Username:       "alexxdd",
+		ReviewsChannel: "birzzha_review",
+		PercentageDeal: 4,
+	},
 	Prices: SettingsPrices{
 		Application: money.New(800*100, "RUB"),
 		Change:      money.New(200*100, "RUB"),

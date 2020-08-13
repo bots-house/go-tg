@@ -40,6 +40,13 @@ func (store *SettingsStore) fromRow(row *dal.Setting) (*core.Settings, error) {
 	result.Channel.PrivateID = row.ChannelPrivateID
 	result.CashierUsername = row.CashierUsername
 	result.UpdatedAt = row.UpdatedAt
+	//garant
+	result.Garant.Name = row.GarantName
+	result.Garant.Username = row.GarantUsername
+	result.Garant.AvatarURL = row.GarantAvatarURL
+	result.Garant.ReviewsChannel = row.GarantReviewsChannel
+	result.Garant.PercentageDeal = row.GarantPercentageDeal
+	result.Garant.PercentageDealDiscountPeriod = row.GarantPercentageDealDiscountPeriod
 
 	return result, nil
 }
@@ -61,6 +68,12 @@ func (store *SettingsStore) toRow(settings *core.Settings) (*dal.Setting, error)
 	result.ChannelPrivateLink = settings.Channel.PrivateLink
 	result.ChannelPrivateID = settings.Channel.PrivateID
 	result.CashierUsername = settings.CashierUsername
+	result.GarantAvatarURL = settings.Garant.AvatarURL
+	result.GarantName = settings.Garant.Name
+	result.GarantUsername = settings.Garant.Username
+	result.GarantReviewsChannel = settings.Garant.ReviewsChannel
+	result.GarantPercentageDeal = settings.Garant.PercentageDeal
+	result.GarantPercentageDealDiscountPeriod = settings.Garant.PercentageDealDiscountPeriod
 
 	result.UpdatedAt = settings.UpdatedAt
 

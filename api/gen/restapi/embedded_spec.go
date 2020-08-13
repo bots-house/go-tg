@@ -678,6 +678,47 @@ func init() {
         }
       }
     },
+    "/admin/settings/garant": {
+      "put": {
+        "description": "Обновления даных о гаранте",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Garant",
+        "operationId": "adminUpdateSettingsGarant",
+        "parameters": [
+          {
+            "description": "гарант",
+            "name": "garant",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsGarantUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsGarant"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/admin/settings/landing": {
       "put": {
         "tags": [
@@ -2921,6 +2962,92 @@ func init() {
         }
       }
     },
+    "AdminSettingsGarant": {
+      "type": "object",
+      "required": [
+        "name",
+        "username",
+        "reviews_channel",
+        "percentage_deal",
+        "percentage_deal_of_discount_period",
+        "avatar_url"
+      ],
+      "properties": {
+        "avatar_url": {
+          "description": "ссылка на аватарку гаранта (может быть null)",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
+        },
+        "name": {
+          "description": "имя гаранта",
+          "type": "string",
+          "x-order": 0
+        },
+        "percentage_deal": {
+          "description": "процент от сделки",
+          "type": "number",
+          "x-order": 3
+        },
+        "percentage_deal_of_discount_period": {
+          "description": "процент от сделки (на период скидки)",
+          "type": "number",
+          "x-order": 4
+        },
+        "reviews_channel": {
+          "description": "username канала с отызывами",
+          "type": "string",
+          "x-order": 2
+        },
+        "username": {
+          "description": "username гаранта",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
+    "AdminSettingsGarantUpdate": {
+      "type": "object",
+      "required": [
+        "name",
+        "username",
+        "reviews_channel",
+        "percentage_deal"
+      ],
+      "properties": {
+        "avatar_url": {
+          "description": "ссылка на аватарку гаранта (может быть null)",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
+        },
+        "name": {
+          "description": "имя гаранта",
+          "type": "string",
+          "x-order": 0
+        },
+        "percentage_deal": {
+          "description": "процент от сделки",
+          "type": "number",
+          "x-order": 3
+        },
+        "percentage_deal_of_discount_period": {
+          "description": "процент от сделки (на период скидки)",
+          "type": "number",
+          "x-order": 4
+        },
+        "reviews_channel": {
+          "description": "username канала с отызывами",
+          "type": "string",
+          "x-order": 2
+        },
+        "username": {
+          "description": "username гаранта",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "AdminSettingsLanding": {
       "description": "Содержит статистику которая показывается на лендинке.\nПоля вида ` + "`" + `*_shift` + "`" + ` нужны для того чтобы на старте показатель не были слишком низкие.\n",
       "type": "object",
@@ -3622,19 +3749,29 @@ func init() {
       "required": [
         "stats",
         "channel",
-        "reviews"
+        "reviews",
+        "application",
+        "garant"
       ],
       "properties": {
-        "channel": {
+        "application": {
           "x-order": 1,
+          "$ref": "#/definitions/Money"
+        },
+        "channel": {
+          "x-order": 3,
           "$ref": "#/definitions/LandingChannel"
         },
+        "garant": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsGarant"
+        },
         "reviews": {
-          "x-order": 2,
+          "x-order": 4,
           "$ref": "#/definitions/ReviewList"
         },
         "stats": {
-          "x-order": 0,
+          "x-order": 2,
           "$ref": "#/definitions/LandingStats"
         }
       }
@@ -5677,6 +5814,47 @@ func init() {
         }
       }
     },
+    "/admin/settings/garant": {
+      "put": {
+        "description": "Обновления даных о гаранте",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Settings Garant",
+        "operationId": "adminUpdateSettingsGarant",
+        "parameters": [
+          {
+            "description": "гарант",
+            "name": "garant",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsGarantUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminSettingsGarant"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/admin/settings/landing": {
       "put": {
         "tags": [
@@ -7940,6 +8118,92 @@ func init() {
         }
       }
     },
+    "AdminSettingsGarant": {
+      "type": "object",
+      "required": [
+        "name",
+        "username",
+        "reviews_channel",
+        "percentage_deal",
+        "percentage_deal_of_discount_period",
+        "avatar_url"
+      ],
+      "properties": {
+        "avatar_url": {
+          "description": "ссылка на аватарку гаранта (может быть null)",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
+        },
+        "name": {
+          "description": "имя гаранта",
+          "type": "string",
+          "x-order": 0
+        },
+        "percentage_deal": {
+          "description": "процент от сделки",
+          "type": "number",
+          "x-order": 3
+        },
+        "percentage_deal_of_discount_period": {
+          "description": "процент от сделки (на период скидки)",
+          "type": "number",
+          "x-order": 4
+        },
+        "reviews_channel": {
+          "description": "username канала с отызывами",
+          "type": "string",
+          "x-order": 2
+        },
+        "username": {
+          "description": "username гаранта",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
+    "AdminSettingsGarantUpdate": {
+      "type": "object",
+      "required": [
+        "name",
+        "username",
+        "reviews_channel",
+        "percentage_deal"
+      ],
+      "properties": {
+        "avatar_url": {
+          "description": "ссылка на аватарку гаранта (может быть null)",
+          "type": "string",
+          "format": "url",
+          "x-order": 5
+        },
+        "name": {
+          "description": "имя гаранта",
+          "type": "string",
+          "x-order": 0
+        },
+        "percentage_deal": {
+          "description": "процент от сделки",
+          "type": "number",
+          "x-order": 3
+        },
+        "percentage_deal_of_discount_period": {
+          "description": "процент от сделки (на период скидки)",
+          "type": "number",
+          "x-order": 4
+        },
+        "reviews_channel": {
+          "description": "username канала с отызывами",
+          "type": "string",
+          "x-order": 2
+        },
+        "username": {
+          "description": "username гаранта",
+          "type": "string",
+          "x-order": 1
+        }
+      }
+    },
     "AdminSettingsLanding": {
       "description": "Содержит статистику которая показывается на лендинке.\nПоля вида ` + "`" + `*_shift` + "`" + ` нужны для того чтобы на старте показатель не были слишком низкие.\n",
       "type": "object",
@@ -8679,19 +8943,29 @@ func init() {
       "required": [
         "stats",
         "channel",
-        "reviews"
+        "reviews",
+        "application",
+        "garant"
       ],
       "properties": {
-        "channel": {
+        "application": {
           "x-order": 1,
+          "$ref": "#/definitions/Money"
+        },
+        "channel": {
+          "x-order": 3,
           "$ref": "#/definitions/LandingChannel"
         },
+        "garant": {
+          "x-order": 0,
+          "$ref": "#/definitions/AdminSettingsGarant"
+        },
         "reviews": {
-          "x-order": 2,
+          "x-order": 4,
           "$ref": "#/definitions/ReviewList"
         },
         "stats": {
-          "x-order": 0,
+          "x-order": 2,
           "$ref": "#/definitions/LandingStats"
         }
       }

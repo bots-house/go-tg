@@ -3,6 +3,7 @@ package landing
 import (
 	"context"
 
+	"github.com/Rhymond/go-money"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/pkg/errors"
@@ -31,9 +32,11 @@ type Stats struct {
 }
 
 type Landing struct {
-	Channel Channel
-	Stats   Stats
-	Reviews *ReviewList
+	Garant           *core.Garant
+	Channel          Channel
+	ApplicationPrice *money.Money
+	Stats            Stats
+	Reviews          *ReviewList
 }
 
 var (
@@ -64,14 +67,22 @@ func (srv *Service) GetLanding(ctx context.Context) (*Landing, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "get landing")
 	}
-
 	return &Landing{
 		Stats: Stats{
 			UniqueVisitorsPerMonth: landing.UniqueUsersPerMonth(),
 			AvgLotChannelReach:     landing.AvgChannelReach(),
 			AvgLotSiteReach:        landing.AvgSiteReach(),
 		},
-		Reviews: reviews,
+		Garant: &core.Garant{
+			Name:                         settings.Garant.Name,
+			Username:                     settings.Garant.Username,
+			ReviewsChannel:               settings.Garant.ReviewsChannel,
+			PercentageDeal:               settings.Garant.PercentageDeal,
+			PercentageDealDiscountPeriod: settings.Garant.PercentageDealDiscountPeriod,
+			AvatarURL:                    settings.Garant.AvatarURL,
+		},
+		ApplicationPrice: settings.Prices.Application,
+		Reviews:          reviews,
 		Channel: Channel{
 			Title:        result.Channel.Name,
 			MembersCount: result.Channel.MembersCount,

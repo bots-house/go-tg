@@ -17,6 +17,14 @@ import (
 // swagger:model Landing
 type Landing struct {
 
+	// garant
+	// Required: true
+	Garant *AdminSettingsGarant `json:"garant"`
+
+	// application
+	// Required: true
+	Application *Money `json:"application"`
+
 	// stats
 	// Required: true
 	Stats *LandingStats `json:"stats"`
@@ -34,6 +42,14 @@ type Landing struct {
 func (m *Landing) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateGarant(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateApplication(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateStats(formats); err != nil {
 		res = append(res, err)
 	}
@@ -49,6 +65,42 @@ func (m *Landing) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *Landing) validateGarant(formats strfmt.Registry) error {
+
+	if err := validate.Required("garant", "body", m.Garant); err != nil {
+		return err
+	}
+
+	if m.Garant != nil {
+		if err := m.Garant.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("garant")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Landing) validateApplication(formats strfmt.Registry) error {
+
+	if err := validate.Required("application", "body", m.Application); err != nil {
+		return err
+	}
+
+	if m.Application != nil {
+		if err := m.Application.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("application")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

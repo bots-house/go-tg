@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml913525896 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/ty/9fw59_y54dz_3j7bv46bcjmh0000gn/T/swagger.yml480925091 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -170,6 +170,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminUpdateSettingsChannelHandler == nil {
 		api.AdminAdminUpdateSettingsChannelHandler = admin.AdminUpdateSettingsChannelHandlerFunc(func(params admin.AdminUpdateSettingsChannelParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateSettingsChannel has not yet been implemented")
+		})
+	}
+	if api.AdminAdminUpdateSettingsGarantHandler == nil {
+		api.AdminAdminUpdateSettingsGarantHandler = admin.AdminUpdateSettingsGarantHandlerFunc(func(params admin.AdminUpdateSettingsGarantParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateSettingsGarant has not yet been implemented")
 		})
 	}
 	if api.AdminAdminUpdateSettingsLandingHandler == nil {

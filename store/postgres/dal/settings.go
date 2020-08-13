@@ -25,59 +25,89 @@ import (
 
 // Setting is an object representing the database table.
 type Setting struct {
-	ID                    int        `boil:"id" json:"id" toml:"id" yaml:"id"`
-	PricesApplication     types.JSON `boil:"prices_application" json:"prices_application" toml:"prices_application" yaml:"prices_application"`
-	PricesChange          types.JSON `boil:"prices_change" json:"prices_change" toml:"prices_change" yaml:"prices_change"`
-	ChannelPublicUsername string     `boil:"channel_public_username" json:"channel_public_username" toml:"channel_public_username" yaml:"channel_public_username"`
-	ChannelPrivateLink    string     `boil:"channel_private_link" json:"channel_private_link" toml:"channel_private_link" yaml:"channel_private_link"`
-	ChannelPrivateID      int64      `boil:"channel_private_id" json:"channel_private_id" toml:"channel_private_id" yaml:"channel_private_id"`
-	CashierUsername       string     `boil:"cashier_username" json:"cashier_username" toml:"cashier_username" yaml:"cashier_username"`
-	UpdatedAt             null.Time  `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
+	ID                                 int          `boil:"id" json:"id" toml:"id" yaml:"id"`
+	PricesApplication                  types.JSON   `boil:"prices_application" json:"prices_application" toml:"prices_application" yaml:"prices_application"`
+	PricesChange                       types.JSON   `boil:"prices_change" json:"prices_change" toml:"prices_change" yaml:"prices_change"`
+	ChannelPublicUsername              string       `boil:"channel_public_username" json:"channel_public_username" toml:"channel_public_username" yaml:"channel_public_username"`
+	ChannelPrivateLink                 string       `boil:"channel_private_link" json:"channel_private_link" toml:"channel_private_link" yaml:"channel_private_link"`
+	ChannelPrivateID                   int64        `boil:"channel_private_id" json:"channel_private_id" toml:"channel_private_id" yaml:"channel_private_id"`
+	CashierUsername                    string       `boil:"cashier_username" json:"cashier_username" toml:"cashier_username" yaml:"cashier_username"`
+	UpdatedAt                          null.Time    `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
+	GarantName                         string       `boil:"garant_name" json:"garant_name" toml:"garant_name" yaml:"garant_name"`
+	GarantUsername                     string       `boil:"garant_username" json:"garant_username" toml:"garant_username" yaml:"garant_username"`
+	GarantReviewsChannel               string       `boil:"garant_reviews_channel" json:"garant_reviews_channel" toml:"garant_reviews_channel" yaml:"garant_reviews_channel"`
+	GarantPercentageDeal               float64      `boil:"garant_percentage_deal" json:"garant_percentage_deal" toml:"garant_percentage_deal" yaml:"garant_percentage_deal"`
+	GarantPercentageDealDiscountPeriod null.Float64 `boil:"garant_percentage_deal_discount_period" json:"garant_percentage_deal_discount_period,omitempty" toml:"garant_percentage_deal_discount_period" yaml:"garant_percentage_deal_discount_period,omitempty"`
+	GarantAvatarURL                    null.String  `boil:"garant_avatar_url" json:"garant_avatar_url,omitempty" toml:"garant_avatar_url" yaml:"garant_avatar_url,omitempty"`
 
 	R *settingR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L settingL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var SettingColumns = struct {
-	ID                    string
-	PricesApplication     string
-	PricesChange          string
-	ChannelPublicUsername string
-	ChannelPrivateLink    string
-	ChannelPrivateID      string
-	CashierUsername       string
-	UpdatedAt             string
+	ID                                 string
+	PricesApplication                  string
+	PricesChange                       string
+	ChannelPublicUsername              string
+	ChannelPrivateLink                 string
+	ChannelPrivateID                   string
+	CashierUsername                    string
+	UpdatedAt                          string
+	GarantName                         string
+	GarantUsername                     string
+	GarantReviewsChannel               string
+	GarantPercentageDeal               string
+	GarantPercentageDealDiscountPeriod string
+	GarantAvatarURL                    string
 }{
-	ID:                    "id",
-	PricesApplication:     "prices_application",
-	PricesChange:          "prices_change",
-	ChannelPublicUsername: "channel_public_username",
-	ChannelPrivateLink:    "channel_private_link",
-	ChannelPrivateID:      "channel_private_id",
-	CashierUsername:       "cashier_username",
-	UpdatedAt:             "updated_at",
+	ID:                                 "id",
+	PricesApplication:                  "prices_application",
+	PricesChange:                       "prices_change",
+	ChannelPublicUsername:              "channel_public_username",
+	ChannelPrivateLink:                 "channel_private_link",
+	ChannelPrivateID:                   "channel_private_id",
+	CashierUsername:                    "cashier_username",
+	UpdatedAt:                          "updated_at",
+	GarantName:                         "garant_name",
+	GarantUsername:                     "garant_username",
+	GarantReviewsChannel:               "garant_reviews_channel",
+	GarantPercentageDeal:               "garant_percentage_deal",
+	GarantPercentageDealDiscountPeriod: "garant_percentage_deal_discount_period",
+	GarantAvatarURL:                    "garant_avatar_url",
 }
 
 // Generated where
 
 var SettingWhere = struct {
-	ID                    whereHelperint
-	PricesApplication     whereHelpertypes_JSON
-	PricesChange          whereHelpertypes_JSON
-	ChannelPublicUsername whereHelperstring
-	ChannelPrivateLink    whereHelperstring
-	ChannelPrivateID      whereHelperint64
-	CashierUsername       whereHelperstring
-	UpdatedAt             whereHelpernull_Time
+	ID                                 whereHelperint
+	PricesApplication                  whereHelpertypes_JSON
+	PricesChange                       whereHelpertypes_JSON
+	ChannelPublicUsername              whereHelperstring
+	ChannelPrivateLink                 whereHelperstring
+	ChannelPrivateID                   whereHelperint64
+	CashierUsername                    whereHelperstring
+	UpdatedAt                          whereHelpernull_Time
+	GarantName                         whereHelperstring
+	GarantUsername                     whereHelperstring
+	GarantReviewsChannel               whereHelperstring
+	GarantPercentageDeal               whereHelperfloat64
+	GarantPercentageDealDiscountPeriod whereHelpernull_Float64
+	GarantAvatarURL                    whereHelpernull_String
 }{
-	ID:                    whereHelperint{field: "\"settings\".\"id\""},
-	PricesApplication:     whereHelpertypes_JSON{field: "\"settings\".\"prices_application\""},
-	PricesChange:          whereHelpertypes_JSON{field: "\"settings\".\"prices_change\""},
-	ChannelPublicUsername: whereHelperstring{field: "\"settings\".\"channel_public_username\""},
-	ChannelPrivateLink:    whereHelperstring{field: "\"settings\".\"channel_private_link\""},
-	ChannelPrivateID:      whereHelperint64{field: "\"settings\".\"channel_private_id\""},
-	CashierUsername:       whereHelperstring{field: "\"settings\".\"cashier_username\""},
-	UpdatedAt:             whereHelpernull_Time{field: "\"settings\".\"updated_at\""},
+	ID:                                 whereHelperint{field: "\"settings\".\"id\""},
+	PricesApplication:                  whereHelpertypes_JSON{field: "\"settings\".\"prices_application\""},
+	PricesChange:                       whereHelpertypes_JSON{field: "\"settings\".\"prices_change\""},
+	ChannelPublicUsername:              whereHelperstring{field: "\"settings\".\"channel_public_username\""},
+	ChannelPrivateLink:                 whereHelperstring{field: "\"settings\".\"channel_private_link\""},
+	ChannelPrivateID:                   whereHelperint64{field: "\"settings\".\"channel_private_id\""},
+	CashierUsername:                    whereHelperstring{field: "\"settings\".\"cashier_username\""},
+	UpdatedAt:                          whereHelpernull_Time{field: "\"settings\".\"updated_at\""},
+	GarantName:                         whereHelperstring{field: "\"settings\".\"garant_name\""},
+	GarantUsername:                     whereHelperstring{field: "\"settings\".\"garant_username\""},
+	GarantReviewsChannel:               whereHelperstring{field: "\"settings\".\"garant_reviews_channel\""},
+	GarantPercentageDeal:               whereHelperfloat64{field: "\"settings\".\"garant_percentage_deal\""},
+	GarantPercentageDealDiscountPeriod: whereHelpernull_Float64{field: "\"settings\".\"garant_percentage_deal_discount_period\""},
+	GarantAvatarURL:                    whereHelpernull_String{field: "\"settings\".\"garant_avatar_url\""},
 }
 
 // SettingRels is where relationship names are stored.
@@ -97,9 +127,9 @@ func (*settingR) NewStruct() *settingR {
 type settingL struct{}
 
 var (
-	settingAllColumns            = []string{"id", "prices_application", "prices_change", "channel_public_username", "channel_private_link", "channel_private_id", "cashier_username", "updated_at"}
-	settingColumnsWithoutDefault = []string{"id", "prices_application", "prices_change", "channel_public_username", "channel_private_link", "channel_private_id", "cashier_username", "updated_at"}
-	settingColumnsWithDefault    = []string{}
+	settingAllColumns            = []string{"id", "prices_application", "prices_change", "channel_public_username", "channel_private_link", "channel_private_id", "cashier_username", "updated_at", "garant_name", "garant_username", "garant_reviews_channel", "garant_percentage_deal", "garant_percentage_deal_discount_period", "garant_avatar_url"}
+	settingColumnsWithoutDefault = []string{"id", "prices_application", "prices_change", "channel_public_username", "channel_private_link", "channel_private_id", "cashier_username", "updated_at", "garant_percentage_deal_discount_period", "garant_avatar_url"}
+	settingColumnsWithDefault    = []string{"garant_name", "garant_username", "garant_reviews_channel", "garant_percentage_deal"}
 	settingPrimaryKeyColumns     = []string{"id"}
 )
 

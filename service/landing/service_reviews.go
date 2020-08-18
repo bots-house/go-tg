@@ -13,7 +13,12 @@ type ReviewList struct {
 }
 
 func (srv *Service) GetReviews(ctx context.Context, offset, limit int) (*ReviewList, error) {
-	reviews, err := srv.Review.Query().Offset(offset).Limit(limit).All(ctx)
+	reviews, err := srv.Review.Query().
+		OrderByCreatedAt().
+		Offset(offset).
+		Limit(limit).
+		All(ctx)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "get reviews")
 	}

@@ -35,3 +35,7 @@ jobs:
         run: |
           docker push docker.pkg.github.com/${{ github.repository }}/birzzha:latest
           docker push docker.pkg.github.com/${{ github.repository }}/birzzha:${GITHUB_REF##*/}
+
+      - name: Call Deploy Hooks
+        run: |
+          sh .github/deploy.sh ${{ secrets.DEPLOY_HOOKS }}

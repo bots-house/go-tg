@@ -62,8 +62,12 @@ type OwnedLot struct {
 
 	// status
 	// Required: true
-	// Enum: [created paid published declined canceled]
+	// Enum: [created paid published scheduled declined canceled]
 	Status *string `json:"status"`
+
+	// Текст причины по которой был отклолен лот
+	// Required: true
+	DeclineReason *string `json:"decline_reason"`
 
 	// ID причины снятия с продажи
 	// Required: true
@@ -80,6 +84,10 @@ type OwnedLot struct {
 	// Дата проверки
 	// Required: true
 	ApprovedAt *int64 `json:"approved_at"`
+
+	// Планируемая дата публикации в канале
+	// Required: true
+	ScheduledAt *int64 `json:"scheduled_at"`
 
 	// topics
 	// Required: true
@@ -149,6 +157,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateDeclineReason(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCanceledReasonID(formats); err != nil {
 		res = append(res, err)
 	}
@@ -162,6 +174,10 @@ func (m *OwnedLot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateApprovedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduledAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -303,7 +319,7 @@ var ownedLotTypeStatusPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["created","paid","published","declined","canceled"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["created","paid","published","scheduled","declined","canceled"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -321,6 +337,9 @@ const (
 
 	// OwnedLotStatusPublished captures enum value "published"
 	OwnedLotStatusPublished string = "published"
+
+	// OwnedLotStatusScheduled captures enum value "scheduled"
+	OwnedLotStatusScheduled string = "scheduled"
 
 	// OwnedLotStatusDeclined captures enum value "declined"
 	OwnedLotStatusDeclined string = "declined"
@@ -345,6 +364,15 @@ func (m *OwnedLot) validateStatus(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLot) validateDeclineReason(formats strfmt.Registry) error {
+
+	if err := validate.Required("decline_reason", "body", m.DeclineReason); err != nil {
 		return err
 	}
 
@@ -381,6 +409,15 @@ func (m *OwnedLot) validatePaidAt(formats strfmt.Registry) error {
 func (m *OwnedLot) validateApprovedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("approved_at", "body", m.ApprovedAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OwnedLot) validateScheduledAt(formats strfmt.Registry) error {
+
+	if err := validate.Required("scheduled_at", "body", m.ScheduledAt); err != nil {
 		return err
 	}
 

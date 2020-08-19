@@ -3979,7 +3979,7 @@ func init() {
           "description": "Комментарий пользователя",
           "type": "string",
           "x-order": 6,
-          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу пр������даю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
+          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу продаю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
         },
         "extra": {
           "description": "Список ссылок на дополнительные ресурсы",
@@ -4362,6 +4362,7 @@ func init() {
         "price",
         "comment",
         "status",
+        "decline_reason",
         "canceled_reason_id",
         "metrics",
         "topics",
@@ -4369,6 +4370,7 @@ func init() {
         "created_at",
         "paid_at",
         "approved_at",
+        "scheduled_at",
         "published_at",
         "files"
       ],
@@ -4394,12 +4396,12 @@ func init() {
               "x-order": 1
             }
           },
-          "x-order": 16
+          "x-order": 18
         },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 14
+          "x-order": 15
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -4415,7 +4417,7 @@ func init() {
         "canceled_reason_id": {
           "description": "ID причины снятия с продажи",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "comment": {
           "description": "Комментарий к лоту",
@@ -4425,7 +4427,12 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
+        },
+        "decline_reason": {
+          "description": "Текст причины по которой был отклолен лот",
+          "type": "string",
+          "x-order": 11
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -4437,14 +4444,14 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 17
+          "x-order": 19
         },
         "files": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/OwnedLotUploadedFile"
           },
-          "x-order": 19
+          "x-order": 21
         },
         "id": {
           "description": "ID лота",
@@ -4469,7 +4476,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 13
+          "x-order": 14
         },
         "price": {
           "x-order": 7,
@@ -4478,7 +4485,12 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 18
+          "x-order": 20
+        },
+        "scheduled_at": {
+          "description": "Планируемая дата публикации в канале",
+          "type": "integer",
+          "x-order": 16
         },
         "status": {
           "type": "string",
@@ -4486,6 +4498,7 @@ func init() {
             "created",
             "paid",
             "published",
+            "scheduled",
             "declined",
             "canceled"
           ],
@@ -4498,7 +4511,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 15
+          "x-order": 17
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -9176,7 +9189,7 @@ func init() {
           "description": "Комментарий пользователя",
           "type": "string",
           "x-order": 6,
-          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу пр������даю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
+          "example": "Продаю дешевле, чем залил. Каналу месяц, налит свежим тг трафом за две недели. В канал вложено 250.000-260.000₽. Рекламу продаю последние 2 недели. Продаю, так как сам в телеграмме недавно, так поигрались с партнером, посмотрели что к чему, идем дальше!\n"
         },
         "extra": {
           "description": "Список ссылок на дополнительные ресурсы",
@@ -9559,6 +9572,7 @@ func init() {
         "price",
         "comment",
         "status",
+        "decline_reason",
         "canceled_reason_id",
         "metrics",
         "topics",
@@ -9566,6 +9580,7 @@ func init() {
         "created_at",
         "paid_at",
         "approved_at",
+        "scheduled_at",
         "published_at",
         "files"
       ],
@@ -9591,12 +9606,12 @@ func init() {
               "x-order": 1
             }
           },
-          "x-order": 16
+          "x-order": 18
         },
         "approved_at": {
           "description": "Дата проверки",
           "type": "integer",
-          "x-order": 14
+          "x-order": 15
         },
         "avatar": {
           "description": "Аватарка лота",
@@ -9612,7 +9627,7 @@ func init() {
         "canceled_reason_id": {
           "description": "ID причины снятия с продажи",
           "type": "integer",
-          "x-order": 11
+          "x-order": 12
         },
         "comment": {
           "description": "Комментарий к лоту",
@@ -9622,7 +9637,12 @@ func init() {
         "created_at": {
           "description": "Дата создания",
           "type": "integer",
-          "x-order": 12
+          "x-order": 13
+        },
+        "decline_reason": {
+          "description": "Текст причины по которой был отклолен лот",
+          "type": "string",
+          "x-order": 11
         },
         "external_id": {
           "description": "ID лота в Telegram",
@@ -9634,14 +9654,14 @@ func init() {
           "items": {
             "$ref": "#/definitions/LotExtraResource"
           },
-          "x-order": 17
+          "x-order": 19
         },
         "files": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/OwnedLotUploadedFile"
           },
-          "x-order": 19
+          "x-order": 21
         },
         "id": {
           "description": "ID лота",
@@ -9666,7 +9686,7 @@ func init() {
         "paid_at": {
           "description": "Дата оплаты",
           "type": "integer",
-          "x-order": 13
+          "x-order": 14
         },
         "price": {
           "x-order": 7,
@@ -9675,7 +9695,12 @@ func init() {
         "published_at": {
           "description": "Дата публикации в канале",
           "type": "integer",
-          "x-order": 18
+          "x-order": 20
+        },
+        "scheduled_at": {
+          "description": "Планируемая дата публикации в канале",
+          "type": "integer",
+          "x-order": 16
         },
         "status": {
           "type": "string",
@@ -9683,6 +9708,7 @@ func init() {
             "created",
             "paid",
             "published",
+            "scheduled",
             "declined",
             "canceled"
           ],
@@ -9695,7 +9721,7 @@ func init() {
             "maxLength": 3,
             "minLength": 1
           },
-          "x-order": 15
+          "x-order": 17
         },
         "username": {
           "description": "@username канала (может быть null)",
@@ -9725,7 +9751,7 @@ func init() {
           "x-order": 1
         }
       },
-      "x-order": 16
+      "x-order": 18
     },
     "OwnedLotUploadedFile": {
       "description": "Файл созданного лота.",

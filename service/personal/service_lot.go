@@ -114,7 +114,11 @@ func (srv *Service) newOwnedLotSlice(lots []*core.Lot) ([]*OwnedLot, error) {
 }
 
 func (srv *Service) GetLots(ctx context.Context, user *core.User) ([]*OwnedLot, error) {
-	lots, err := srv.Lot.Query().OwnerID(user.ID).All(ctx)
+	lots, err := srv.Lot.Query().
+		OwnerID(user.ID).
+		SortBy(core.LotFieldCreatedAt, store.SortTypeDesc).
+		All(ctx)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "get lots")
 	}

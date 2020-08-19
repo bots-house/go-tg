@@ -2175,6 +2175,7 @@ definitions:
       - price
       - comment
       - status
+      - decline_reason
       - canceled_reason_id
       - metrics
       - topics
@@ -2182,6 +2183,7 @@ definitions:
       - created_at
       - paid_at
       - approved_at
+      - scheduled_at
       - published_at
       - files
     properties:
@@ -2221,8 +2223,12 @@ definitions:
           - created
           - paid
           - published
+          - scheduled
           - declined
           - canceled
+      decline_reason:
+        type: string
+        description: Текст причины по которой был отклолен лот
       canceled_reason_id:
         type: integer
         description: ID причины снятия с продажи
@@ -2235,6 +2241,9 @@ definitions:
       approved_at:
         type: integer
         description: Дата проверки
+      scheduled_at:
+        type: integer
+        description: Планируемая дата публикации в канале
       topics:
         type: array
         items:

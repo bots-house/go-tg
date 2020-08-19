@@ -124,8 +124,8 @@ const (
 )
 
 var ShowLotStatus = []LotStatus{
-	LotStatusPaid,
-	LotStatusCreated,
+	LotStatusScheduled,
+	LotStatusPublished,
 }
 
 var (

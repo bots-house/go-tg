@@ -38,4 +38,4 @@ jobs:
 
       - name: Call Deploy Hooks
         run: |
-          sh .github/deploy.sh ${{ secrets.DEPLOY_HOOKS }}
+          .github/deploy.sh ${{ secrets.DEPLOY_HOOKS }}

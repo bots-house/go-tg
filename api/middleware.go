@@ -9,6 +9,8 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/getsentry/sentry-go"
+
 	"github.com/pkg/errors"
 
 	"github.com/bots-house/birzzha/core"
@@ -45,6 +47,14 @@ func newFileProxyWrapper(fp *tg.FileProxy) func(http.Handler) http.Handler {
 			}
 		})
 	}
+}
+
+func (h *Handler) wrapMiddlewareSentryHub(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, core.ModuleName, core.API)
+		handler.ServeHTTP(w, r.WithContext(sentry.SetHubOnContext(ctx, sentry.CurrentHub().Clone())))
+	})
 }
 
 func (h *Handler) wrapMiddlewareLogger(handler http.Handler) http.Handler {

@@ -23,14 +23,14 @@ func (h *Handler) handleGatewayNotification(params webhookops.HandleGatewayNotif
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return webhookops.NewHandleGatewayNotificationBadRequest().WithPayload(models.NewError(err2))
 		}
-		return webhookops.NewHandleGatewayNotificationInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return webhookops.NewHandleGatewayNotificationInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	if err := h.Personal.ProcessGatewayNotification(ctx, notify); err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return webhookops.NewHandleGatewayNotificationBadRequest().WithPayload(models.NewError(err2))
 		}
-		return webhookops.NewHandleGatewayNotificationInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return webhookops.NewHandleGatewayNotificationInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return webhookops.NewHandleGatewayNotificationOK()

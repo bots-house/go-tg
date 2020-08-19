@@ -21,7 +21,7 @@ func (h *Handler) adminDeleteReview(params adminops.AdminDeleteReviewParams, ide
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeleteReviewBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminDeleteReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminDeleteReviewInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminDeleteReviewNoContent()
 }
@@ -34,7 +34,7 @@ func (h *Handler) adminUpdateReview(params adminops.AdminUpdateReviewParams, ide
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateReviewBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateReviewOK().WithPayload(models.NewReview(h.Storage, result))
 }
@@ -47,7 +47,7 @@ func (h *Handler) adminGetReviews(params adminops.AdminGetReviewsParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetReviewsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetReviewsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetReviewsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetReviewsOK().WithPayload(models.NewAdminReviewList(h.Storage, result))
 }
@@ -60,7 +60,7 @@ func (h *Handler) adminGetUsers(params adminops.AdminGetUsersParams, identity *a
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetUsersBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetUsersInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetUsersInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetUsersOK().WithPayload(models.NewAdminFullUserList(h.Storage, users))
 
@@ -74,7 +74,7 @@ func (h *Handler) toggleUserAdmin(params adminops.ToggleUserAdminParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewToggleUserAdminBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewToggleUserAdminInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewToggleUserAdminInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewToggleUserAdminOK().WithPayload(models.NewAdminFullUser(h.Storage, user))
 
@@ -88,7 +88,7 @@ func (h *Handler) adminGetLotStatuses(params adminops.AdminGetLotStatusesParams,
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetLotStatusesBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetLotStatusesOK().WithPayload(models.NewLotStatusesCount(result))
 
@@ -106,7 +106,7 @@ func (h *Handler) adminGetLots(params adminops.AdminGetLotsParams, identity *aut
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetLotsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetLotsOK().WithPayload(models.NewAdminLotItemList(h.Storage, result))
 }
@@ -119,7 +119,7 @@ func (h *Handler) adminGetSettings(params adminops.AdminGetSettingsParams, ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetSettingsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetSettingsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetSettingsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetSettingsOK().WithPayload(models.NewSettings(result))
 }
@@ -136,7 +136,7 @@ func (h *Handler) adminUpdateSettingsLanding(params adminops.AdminUpdateSettings
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateSettingsLandingBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateSettingsLandingInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateSettingsLandingInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return adminops.NewAdminUpdateSettingsLandingOK().WithPayload(models.NewAdminLanding(result))
@@ -156,7 +156,7 @@ func (h *Handler) adminUpdateSettingsPrices(params adminops.AdminUpdateSettingsP
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateSettingsPricesBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return adminops.NewAdminUpdateSettingsPricesOK().WithPayload(models.NewSettingsPrices(result))
@@ -177,7 +177,7 @@ func (h *Handler) adminUpdateSettingsGarant(params adminops.AdminUpdateSettingsG
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateSettingsGarantBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateSettingsGarantInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateSettingsGarantInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateSettingsGarantOK().WithPayload(models.NewSettingsGarant(result))
 }
@@ -197,7 +197,7 @@ func (h *Handler) adminUpdateSettingsChannel(params adminops.AdminUpdateSettings
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateSettingsChannelBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateReviewInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateSettingsChannelOK().WithPayload(models.NewSettingsChannel(result))
 }
@@ -210,7 +210,7 @@ func (h *Handler) adminCreateTopic(params adminops.AdminCreateTopicParams, ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminCreateTopicBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminCreateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminCreateTopicInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminCreateTopicOK().WithPayload(models.NewAdminFullTopic(result))
 }
@@ -223,7 +223,7 @@ func (h *Handler) adminUpdateTopic(params adminops.AdminUpdateTopicParams, ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateTopicBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateTopicInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateTopicOK().WithPayload(models.NewAdminFullTopic(result))
 }
@@ -235,7 +235,7 @@ func (h *Handler) adminDeleteTopic(params adminops.AdminDeleteTopicParams, ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeleteTopicBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminDeleteTopicInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminDeleteTopicInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminDeleteTopicNoContent()
 }
@@ -254,7 +254,7 @@ func (h *Handler) adminCreateLotCanceledReason(params adminops.AdminCreateLotCan
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminCreateLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminCreateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminCreateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminCreateLotCanceledReasonOK().WithPayload(models.NewLotCanceledReason(result))
 }
@@ -274,7 +274,7 @@ func (h *Handler) adminUpdateLotCanceledReason(params adminops.AdminUpdateLotCan
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateLotCanceledReasonOK().WithPayload(models.NewLotCanceledReason(result))
 }
@@ -286,7 +286,7 @@ func (h *Handler) adminDeleteLotCanceledReason(params adminops.AdminDeleteLotCan
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeleteLotCanceledReasonBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminDeleteLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminDeleteLotCanceledReasonInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminDeleteLotCanceledReasonNoContent()
 }
@@ -300,7 +300,7 @@ func (h *Handler) adminGetPostText(params adminops.AdminGetPostTextParams, ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetPostTextBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetLotStatusesInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetPostTextOK().WithPayload(models.NewPostText(result))
 }
@@ -312,7 +312,7 @@ func (h *Handler) adminSendPostPreview(params adminops.AdminSendPostPreviewParam
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminSendPostPreviewBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminSendPostPreviewInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminSendPostPreviewInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminSendPostPreviewOK()
 }
@@ -332,7 +332,7 @@ func (h *Handler) adminUpdateLot(params adminops.AdminUpdateLotParams, identity 
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdateLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdateLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdateLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdateLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
 }
@@ -345,7 +345,7 @@ func (h *Handler) adminDeclineLot(params adminops.AdminDeclineLotParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeclineLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminDeclineLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminDeclineLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminDeclineLotNoContent()
 }
@@ -359,7 +359,7 @@ func (h *Handler) adminGetLot(params adminops.AdminGetLotParams, identity *authz
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return adminops.NewAdminGetLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
@@ -386,7 +386,7 @@ func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminCreatePostBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminCreatePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminCreatePostInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminCreatePostCreated().WithPayload(models.NewPost(result))
 }
@@ -412,7 +412,7 @@ func (h *Handler) adminUpdatePost(params adminops.AdminUpdatePostParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminUpdatePostBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminUpdatePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminUpdatePostInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminUpdatePostOK().WithPayload(models.NewPostItem(h.Storage, result))
 }
@@ -425,7 +425,7 @@ func (h *Handler) adminDeletePost(params adminops.AdminDeletePostParams, identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeletePostBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminDeletePostInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminDeletePostInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminDeletePostNoContent()
 }
@@ -438,7 +438,7 @@ func (h *Handler) adminGetPosts(params adminops.AdminGetPostsParams, identity *a
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetPostsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return adminops.NewAdminGetPostsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return adminops.NewAdminGetPostsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return adminops.NewAdminGetPostsOK().WithPayload(models.NewFullPost(h.Storage, result))
 }

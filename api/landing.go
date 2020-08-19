@@ -17,7 +17,7 @@ func (h *Handler) getReviews(params landingops.GetReviewsParams) middleware.Resp
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return landingops.NewGetReviewsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return landingops.NewGetReviewsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return landingops.NewGetReviewsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return landingops.NewGetReviewsOK().WithPayload(models.NewReviewList(h.Storage, result))
 }
@@ -30,7 +30,7 @@ func (h *Handler) getLanding(params landingops.GetLandingParams) middleware.Resp
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return landingops.NewGetLandingBadRequest().WithPayload(models.NewError(err2))
 		}
-		return landingops.NewGetLandingInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return landingops.NewGetLandingInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return landingops.NewGetLandingOK().WithPayload(models.NewLanding(h.Storage, result))
 }

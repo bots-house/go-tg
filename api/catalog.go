@@ -39,7 +39,7 @@ func (h *Handler) getFilterBoundaries(params catalogops.GetFilterBoundariesParam
 
 	boundaries, err := h.Catalog.GetFilterBoundaries(ctx, query)
 	if err != nil {
-		return catalogops.NewGetFilterBoundariesInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetFilterBoundariesInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return catalogops.NewGetFilterBoundariesOK().WithPayload(models.NewFilterBoundaries(boundaries))
@@ -75,7 +75,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Ident
 			if err2, ok := errors.Cause(err).(*core.Error); ok {
 				return catalogops.NewGetLotsBadRequest().WithPayload(models.NewError(err2))
 			}
-			return catalogops.NewGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+			return catalogops.NewGetLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 		}
 
 		query.SortBy = sortBy
@@ -96,7 +96,7 @@ func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Ident
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetLotsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewGetLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return catalogops.NewGetLotsOK().WithPayload(models.NewLotList(h.Storage, lots))
@@ -108,7 +108,7 @@ func (h *Handler) getDailyCoverage(params catalogops.GetDailyCoverageParams) mid
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetDailyCoverageBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewGetDailyCoverageInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetDailyCoverageInternalServerError().WithPayload(models.NewInternalServerError(params.HTTPRequest.Context(), err))
 	}
 
 	return catalogops.NewGetDailyCoverageOK().WithPayload(models.NewDailyCoverage(int64(count)))
@@ -122,7 +122,7 @@ func (h *Handler) resolveTelegram(params catalogops.ResolveTelegramParams) middl
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewResolveTelegramBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewResolveTelegramBadRequest().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewResolveTelegramBadRequest().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return catalogops.NewResolveTelegramOK().WithPayload(models.NewResolveResult(result))
@@ -171,7 +171,7 @@ func (h *Handler) getLot(params catalogops.GetLotParams, identity *authz.Identit
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewGetLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	go h.registerLotView(ctx, id, params.HTTPRequest, identity)
@@ -190,7 +190,7 @@ func (h *Handler) getSimilarLots(params catalogops.GetSimilarLotsParams) middlew
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewGetSimilarLotsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewGetSimilarLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewGetSimilarLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return catalogops.NewGetSimilarLotsOK().WithPayload(models.NewLotList(h.Storage, result))
 }
@@ -204,7 +204,7 @@ func (h *Handler) toggleLotFavorite(params catalogops.ToggleLotFavoriteParams, i
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return catalogops.NewToggleLotFavoriteBadRequest().WithPayload(models.NewError(err2))
 		}
-		return catalogops.NewToggleLotFavoriteInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return catalogops.NewToggleLotFavoriteInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return catalogops.NewToggleLotFavoriteOK().WithPayload(models.NewLotFavoriteStatus(result))
 }

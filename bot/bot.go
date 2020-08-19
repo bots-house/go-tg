@@ -86,8 +86,9 @@ func (bot *Bot) SetWebhookIfNeed(ctx context.Context, domain string, path string
 
 func (bot *Bot) initHandler() {
 	authMiddleware := newAuthMiddleware(bot.authSrv)
+	sentryMiddleware := newSentryMiddleware()
 
-	handler := authMiddleware(tg.HandlerFunc(bot.onUpdate))
+	handler := sentryMiddleware(authMiddleware(tg.HandlerFunc(bot.onUpdate)))
 
 	bot.handler = handler
 }

@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/bots-house/birzzha/core"
+	"github.com/getsentry/sentry-go"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/go-kit/kit/log/term"
@@ -83,8 +85,8 @@ func Error(ctx context.Context, msg string, kvs ...interface{}) {
 		"msg",
 		msg,
 	}, kvs...)
-
 	_ = level.Error(GetLogger(ctx)).Log(kvs...)
+	captureException(ctx, msg, kvs)
 }
 
 // Warn message
@@ -95,4 +97,31 @@ func Warn(ctx context.Context, msg string, kvs ...interface{}) {
 	}, kvs...)
 
 	_ = level.Warn(GetLogger(ctx)).Log(kvs...)
+}
+
+func captureException(ctx context.Context, msg string, kvs []interface{}) {
+	if !sentry.HasHubOnContext(ctx) {
+		return
+	}
+	hub := sentry.GetHubFromContext(ctx)
+	module, ok := ctx.Value(core.ModuleName).(string)
+	if !ok {
+		module = core.Unknown
+	}
+	hub.WithScope(func(scope *sentry.Scope) {
+		scope.SetTag(string(core.ModuleName), module)
+		for i := 0; i < len(kvs); i += 2 {
+			if key, ok := kvs[i].(string); ok {
+				switch value := kvs[i+1].(type) {
+				case error:
+					scope.SetExtra(key, value.Error())
+					msg += " " + value.Error()
+				default:
+					scope.SetExtra(key, kvs[i+1])
+				}
+			}
+		}
+		scope.SetLevel(sentry.LevelError)
+		hub.CaptureMessage(msg)
+	})
 }

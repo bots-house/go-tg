@@ -11,15 +11,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/bots-house/birzzha/pkg/rate"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
+	"github.com/bots-house/birzzha/pkg/rate"
+	"github.com/bots-house/birzzha/pkg/sentrylog"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	tgme "github.com/bots-house/tg-me"
+	"github.com/getsentry/sentry-go"
 	"github.com/go-redis/redis/v8"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/subosito/gotenv"
@@ -59,7 +60,7 @@ func Run(ctx context.Context, revision string) {
 
 	log.Info(ctx, "start", "revision", revision)
 
-	if err := run(ctx); err != nil {
+	if err := run(ctx, revision); err != nil {
 		log.Error(ctx, "fatal error", "err", err)
 		os.Exit(1)
 	}
@@ -153,8 +154,7 @@ func parseConfig(config string) (Config, error) {
 	return cfg, nil
 }
 
-func run(ctx context.Context) error {
-
+func run(ctx context.Context, revision string) error {
 	// parse flags
 	var (
 		flagWorker, flagServer, flagHealth bool
@@ -174,6 +174,13 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "parse config")
 	}
+
+	flush, err := sentrylog.Init(ctx, revision, core.GetEnv(cfg.Env), cfg.SentryDSN)
+	if err != nil {
+		return err
+	}
+	defer flush()
+	defer sentry.Recover()
 
 	if flagHealth {
 		return runHealthcheck(ctx, cfg)
@@ -454,10 +461,13 @@ func run(ctx context.Context) error {
 			return nil
 		})
 	}
-
 	if wrk != nil {
 		g.Go(func() error {
-			if err := wrk.Run(ctx); err != nil {
+			hub := sentry.CurrentHub().Clone()
+			ctx = context.WithValue(ctx, core.ModuleName, core.Worker)
+			sentryCtx := sentry.SetHubOnContext(ctx, hub)
+
+			if err := wrk.Run(sentryCtx); err != nil {
 				return errors.Wrap(err, "run worker")
 			}
 

@@ -29,7 +29,7 @@ func (h *Handler) createToken(params authops.CreateTokenParams) middleware.Respo
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return authops.NewCreateTokenBadRequest().WithPayload(models.NewError(err2))
 		}
-		return authops.NewCreateTokenInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return authops.NewCreateTokenInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return authops.NewCreateTokenCreated().WithPayload(models.NewToken(h.Storage, token))
@@ -44,7 +44,7 @@ func (h *Handler) loginViaBot(params authops.LoginViaBotParams) middleware.Respo
 
 	url, err := h.Auth.LoginViaBot(ctx, params.CallbackURL)
 	if err != nil {
-		return authops.NewLoginViaBotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return authops.NewLoginViaBotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return authops.NewLoginViaBotFound().WithLocation(url)

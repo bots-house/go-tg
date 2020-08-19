@@ -40,7 +40,7 @@ type Worker struct {
 func (wrk *Worker) wrap(ctx context.Context, do func(ctx context.Context) error) func() {
 	return func() {
 		if err := do(ctx); err != nil {
-			panic(err)
+			log.Error(ctx, "worker failed", "error", err)
 		}
 	}
 }

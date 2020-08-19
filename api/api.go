@@ -176,6 +176,7 @@ func (h Handler) setupMiddleware(api *operations.BirzzhaAPI) {
 
 func (h Handler) wrapMiddleware(handler http.Handler) http.Handler {
 	// handler = common.WrapMiddlewareFS(handler, h.Service.Config.MediaStoragePath)
+	handler = h.wrapMiddlewareSentryHub(handler)
 	handler = h.wrapMiddlewareLogger(handler)
 
 	handler = h.wrapMiddlewareRecovery(handler)

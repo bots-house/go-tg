@@ -6,6 +6,8 @@ import (
 )
 
 type Config struct {
+	Env string `default:"local" split_words:"true"`
+
 	Domain      string `default:"localhost:8000"`
 	DomainProto string `default:"http" split_words:"true"`
 
@@ -28,6 +30,9 @@ type Config struct {
 	S3GlobalDir string `default:"" split_words:"true"`
 
 	S3PublicPrefix string `required:"true" split_words:"true"`
+
+	SentryDSN     string `default:"" split_words:"true"`
+	SentryEnabled bool   `default:"false" split_words:"true"`
 
 	BotToken              string        `required:"true" split_words:"true"`
 	BotWebhookDomain      string        `required:"true" split_words:"true"`

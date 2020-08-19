@@ -45,7 +45,7 @@ func (h *Handler) createLot(params personalops.CreateLotParams, identity *authz.
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCreateLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewCreateLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewCreateLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewCreateLotCreated().WithPayload(models.NewOwnedLot(h.Storage, lot))
@@ -61,7 +61,7 @@ func (h *Handler) getApplicationInvoice(params personalops.GetApplicationInovice
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetApplicationInoviceBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetApplicationInoviceInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetApplicationInoviceInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewGetApplicationInoviceOK().WithPayload(models.NewApplicationInvoice(h.Storage, invoice))
@@ -77,7 +77,7 @@ func (h *Handler) createApplicationPayment(params personalops.CreateApplicationP
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCreateApplicationPaymentBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewCreateApplicationPaymentInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewCreateApplicationPaymentInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewCreateApplicationPaymentCreated().WithPayload(models.NewPaymentForm(invoice))
@@ -93,7 +93,7 @@ func (h *Handler) getPaymentStatus(params personalops.GetPaymentStatusParams, id
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetPaymentStatusBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetPaymentStatusInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetPaymentStatusInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewGetPaymentStatusOK().WithPayload(models.NewPaymentStatus(status))
@@ -107,7 +107,7 @@ func (h *Handler) getOwnedLots(params personalops.GetUserLotsParams, identity *a
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetUserLotsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetUserLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetUserLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewGetUserLotsOK().WithPayload(models.NewOwnedLotSlice(h.Storage, lots))
@@ -122,7 +122,7 @@ func (h *Handler) getLotCanceledReasons(params personalops.GetLotCanceledReasons
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetLotCanceledReasonsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetLotCanceledReasonsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetLotCanceledReasonsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewGetLotCanceledReasonsOK().WithPayload(models.NewLotCanceledReasonSlice(lcrs))
@@ -140,7 +140,7 @@ func (h *Handler) cancelLot(params personalops.CancelLotParams, identity *authz.
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCancelLotBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewCancelLotInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewCancelLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewCancelLotOK()
@@ -161,7 +161,7 @@ func (h *Handler) uploadLotFile(params personalops.UploadLotFileParams, identity
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewUploadLotFileBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewUploadLotFileInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewUploadLotFileInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return personalops.NewUploadLotFileCreated().WithPayload(models.NewUploadedLotFile(h.Storage, result))
 }
@@ -177,7 +177,7 @@ func (h *Handler) getFavoriteLots(params personalops.GetFavoriteLotsParams, iden
 			if err2, ok := errors.Cause(err).(*core.Error); ok {
 				return personalops.NewGetFavoriteLotsBadRequest().WithPayload(models.NewError(err2))
 			}
-			return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+			return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 		}
 		query.SortBy = sortBy
 	}
@@ -202,7 +202,7 @@ func (h *Handler) getFavoriteLots(params personalops.GetFavoriteLotsParams, iden
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetFavoriteLotsBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetFavoriteLotsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return personalops.NewGetFavoriteLotsOK().WithPayload(models.NewPersonalLotList(h.Storage, result))
 }
@@ -216,7 +216,7 @@ func (h *Handler) changeLotPrice(params personalops.ChangeLotPriceParams, identi
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewChangeLotPriceBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewChangeLotPriceInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewChangeLotPriceInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 	return personalops.NewChangeLotPriceOK().WithPayload(models.NewOwnedLot(h.Storage, result))
 }
@@ -231,7 +231,7 @@ func (h *Handler) getChangePriceInvoice(params personalops.GetChangePriceInvoice
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewGetChangePriceInvoiceBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewGetChangePriceInvoiceInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewGetChangePriceInvoiceInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewGetChangePriceInvoiceOK().WithPayload(models.NewChangePriceInvoice(h.Storage, invoice))
@@ -247,7 +247,7 @@ func (h *Handler) createChangePricePayment(params personalops.CreateChangePriceP
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCreateChangePricePaymentBadRequest().WithPayload(models.NewError(err2))
 		}
-		return personalops.NewCreateChangePricePaymentInternalServerError().WithPayload(models.NewInternalServerError(err))
+		return personalops.NewCreateChangePricePaymentInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
 	}
 
 	return personalops.NewCreateChangePricePaymentCreated().WithPayload(models.NewPaymentForm(invoice))

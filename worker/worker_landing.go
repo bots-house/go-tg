@@ -56,7 +56,7 @@ func (wrk *Worker) taskUpdateLanding(ctx context.Context) error {
 
 	landing, err := wrk.Landing.Get(ctx)
 	if err != nil {
-		return errors.Wrap(err, "get lending")
+		return errors.Wrap(err, "get landing")
 	}
 
 	wg := sync.WaitGroup{}

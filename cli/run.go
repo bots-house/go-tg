@@ -16,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
+	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/pkg/rate"
 	"github.com/bots-house/birzzha/pkg/sentrylog"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
@@ -243,11 +244,11 @@ func run(ctx context.Context, revision string) error {
 		return errors.Wrap(err, "init file proxy cache")
 	}
 
-	var notifications *admin.Notifications
+	var notifs *notifications.Notifications
 
 	if cfg.AdminNotificationsChannelID != 0 {
-		notifications = admin.NewNotifications(tgClient, cfg.AdminNotificationsChannelID)
-		defer notifications.Close()
+		notifs = notifications.New(tgClient)
+		defer notifs.Close()
 	}
 
 	botLinkBuilder := bot.NewLinkBuilder(tgClient.Self.UserName)
@@ -261,11 +262,12 @@ func run(ctx context.Context, revision string) error {
 			TokenSecret:   cfg.TokenSecret,
 			TokenLifeTime: cfg.TokenLifeTime,
 		},
-		Clock:          clock.New(),
-		Storage:        strg,
-		BotLinkBuilder: botLinkBuilder,
-		Notifications:  notifications,
-		Redis:          rds,
+		Clock:                       clock.New(),
+		Storage:                     strg,
+		BotLinkBuilder:              botLinkBuilder,
+		Notifications:               notifs,
+		Redis:                       rds,
+		AdminNotificationsChannelID: cfg.AdminNotificationsChannelID,
 	}
 
 	resolver := &tg.BotResolver{
@@ -298,14 +300,20 @@ func run(ctx context.Context, revision string) error {
 		TelegramStat: telemetr,
 	}
 
+	usrNotif := notifications.UserNotification{
+		UsrStore: pg.User,
+		Notifier: notifs,
+	}
+
 	postingSrv := &posting.Service{
-		Lot:      pg.Lot,
-		Settings: pg.Settings,
-		Topic:    pg.Topic,
-		User:     pg.User,
-		Post:     pg.Post,
-		Txier:    pg.Tx,
-		TgClient: tgClient,
+		Lot:              pg.Lot,
+		Settings:         pg.Settings,
+		Topic:            pg.Topic,
+		User:             pg.User,
+		Post:             pg.Post,
+		Txier:            pg.Tx,
+		TgClient:         tgClient,
+		UserNotification: usrNotif,
 	}
 
 	adminSrv := &admin.Service{
@@ -325,8 +333,9 @@ func run(ctx context.Context, revision string) error {
 		AvatarResolver: tg.AvatarResolver{
 			Client: http.DefaultClient,
 		},
-		Posting: postingSrv,
-		Post:    pg.Post,
+		Posting:          postingSrv,
+		Post:             pg.Post,
+		UserNotification: usrNotif,
 	}
 
 	landingSrv := &landing.Service{
@@ -349,19 +358,20 @@ func run(ctx context.Context, revision string) error {
 	gateways := newGatewayRegistry(ctx, cfg)
 
 	personalSrv := &personal.Service{
-		Lot:               pg.Lot,
-		Resolver:          resolver,
-		Payment:           pg.Payment,
-		Txier:             pg.Tx,
-		LotFavorite:       pg.Favorite,
-		Storage:           strg,
-		Settings:          pg.Settings,
-		TelegramStat:      telemetr,
-		Gateways:          gateways,
-		AdminNotify:       notifications,
-		LotCanceledReason: pg.LotCanceledReason,
-		LotFile:           pg.LotFile,
-		Parser:            newParser(&http.Client{}),
+		Lot:                         pg.Lot,
+		Resolver:                    resolver,
+		Payment:                     pg.Payment,
+		Txier:                       pg.Tx,
+		LotFavorite:                 pg.Favorite,
+		Storage:                     strg,
+		Settings:                    pg.Settings,
+		TelegramStat:                telemetr,
+		Gateways:                    gateways,
+		Notify:                      notifs,
+		LotCanceledReason:           pg.LotCanceledReason,
+		LotFile:                     pg.LotFile,
+		Parser:                      newParser(&http.Client{}),
+		AdminNotificationsChannelID: cfg.AdminNotificationsChannelID,
 	}
 
 	viewsSrv := &views.Service{

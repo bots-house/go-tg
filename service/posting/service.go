@@ -2,6 +2,7 @@ package posting
 
 import (
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/store"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 )
@@ -16,4 +17,6 @@ type Service struct {
 	Txier store.Txier
 
 	TgClient *tgbotapi.BotAPI
+
+	UserNotification notifications.UserNotification
 }

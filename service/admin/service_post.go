@@ -49,6 +49,8 @@ func (srv *Service) CreatePost(ctx context.Context, user *core.User, in *PostInp
 			if err := srv.Lot.Update(ctx, lot); err != nil {
 				return errors.Wrap(err, "update lot")
 			}
+
+			srv.UserNotification.Send(ctx, lot, CreatePostNotification{postTgID: post.ID})
 		}
 
 		return nil

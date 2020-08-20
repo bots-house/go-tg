@@ -2,9 +2,11 @@ package posting
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/log"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
@@ -94,8 +96,49 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 				if err := srv.Lot.Update(ctx, lot); err != nil {
 					return errors.Wrap(err, "update lot")
 				}
+
+				date, err := formatDate(lot.ScheduledAt.Time)
+				if err == nil {
+					srv.UserNotification.Send(ctx, lot, LotPublishedNotification{PublishedAt: date})
+				} else {
+					log.Error(ctx, "failed to format date to send lot published notification", "error", err, "time", lot.ScheduledAt.Time)
+				}
 			}
 		}
 		return nil
 	})
+}
+
+func formatDate(t time.Time) (string, error) {
+	location, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return "", errors.Wrap(err, "load moscow location")
+	}
+	now := time.Now().In(location)
+	t = t.In(location)
+	if t.Day() == now.Day() {
+		return "сегодня в " + t.Format("15:04"), nil
+	}
+
+	month, ok := mskMonth[t.Month()]
+	if !ok {
+		return "", errors.New("failed to match defined month in MSK")
+	}
+
+	return strconv.Itoa(t.Day()) + " " + month + " в " + t.Format("15:04"), nil
+}
+
+var mskMonth = map[time.Month]string{
+	time.January:   "января",
+	time.February:  "ферваля",
+	time.March:     "марта",
+	time.April:     "апреля",
+	time.May:       "мая",
+	time.June:      "июня",
+	time.July:      "июля",
+	time.August:    "августа",
+	time.September: "сентября",
+	time.October:   "октябрь",
+	time.November:  "ноябрь",
+	time.December:  "декабрь",
 }

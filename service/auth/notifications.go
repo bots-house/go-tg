@@ -5,7 +5,8 @@ import (
 )
 
 type NewUserNotification struct {
-	User *core.User
+	User      *core.User
+	channelID int64
 }
 
 func (n NewUserNotification) NotificationTemplate() string {
@@ -18,4 +19,8 @@ func (n NewUserNotification) NotificationTemplate() string {
 
 		#user{{ .User.ID }}
 	`
+}
+
+func (n NewUserNotification) ChatID() int64 {
+	return n.channelID
 }

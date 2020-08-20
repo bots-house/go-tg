@@ -2,6 +2,7 @@ package admin
 
 import (
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/posting"
@@ -22,6 +23,8 @@ type Service struct {
 	Post              core.PostStore
 	BotLinkBuilder    *core.BotLinkBuilder
 	Posting           *posting.Service
+
+	UserNotification notifications.UserNotification
 
 	Txier store.Txier
 

@@ -2,10 +2,10 @@ package personal
 
 import (
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/pkg/stat"
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
-	"github.com/bots-house/birzzha/service/admin"
 	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/store"
 )
@@ -16,7 +16,7 @@ type Service struct {
 	Resolver          tg.Resolver
 	Payment           core.PaymentStore
 	Txier             store.Txier
-	AdminNotify       *admin.Notifications
+	Notify            *notifications.Notifications
 	LotCanceledReason core.LotCanceledReasonStore
 	LotFile           core.LotFileStore
 	TelegramStat      stat.Telegram
@@ -25,4 +25,6 @@ type Service struct {
 	Settings core.SettingsStore
 	Gateways *payment.GatewayRegistry
 	Parser   core.LotExtraResourceParser
+
+	AdminNotificationsChannelID int64
 }

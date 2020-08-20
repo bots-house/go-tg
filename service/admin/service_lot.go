@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-
 	"fmt"
 
 	"github.com/bots-house/birzzha/core"
@@ -298,6 +297,8 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 	if err := srv.Lot.Update(ctx, lot); err != nil {
 		return errors.Wrap(err, "update lot")
 	}
+
+	srv.UserNotification.Send(ctx, lot, new(DeclineNotification))
 
 	return nil
 }

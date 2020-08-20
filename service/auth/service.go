@@ -7,15 +7,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/benbjohnson/clock"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
+	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/pkg/storage"
-	"github.com/bots-house/birzzha/service/admin"
-
 	"github.com/cristalhq/jwt"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
 	"github.com/volatiletech/null/v8"
@@ -32,9 +30,11 @@ type Service struct {
 	Config         Config
 	Clock          clock.Clock
 	Storage        storage.Storage
-	Notifications  *admin.Notifications
+	Notifications  *notifications.Notifications
 	BotLinkBuilder *core.BotLinkBuilder
 	Redis          redis.UniversalClient
+
+	AdminNotificationsChannelID int64
 }
 
 var (
@@ -75,7 +75,8 @@ func (srv *Service) newUserFromTelegramWidgetInfo(ctx context.Context, info *Tel
 	}
 
 	srv.Notifications.Send(NewUserNotification{
-		User: user,
+		User:      user,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 
 	return user, nil
@@ -199,7 +200,8 @@ func (srv *Service) newUserFromTelegramUserInfo(ctx context.Context, info *Teleg
 	}
 
 	srv.Notifications.Send(NewUserNotification{
-		User: user,
+		User:      user,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 
 	return user, nil

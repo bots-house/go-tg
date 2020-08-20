@@ -221,9 +221,10 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		return nil, err
 	}
 
-	srv.AdminNotify.Send(&NewLotNotification{
-		User: user,
-		Lot:  lot,
+	srv.Notify.Send(&NewLotNotification{
+		User:      user,
+		Lot:       lot,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 
 	olufs := NewOwnedLotUploadedFileSlice(files)
@@ -285,9 +286,10 @@ func (srv *Service) CancelLot(
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.AdminNotify.Send(&CanceledLotNotification{
-		Lot:    lot.Lot,
-		Reason: reason,
+	srv.Notify.Send(&CanceledLotNotification{
+		Lot:       lot.Lot,
+		Reason:    reason,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 
 	return nil

@@ -279,9 +279,10 @@ func (srv *Service) onPaymentApplication(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.AdminNotify.Send(NewPaymentNotification{
-		Payment: pm,
-		Lot:     lot,
+	srv.Notify.Send(NewPaymentNotification{
+		Payment:   pm,
+		Lot:       lot,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 
 	return nil
@@ -304,9 +305,10 @@ func (srv *Service) onPaymentChangePrice(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.AdminNotify.Send(NewPaymentNotification{
-		Payment: pm,
-		Lot:     lot,
+	srv.Notify.Send(NewPaymentNotification{
+		Payment:   pm,
+		Lot:       lot,
+		channelID: srv.AdminNotificationsChannelID,
 	})
 	return nil
 }

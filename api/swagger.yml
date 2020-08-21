@@ -738,6 +738,8 @@ paths:
     post:
       summary: Upload File
       tags: ["personal-area"]
+      security: []
+      
       description: |
         Загрузка файла для лота.
 

@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/s8/y6wl2zqx0l7cvcv1f_jz6v300000gn/T/swagger.yml540159905 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/s8/y6wl2zqx0l7cvcv1f_jz6v300000gn/T/swagger.yml079677901 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -338,7 +338,7 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 		})
 	}
 	if api.PersonalAreaUploadLotFileHandler == nil {
-		api.PersonalAreaUploadLotFileHandler = personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams, principal *authz.Identity) middleware.Responder {
+		api.PersonalAreaUploadLotFileHandler = personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.UploadLotFile has not yet been implemented")
 		})
 	}

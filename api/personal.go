@@ -146,7 +146,7 @@ func (h *Handler) cancelLot(params personalops.CancelLotParams, identity *authz.
 	return personalops.NewCancelLotOK()
 }
 
-func (h *Handler) uploadLotFile(params personalops.UploadLotFileParams, identity *authz.Identity) middleware.Responder {
+func (h *Handler) uploadLotFile(params personalops.UploadLotFileParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	defer params.File.Close()

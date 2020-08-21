@@ -218,7 +218,7 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminToggleUserAdminHandler: admin.ToggleUserAdminHandlerFunc(func(params admin.ToggleUserAdminParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.ToggleUserAdmin has not yet been implemented")
 		}),
-		PersonalAreaUploadLotFileHandler: personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams, principal *authz.Identity) middleware.Responder {
+		PersonalAreaUploadLotFileHandler: personal_area.UploadLotFileHandlerFunc(func(params personal_area.UploadLotFileParams) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.UploadLotFile has not yet been implemented")
 		}),
 

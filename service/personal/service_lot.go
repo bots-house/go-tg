@@ -302,6 +302,23 @@ type LotUploadedFile struct {
 	Size int
 }
 
+var fileAllowedExtension = []string{
+	"pdf",
+	"png",
+	"jpeg",
+	"jpg",
+}
+
+func isValidFileExension(ext string) bool {
+	for _, v := range fileAllowedExtension {
+		if v == ext {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (srv *Service) UploadLotFile(
 	ctx context.Context,
 	body io.Reader,
@@ -317,7 +334,7 @@ func (srv *Service) UploadLotFile(
 	ext := filepath.Ext(filename)
 	ext = strings.TrimPrefix(ext, ".")
 
-	if ext != "png" && ext != "pdf" && ext != "jpeg" {
+	if isValidFileExension(ext) {
 		return nil, ErrLotFileExtensionIsWrong
 	}
 

@@ -421,7 +421,7 @@ func (store *LotStore) SimilarLotsCount(ctx context.Context, id core.LotID) (int
 					*
 				from
 					topics
-			);
+			) and lot.status in ('published', 'scheduled');
 	`, id)
 	if err != nil {
 		return 0, errors.Wrap(err, "query rows")
@@ -471,7 +471,7 @@ func (store *LotStore) SimilarLotIDs(ctx context.Context, id core.LotID, limit i
 					*
 				from
 					topics
-			)
+			) and lot.status in ('published', 'scheduled')
 		group by
 			lot_topic.topic_id,
 			lot.id

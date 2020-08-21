@@ -214,7 +214,11 @@ func (fl *FullLot) TelemetrLink() string {
 }
 
 func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) (*FullLot, error) {
-	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	lot, err := srv.Lot.Query().
+		ID(id).
+		Statuses(core.ShowLotStatus...).
+		One(ctx)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "get lot")
 	}

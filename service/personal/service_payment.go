@@ -64,7 +64,7 @@ func (srv *Service) GetApplicationInvoice(
 		Lot:             lot,
 		Price:           settings.Prices.Application,
 		CashierUsername: settings.CashierUsername,
-		Gateways:        []string{"interkassa", "direct"},
+		Gateways:        []string{"interkassa"},
 	}, nil
 }
 

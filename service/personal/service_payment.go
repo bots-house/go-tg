@@ -87,7 +87,7 @@ func (srv *Service) GetChangeInvoice(
 		Lot:             lot,
 		Price:           settings.Prices.Change,
 		CashierUsername: settings.CashierUsername,
-		Gateways:        []string{"interkassa", "direct"},
+		Gateways:        []string{"interkassa"},
 	}, nil
 }
 

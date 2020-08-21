@@ -334,7 +334,7 @@ func (srv *Service) UploadLotFile(
 	ext := filepath.Ext(filename)
 	ext = strings.TrimPrefix(ext, ".")
 
-	if isValidFileExension(ext) {
+	if !isValidFileExension(ext) {
 		return nil, ErrLotFileExtensionIsWrong
 	}
 

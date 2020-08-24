@@ -64,6 +64,8 @@ const queryFilterBoundariesAll = `
 		max(metrics_payback_period) as payback_period_max
 	from
 		lot
+	where 
+		status in ('published', 'scheduled')
 `
 
 const queryFilterBoudariesTopics = `
@@ -86,7 +88,10 @@ const queryFilterBoudariesTopics = `
 		lot
 	inner join lot_topic
 		lt on lot.id = lt.lot_id
-	where lt.topic_id = any($1)
+	where 
+		lt.topic_id = any($1)
+		and 
+		status in ('published', 'scheduled')
 `
 
 func (store *LotStore) FilterBoundaries(ctx context.Context, query *core.LotFilterBoundariesQuery) (*core.LotFilterBoundaries, error) {

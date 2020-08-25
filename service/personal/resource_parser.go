@@ -37,7 +37,16 @@ func (parser LotExtraResourceParser) Parse(ctx context.Context, url string) (*co
 	if v == "" {
 		return parser.parseSiteLotExtraResource(ctx, url)
 	}
-	return parser.parseTelegramLotExtraResource(ctx, url)
+
+	res, err := parser.parseTelegramLotExtraResource(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+
+	if res == nil {
+		return parser.parseSiteLotExtraResource(ctx, url)
+	}
+	return nil, nil
 }
 
 func (parser LotExtraResourceParser) getLotExtraResourceOpengraph(ctx context.Context, url string) (*opengraph.OpenGraph, error) {
@@ -114,6 +123,10 @@ func (parser LotExtraResourceParser) parseTelegramLotExtraResource(ctx context.C
 	result, err := parser.Telegram.Parse(ctx, url)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch telegram resource")
+	}
+
+	if result == nil {
+		return nil, nil
 	}
 
 	_, domain := tg.ParseResolveQuery(url)

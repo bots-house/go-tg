@@ -12,10 +12,12 @@ import (
 )
 
 type LotPostText struct {
-	Lot      *core.Lot
-	Topics   core.TopicSlice
-	Owner    *core.User
-	Settings *core.Settings
+	Lot                     *core.Lot
+	Topics                  core.TopicSlice
+	Owner                   *core.User
+	Settings                *core.Settings
+	SiteWithPathListChannel string
+	BotLogin                string
 }
 
 var (
@@ -24,21 +26,24 @@ var (
 
 func (lpt *LotPostText) template() string {
 	return `
-		<b>Канал на продажу:</b> <a href="{{ LotLink }}">{{ .Lot.Name }}</a>	
+		<b>Канал:</b> <a href="{{ LotLink }}">{{ .Lot.Name }}</a> {{ $url:= .SiteWithPathListChannel }}
 		{{ if .Lot.ExtraResources }}<b>Дополнительные ресурсы:</b>{{ range $extra := .Lot.ExtraResources }} <a href={{ $extra.URL }}>{{ $extra.Title }}</a>{{ end }}\n{{ end }}
-		<b>Тематика:</b>{{ range .Topics }} #{{ .Slug }}{{ end }}
+		<b>Тематика:</b>{{ range .Topics }} <a href="https://{{ $url }}/lots?topics={{ .ID }}&from=channel">#{{ .Slug }} </a>{{ end }}
 
-		<b>Подписчиков:</b> {{ .Lot.Metrics.MembersCount }}
+		<b>Подписчиков:</b> {{ .Lot.Metrics.MembersCount }} ₽ ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
+		<b>Просмотров на пост:</b> {{ .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)
+		{{ if .Lot.Metrics.MonthlyIncome.Valid }}<b>Доход в месяц:</b> {{ .Lot.Metrics.MonthlyIncome.Int }} ₽ {{end}}{{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} месяц(а)) {{end}}
 
 		<b>Комментарий:</b>
-		{{ .Lot.Comment }}
+		{{ .Lot.ShortComment }}
+
+		<b>Продавец:</b>{{if .Owner.Telegram.Username.Valid }} @{{ .Owner.Telegram.Username.String }}{{else}} <a href="tg://user?{{ .Owner.EscapedQueryUserID }}"> {{ .Owner.FirstName }} {{ .Owner.LastName.String }}</a> {{end}}
 
 		<b>Цена:</b> {{ PriceHashTag .Lot.Price.Current }}₽ {{ PriceLimit .Lot.Price.Current }}
 
-		<b>Продавец:</b> @{{ .Owner.Telegram.Username.String }}
-
 		100% безопасность при сделках в Telegram.
-		<b>Гарант от команды:</b> @{{ .Settings.CashierUsername }}
+		<b>Гарант от команды:</b> <a href="https://t.me/zzapusk">Запуск</a> @{{ .Settings.CashierUsername }}
+		
 	`
 }
 

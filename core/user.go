@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"strconv"
 	"time"
 
@@ -81,6 +82,10 @@ func (user *User) Name() string {
 
 func (user *User) TelegramLink() string {
 	return "tg://user?id=" + strconv.Itoa(user.Telegram.ID)
+}
+
+func (user *User) EscapedQueryUserID() string {
+	return template.URLQueryEscaper("id=" + strconv.Itoa(user.Telegram.ID))
 }
 
 // UserTelegram contains Telegram user identities.

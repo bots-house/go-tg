@@ -3,7 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
+	"html/template"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
@@ -82,6 +84,10 @@ func NewLotMetrics(price int, membersCount, dailyCoverage int, monthlyIncome nul
 	metrics.Refresh(price)
 
 	return metrics
+}
+
+func (lm *LotMetrics) PriceViewPerPostText() string {
+	return fmt.Sprintf("%.1f", float64(lm.MembersCount)/lm.PricePerView)
 }
 
 func (lm *LotMetrics) Refresh(price int) {
@@ -249,6 +255,19 @@ type Lot struct {
 	PublishedAt null.Time
 
 	ScheduledAt null.Time
+}
+
+func (lot *Lot) EscapedQueryLotID() string {
+	return template.URLQueryEscaper("id=" + strconv.Itoa(int(lot.ID)))
+}
+
+func (lot *Lot) ShortComment() string {
+	words := strings.Fields(lot.Comment)
+	if len(words) < 30 {
+		return lot.Comment
+	}
+
+	return strings.Join(words[:29], " ") + "..."
 }
 
 func (lot *Lot) CanCancel() bool {

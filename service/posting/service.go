@@ -7,6 +7,10 @@ import (
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 )
 
+type Config struct {
+	Site string
+}
+
 type Service struct {
 	Lot      core.LotStore
 	Settings core.SettingsStore
@@ -14,9 +18,13 @@ type Service struct {
 	User     core.UserStore
 	Post     core.PostStore
 
+	Config Config
+
 	Txier store.Txier
 
 	TgClient *tgbotapi.BotAPI
 
 	UserNotification notifications.UserNotification
+
+	SiteWithPathListChannel string
 }

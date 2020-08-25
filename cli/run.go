@@ -306,14 +306,18 @@ func run(ctx context.Context, revision string) error {
 	}
 
 	postingSrv := &posting.Service{
-		Lot:              pg.Lot,
-		Settings:         pg.Settings,
-		Topic:            pg.Topic,
-		User:             pg.User,
-		Post:             pg.Post,
-		Txier:            pg.Tx,
-		TgClient:         tgClient,
-		UserNotification: usrNotif,
+		Lot:      pg.Lot,
+		Settings: pg.Settings,
+		Topic:    pg.Topic,
+		User:     pg.User,
+		Config: posting.Config{
+			Site: cfg.Site,
+		},
+		Post:                    pg.Post,
+		Txier:                   pg.Tx,
+		TgClient:                tgClient,
+		UserNotification:        usrNotif,
+		SiteWithPathListChannel: cfg.getSiteFullPath(cfg.SitePathListChannel),
 	}
 
 	adminSrv := &admin.Service{

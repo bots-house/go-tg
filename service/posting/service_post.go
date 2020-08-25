@@ -2,7 +2,9 @@ package posting
 
 import (
 	"context"
+	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bots-house/birzzha/core"
@@ -11,6 +13,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
 )
+
+func joinSitePath(site, path string) string {
+	path = strings.TrimPrefix(path, "/")
+	site = strings.TrimSuffix(site, "/")
+
+	return site + "/" + path
+}
 
 func (srv *Service) GetText(ctx context.Context, id core.LotID) (string, error) {
 	lot, err := srv.Lot.Query().ID(id).One(ctx)
@@ -34,10 +43,11 @@ func (srv *Service) GetText(ctx context.Context, id core.LotID) (string, error) 
 	}
 
 	lt := &LotPostText{
-		Lot:      lot,
-		Topics:   topics,
-		Owner:    owner,
-		Settings: settings,
+		Lot:                     lot,
+		Topics:                  topics,
+		Owner:                   owner,
+		Settings:                settings,
+		SiteWithPathListChannel: srv.SiteWithPathListChannel,
 	}
 
 	return lt.Render()
@@ -74,12 +84,28 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 		}
 
 		for _, post := range posts {
-			_, err := srv.TgClient.Send(tgbotapi.MessageConfig{
-				BaseChat:              tgbotapi.BaseChat{ChatID: settings.Channel.PrivateID},
+			msg := tgbotapi.MessageConfig{
+				BaseChat: tgbotapi.BaseChat{
+					ChatID: settings.Channel.PrivateID,
+				},
 				Text:                  post.Text,
 				ParseMode:             "HTML",
 				DisableWebPagePreview: post.DisableWebPagePreview,
-			})
+			}
+			if post.LotID != 0 {
+				markup := tgbotapi.NewInlineKeyboardMarkup(
+					tgbotapi.NewInlineKeyboardRow(
+						tgbotapi.InlineKeyboardButton{
+							Text: "Подробней",
+							LoginURL: &tgbotapi.LoginURL{
+								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d/?from=channel", post.LotID)),
+							},
+						},
+					),
+				)
+				msg.BaseChat.ReplyMarkup = markup
+			}
+			_, err := srv.TgClient.Send(msg)
 			if err != nil {
 				return errors.Wrap(err, "send post")
 			}

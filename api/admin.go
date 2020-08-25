@@ -442,3 +442,15 @@ func (h *Handler) adminGetPosts(params adminops.AdminGetPostsParams, identity *a
 	}
 	return adminops.NewAdminGetPostsOK().WithPayload(models.NewFullPost(h.Storage, result))
 }
+
+func (h *Handler) adminCancelLot(params adminops.AdminCancelLotParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	if err := h.Admin.CancelLot(ctx, identity.GetUser(), core.LotID(params.ID), core.LotCanceledReasonID(params.ReasonID)); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminCancelLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminCancelLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminCancelLotOK()
+}

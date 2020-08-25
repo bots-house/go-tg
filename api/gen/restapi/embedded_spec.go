@@ -214,6 +214,51 @@ func init() {
         }
       ]
     },
+    "/admin/lots/{id}/cancel": {
+      "post": {
+        "description": "Снять лот с продажи\n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Cancel Lot",
+        "operationId": "adminCancelLot",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "ID причины снятия лота с продажи.\n",
+            "name": "reason_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/lots/{id}/decline": {
       "put": {
         "description": "Отклонить лот.",
@@ -5361,6 +5406,51 @@ func init() {
         {
           "type": "integer",
           "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/admin/lots/{id}/cancel": {
+      "post": {
+        "description": "Снять лот с продажи\n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Cancel Lot",
+        "operationId": "adminCancelLot",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "ID причины снятия лота с продажи.\n",
+            "name": "reason_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID лота",
           "name": "id",
           "in": "path",
           "required": true

@@ -53,6 +53,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		AdminAdminCancelLotHandler: admin.AdminCancelLotHandlerFunc(func(params admin.AdminCancelLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminCancelLot has not yet been implemented")
+		}),
 		AdminAdminCreateLotCanceledReasonHandler: admin.AdminCreateLotCanceledReasonHandlerFunc(func(params admin.AdminCreateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateLotCanceledReason has not yet been implemented")
 		}),
@@ -282,6 +285,8 @@ type BirzzhaAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// AdminAdminCancelLotHandler sets the operation handler for the admin cancel lot operation
+	AdminAdminCancelLotHandler admin.AdminCancelLotHandler
 	// AdminAdminCreateLotCanceledReasonHandler sets the operation handler for the admin create lot canceled reason operation
 	AdminAdminCreateLotCanceledReasonHandler admin.AdminCreateLotCanceledReasonHandler
 	// AdminAdminCreatePostHandler sets the operation handler for the admin create post operation
@@ -473,6 +478,9 @@ func (o *BirzzhaAPI) Validate() error {
 		unregistered = append(unregistered, "TokenAuth")
 	}
 
+	if o.AdminAdminCancelLotHandler == nil {
+		unregistered = append(unregistered, "admin.AdminCancelLotHandler")
+	}
 	if o.AdminAdminCreateLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCreateLotCanceledReasonHandler")
 	}
@@ -750,6 +758,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/admin/lots/{id}/cancel"] = admin.NewAdminCancelLot(o.context, o.AdminAdminCancelLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

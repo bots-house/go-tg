@@ -396,3 +396,32 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 		CanceledReason: canceledReason,
 	}, nil
 }
+
+var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")
+
+func (srv *Service) CancelLot(ctx context.Context, user *core.User, id core.LotID, reasonID core.LotCanceledReasonID) error {
+	if err := srv.IsAdmin(user); err != nil {
+		return err
+	}
+
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get lot")
+	}
+
+	if !lot.CanCancel() {
+		return ErrLotCantBeCanceled
+	}
+
+	canceledReason, err := srv.LotCanceledReason.Query().ID(reasonID).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get canceled reason")
+	}
+
+	lot.CanceledReasonID = canceledReason.ID
+	if err := srv.Lot.Update(ctx, lot); err != nil {
+		return errors.Wrap(err, "update lot")
+	}
+
+	return nil
+}

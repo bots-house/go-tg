@@ -1257,6 +1257,39 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /admin/lots/{id}/cancel:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID лота
+
+    post:
+      parameters:
+        - name: reason_id
+          in: query
+          type: integer
+          required: true
+          description: |
+            ID причины снятия лота с продажи.
+      summary: Cancel Lot
+      description: |
+        Снять лот с продажи
+      operationId: adminCancelLot
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /admin/lots:
     parameters:
       - name: status

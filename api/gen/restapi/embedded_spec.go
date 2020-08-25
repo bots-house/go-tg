@@ -1567,7 +1567,7 @@ func init() {
     "/lots/file": {
       "post": {
         "security": [],
-        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n",
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg, jpg);\n",
         "consumes": [
           "multipart/form-data"
         ],
@@ -6777,7 +6777,7 @@ func init() {
     "/lots/file": {
       "post": {
         "security": [],
-        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg);\n",
+        "description": "Загрузка файла для лота.\n\nВозможные ошибки:\n  - ` + "`" + `lot_file_size_is_large` + "`" + ` - Размер файла превышает 6MB;\n  - ` + "`" + `lot_file_extension_is_wrong` + "`" + ` - Расширение файла не входит в список доступных (pdf, png, jpeg, jpg);\n",
         "consumes": [
           "multipart/form-data"
         ],

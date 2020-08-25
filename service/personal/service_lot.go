@@ -80,7 +80,7 @@ var (
 
 	ErrLotFileExtensionIsWrong = core.NewError(
 		"lot_file_extension_is_wrong",
-		"lot file extension is wrong (pdf, png, jpeg)",
+		"lot file extension is wrong (pdf, png, jpeg, jpg)",
 	)
 	ErrCantChangeLotPriceFree = core.NewError(
 		"cant_change_lot_price_free",

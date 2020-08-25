@@ -37,7 +37,7 @@ Upload File
 
 Возможные ошибки:
   - `lot_file_size_is_large` - Размер файла превышает 6MB;
-  - `lot_file_extension_is_wrong` - Расширение файла не входит в список доступных (pdf, png, jpeg);
+  - `lot_file_extension_is_wrong` - Расширение файла не входит в список доступных (pdf, png, jpeg, jpg);
 
 
 */

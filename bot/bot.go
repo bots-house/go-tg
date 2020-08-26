@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/pkg/log"
@@ -61,6 +62,13 @@ func (bot *Bot) SetWebhookIfNeed(ctx context.Context, domain string, path string
 	if err != nil {
 		return errors.Wrap(err, "get webhook info")
 	}
+
+	log.Info(ctx, "bot status",
+		"username", bot.Client().Self.UserName,
+		"webhook", webhook.URL,
+		"last_error", webhook.LastErrorMessage,
+		"last_error_at", time.Unix(int64(webhook.LastErrorDate), 0),
+	)
 
 	path = strings.TrimPrefix(path, "/")
 

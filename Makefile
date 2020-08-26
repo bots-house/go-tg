@@ -8,6 +8,9 @@ sqlboiler_download_url = https://api.github.com/repos/volatiletech/sqlboiler/tar
 
 golangci_lint_version = 1.27.0
 
+hosts_file=/etc/hosts
+localhost_alias=local.birzzha.me
+hosts_file_contains_localhost_alias := $(shell grep -q ${localhost_alias} ${hosts_file}; echo $$?)
 
 run: services
 	go run main.go -config .env.local
@@ -19,7 +22,23 @@ run-worker: services
 	go run main.go -config .env.local -worker
 
 services:
-	docker-compose up --no-recreate --detach
+	docker-compose up --no-recreate --detach postgres redis 
+
+run-frontend: frontend-localhost-alias
+	@$(info 👇pull latest images of web and admin)
+	@docker-compose pull --quiet web admin
+	
+	@$(info 👟restart containers)
+	@docker-compose up --quiet --detach --force-recreate web admin
+	
+	@$(info 🚀 site: http://${localhost_alias}:80)
+	@$(info 🚀 admin: http://${localhost_alias}:8080)
+
+frontend-localhost-alias:
+ifeq ($(hosts_file_contains_localhost_alias), 1)
+	@$(info ❓host ${localhost_alias} not found in ${hosts_file}, next command will add it)
+	echo '127.0.0.1 ${localhost_alias}' | sudo tee -a /etc/hosts
+endif
 
 psql:
 	docker-compose exec postgres psql -U brz

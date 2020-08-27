@@ -322,7 +322,7 @@ func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotI
 
 		lot.Comment = in.Comment
 		lot.Price.Current = in.Price
-		lot.Metrics.MonthlyIncome = null.IntFrom(in.Income)
+		lot.Metrics.MonthlyIncome = in.Income
 		lot.ExtraResources = in.Extra
 		lot.TopicIDs = in.Topics
 

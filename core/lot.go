@@ -57,7 +57,7 @@ type LotMetrics struct {
 	DailyCoverage int
 
 	// Total monthly income
-	MonthlyIncome null.Int
+	MonthlyIncome int
 
 	// Price of one member of channel
 	// (MembersCount / Price)
@@ -74,7 +74,7 @@ type LotMetrics struct {
 	PaybackPeriod null.Float64
 }
 
-func NewLotMetrics(price int, membersCount, dailyCoverage int, monthlyIncome null.Int) LotMetrics {
+func NewLotMetrics(price int, membersCount, dailyCoverage int, monthlyIncome int) LotMetrics {
 	metrics := LotMetrics{
 		MembersCount:  membersCount,
 		DailyCoverage: dailyCoverage,
@@ -110,8 +110,8 @@ func (lm *LotMetrics) refreshPricePerView(price int) {
 }
 
 func (lm *LotMetrics) refreshPaybackPeriod(price int) {
-	if lm.MonthlyIncome.Valid {
-		v := float64(price) / float64(lm.MonthlyIncome.Int)
+	if lm.MonthlyIncome > 0 {
+		v := float64(price) / float64(lm.MonthlyIncome)
 		lm.PaybackPeriod = null.Float64From(math.Round(v*100) / 100)
 	} else {
 		lm.PaybackPeriod.Valid = false
@@ -387,7 +387,7 @@ func NewLot(
 	comment string,
 	membersCount int,
 	dailyCoverage int,
-	monthlyIncome null.Int,
+	monthlyIncome int,
 ) *Lot {
 	return &Lot{
 		OwnerID:        ownerID,

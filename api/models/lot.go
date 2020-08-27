@@ -23,7 +23,7 @@ func newLotMetrics(in core.LotMetrics) *models.LotMetrics {
 	return &models.LotMetrics{
 		MembersCount:   swag.Int64(int64(in.MembersCount)),
 		DailyCoverage:  swag.Int64(int64(in.DailyCoverage)),
-		MonthlyIncome:  nullIntToInt64(in.MonthlyIncome),
+		MonthlyIncome:  swag.Int64(int64(in.MonthlyIncome)),
 		PricePerMember: swag.Float64(in.PricePerMember),
 		PricePerView:   swag.Float64(in.PricePerView),
 		PaybackPeriod:  nullFloat64ToFloat64(in.PaybackPeriod),

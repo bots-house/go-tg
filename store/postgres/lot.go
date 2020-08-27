@@ -606,12 +606,12 @@ func (lsq *LotStoreQuery) PaybackPeriodTo(v float64) core.LotStoreQuery {
 }
 
 func (lsq *LotStoreQuery) MonthlyIncomeFrom(v int) core.LotStoreQuery {
-	lsq.mods = append(lsq.mods, dal.LotWhere.MetricsMonthlyIncome.GTE(null.IntFrom(v)))
+	lsq.mods = append(lsq.mods, dal.LotWhere.MetricsMonthlyIncome.GTE(v))
 	return lsq
 }
 
 func (lsq *LotStoreQuery) MonthlyIncomeTo(v int) core.LotStoreQuery {
-	lsq.mods = append(lsq.mods, dal.LotWhere.MetricsMonthlyIncome.LTE(null.IntFrom(v)))
+	lsq.mods = append(lsq.mods, dal.LotWhere.MetricsMonthlyIncome.LTE(v))
 	return lsq
 }
 

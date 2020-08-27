@@ -37,7 +37,7 @@ type Lot struct {
 	Comment               string       `boil:"comment" json:"comment" toml:"comment" yaml:"comment"`
 	MetricsMembersCount   int          `boil:"metrics_members_count" json:"metrics_members_count" toml:"metrics_members_count" yaml:"metrics_members_count"`
 	MetricsDailyCoverage  int          `boil:"metrics_daily_coverage" json:"metrics_daily_coverage" toml:"metrics_daily_coverage" yaml:"metrics_daily_coverage"`
-	MetricsMonthlyIncome  null.Int     `boil:"metrics_monthly_income" json:"metrics_monthly_income,omitempty" toml:"metrics_monthly_income" yaml:"metrics_monthly_income,omitempty"`
+	MetricsMonthlyIncome  int          `boil:"metrics_monthly_income" json:"metrics_monthly_income" toml:"metrics_monthly_income" yaml:"metrics_monthly_income"`
 	MetricsPricePerMember float64      `boil:"metrics_price_per_member" json:"metrics_price_per_member" toml:"metrics_price_per_member" yaml:"metrics_price_per_member"`
 	MetricsPricePerView   float64      `boil:"metrics_price_per_view" json:"metrics_price_per_view" toml:"metrics_price_per_view" yaml:"metrics_price_per_view"`
 	MetricsPaybackPeriod  null.Float64 `boil:"metrics_payback_period" json:"metrics_payback_period,omitempty" toml:"metrics_payback_period" yaml:"metrics_payback_period,omitempty"`
@@ -335,7 +335,7 @@ var LotWhere = struct {
 	Comment               whereHelperstring
 	MetricsMembersCount   whereHelperint
 	MetricsDailyCoverage  whereHelperint
-	MetricsMonthlyIncome  whereHelpernull_Int
+	MetricsMonthlyIncome  whereHelperint
 	MetricsPricePerMember whereHelperfloat64
 	MetricsPricePerView   whereHelperfloat64
 	MetricsPaybackPeriod  whereHelpernull_Float64
@@ -365,7 +365,7 @@ var LotWhere = struct {
 	Comment:               whereHelperstring{field: "\"lot\".\"comment\""},
 	MetricsMembersCount:   whereHelperint{field: "\"lot\".\"metrics_members_count\""},
 	MetricsDailyCoverage:  whereHelperint{field: "\"lot\".\"metrics_daily_coverage\""},
-	MetricsMonthlyIncome:  whereHelpernull_Int{field: "\"lot\".\"metrics_monthly_income\""},
+	MetricsMonthlyIncome:  whereHelperint{field: "\"lot\".\"metrics_monthly_income\""},
 	MetricsPricePerMember: whereHelperfloat64{field: "\"lot\".\"metrics_price_per_member\""},
 	MetricsPricePerView:   whereHelperfloat64{field: "\"lot\".\"metrics_price_per_view\""},
 	MetricsPaybackPeriod:  whereHelpernull_Float64{field: "\"lot\".\"metrics_payback_period\""},

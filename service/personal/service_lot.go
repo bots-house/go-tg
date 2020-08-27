@@ -171,7 +171,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		in.Comment,
 		info.MembersCount,
 		dailyCoverage,
-		null.NewInt(in.MonthlyIncome, in.MonthlyIncome != 0),
+		in.MonthlyIncome,
 	)
 
 	lot.Bio = null.NewString(info.Description, info.Description != "")

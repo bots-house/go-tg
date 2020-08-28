@@ -274,11 +274,21 @@ func (srv *Service) GetPostText(ctx context.Context, user *core.User, id core.Lo
 	return srv.Posting.GetText(ctx, id)
 }
 
-func (srv *Service) SendPostPreview(ctx context.Context, user *core.User, post string) error {
+func (srv *Service) SendPostPreview(ctx context.Context, user *core.User, post string, id core.LotID) error {
 	if err := srv.IsAdmin(user); err != nil {
 		return err
 	}
-	return srv.Posting.SendPreview(ctx, user, post)
+
+	if id != 0 {
+		lot, err := srv.Lot.Query().ID(id).One(ctx)
+		if err != nil {
+			return errors.Wrap(err, "get lot")
+		}
+		return srv.Posting.SendPreview(ctx, user, post, lot)
+
+	}
+	return srv.Posting.SendPreview(ctx, user, post, nil)
+
 }
 
 func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.LotID, reason string) error {

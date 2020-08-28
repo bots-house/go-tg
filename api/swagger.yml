@@ -3394,6 +3394,10 @@ definitions:
     properties:
       text:
         type: string
+        description: Текст поста.
+      lot_id:
+        type: integer
+        description: ID лота.
 
   AdminFullLot:
     type: object
@@ -3510,6 +3514,9 @@ definitions:
       lot_id:
         type: integer
         description: ID лота.
+      lot_link_button:
+        type: boolean
+        description: Наличие кнопки под постом.
       text:
         type: string
         description: Текст поста.

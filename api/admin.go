@@ -308,7 +308,7 @@ func (h *Handler) adminGetPostText(params adminops.AdminGetPostTextParams, ident
 func (h *Handler) adminSendPostPreview(params adminops.AdminSendPostPreviewParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
-	if err := h.Admin.SendPostPreview(ctx, identity.GetUser(), swag.StringValue(params.Post.Text)); err != nil {
+	if err := h.Admin.SendPostPreview(ctx, identity.GetUser(), swag.StringValue(params.Post.Text), core.LotID(params.Post.LotID)); err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminSendPostPreviewBadRequest().WithPayload(models.NewError(err2))
 		}
@@ -371,6 +371,7 @@ func (h *Handler) adminCreatePost(params adminops.AdminCreatePostParams, identit
 		Text:                  swag.StringValue(params.Post.Text),
 		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
 		LotID:                 core.LotID(int(params.Post.LotID)),
+		LotLinkButton:         params.Post.LotLinkButton,
 	}
 	if params.Post.ScheduledAt != 0 {
 		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)

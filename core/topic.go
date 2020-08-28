@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -20,6 +21,10 @@ type Topic struct {
 }
 
 type TopicSlice []*Topic
+
+func (t Topic) MinifiedName() string {
+	return strings.ReplaceAll(t.Name, " ", "")
+}
 
 func (ts TopicSlice) IDs() []TopicID {
 	result := make([]TopicID, len(ts))

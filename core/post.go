@@ -44,6 +44,7 @@ func NewPost(
 	title null.String,
 	disableWebPagePreview bool,
 	scheduledAt time.Time,
+	lotLinkButton bool,
 ) *Post {
 	return &Post{
 		LotID:                 lotID,
@@ -51,7 +52,7 @@ func NewPost(
 		Title:                 title,
 		DisableWebPagePreview: disableWebPagePreview,
 		ScheduledAt:           scheduledAt,
-		Buttons:               PostButtons{Like: true},
+		Buttons:               PostButtons{Like: true, LotLink: lotLinkButton},
 	}
 }
 
@@ -70,7 +71,8 @@ var (
 )
 
 type PostButtons struct {
-	Like bool
+	Like    bool
+	LotLink bool
 }
 
 type PostField int8

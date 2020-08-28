@@ -17,9 +17,12 @@ import (
 // swagger:model PostText
 type PostText struct {
 
-	// text
+	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`
+
+	// ID лота.
+	LotID int64 `json:"lot_id,omitempty"`
 }
 
 // Validate validates this post text

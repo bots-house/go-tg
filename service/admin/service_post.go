@@ -16,6 +16,7 @@ type PostInput struct {
 	Title                 null.String
 	DisableWebPagePreview bool
 	ScheduledAt           time.Time
+	LotLinkButton         bool
 }
 
 var (
@@ -26,7 +27,7 @@ func (srv *Service) CreatePost(ctx context.Context, user *core.User, in *PostInp
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
-	post := core.NewPost(in.LotID, in.Text, in.Title, in.DisableWebPagePreview, in.ScheduledAt)
+	post := core.NewPost(in.LotID, in.Text, in.Title, in.DisableWebPagePreview, in.ScheduledAt, in.LotLinkButton)
 
 	if err := srv.Txier(ctx, func(ctx context.Context) error {
 
@@ -87,6 +88,7 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	post.Text = in.Text
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
+	post.Buttons.LotLink = in.LotLinkButton
 
 	item := &PostItem{
 		Post: post,

@@ -53,13 +53,29 @@ func (srv *Service) GetText(ctx context.Context, id core.LotID) (string, error) 
 	return lt.Render()
 }
 
-func (srv *Service) SendPreview(ctx context.Context, user *core.User, post string) error {
-	_, err := srv.TgClient.Send(tgbotapi.MessageConfig{
+func (srv *Service) SendPreview(ctx context.Context, user *core.User, post string, lot *core.Lot) error {
+	msg := tgbotapi.MessageConfig{
 		BaseChat:              tgbotapi.BaseChat{ChatID: int64(user.Telegram.ID)},
 		Text:                  post,
 		ParseMode:             "HTML",
 		DisableWebPagePreview: true,
-	})
+	}
+
+	if lot != nil {
+		markup := tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.InlineKeyboardButton{
+					Text: "Подробней",
+					LoginURL: &tgbotapi.LoginURL{
+						URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", lot.ID)),
+					},
+				},
+			),
+		)
+		msg.BaseChat.ReplyMarkup = markup
+	}
+
+	_, err := srv.TgClient.Send(msg)
 	if err != nil {
 		return errors.Wrap(err, "send lot text")
 	}
@@ -92,13 +108,13 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 				ParseMode:             "HTML",
 				DisableWebPagePreview: post.DisableWebPagePreview,
 			}
-			if post.LotID != 0 {
+			if post.LotID != 0 && post.Buttons.LotLink {
 				markup := tgbotapi.NewInlineKeyboardMarkup(
 					tgbotapi.NewInlineKeyboardRow(
 						tgbotapi.InlineKeyboardButton{
 							Text: "Подробней",
 							LoginURL: &tgbotapi.LoginURL{
-								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d/?from=channel", post.LotID)),
+								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
 							},
 						},
 					),

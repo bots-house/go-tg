@@ -3,6 +3,7 @@ package posting
 import (
 	"bytes"
 	"html/template"
+	"math"
 	"strings"
 
 	"github.com/bots-house/birzzha/core"
@@ -27,23 +28,18 @@ var (
 func (lpt *LotPostText) template() string {
 	return `
 		<b>Канал:</b> <a href="{{ LotLink }}">{{ .Lot.Name }}</a> {{ $url:= .SiteWithPathListChannel }}
-		{{ if .Lot.ExtraResources }}<b>Дополнительные ресурсы:</b>{{ range $extra := .Lot.ExtraResources }} <a href={{ $extra.URL }}>{{ $extra.Title }}</a>{{ end }}\n{{ end }}
-		<b>Тематика:</b>{{ range .Topics }} <a href="https://{{ $url }}/lots?topics={{ .ID }}&from=channel">#{{ .Slug }} </a>{{ end }}
+		{{ if .Lot.ExtraResources }}<b>Дополнительные ресурсы:</b>{{ range $extra := .Lot.ExtraResources }} <a href={{ $extra.URL }}>{{ $extra.Title }}</a>{{ end }}\n{{ end }}<b>Тематика:</b>{{ range .Topics }} <a href="https://{{ $url }}/lots?topics={{ .ID }}&from=channel">#{{ .MinifiedName }} </a>{{ end }}
+		<b>Подписчиков:</b> {{ ApostrophyIntValue .Lot.Metrics.MembersCount }} ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
+		<b>Просмотров на пост:</b> {{ ApostrophyFloat64Value .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)
+		<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }} ₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}) {{end}}
 
-		<b>Подписчиков:</b> {{ .Lot.Metrics.MembersCount }} ₽ ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
-		<b>Просмотров на пост:</b> {{ .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)
-		{{ if .Lot.Metrics.MonthlyIncome.Valid }}<b>Доход в месяц:</b> {{ .Lot.Metrics.MonthlyIncome.Int }} ₽ {{end}}{{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} месяц(а)) {{end}}
-
-		<b>Комментарий:</b>
-		{{ .Lot.ShortComment }}
+		<b>Комментарий:</b> «{{ .Lot.ShortComment }}»
 
 		<b>Продавец:</b>{{if .Owner.Telegram.Username.Valid }} @{{ .Owner.Telegram.Username.String }}{{else}} <a href="tg://user?{{ .Owner.EscapedQueryUserID }}"> {{ .Owner.FirstName }} {{ .Owner.LastName.String }}</a> {{end}}
 
-		<b>Цена:</b> {{ PriceHashTag .Lot.Price.Current }}₽ {{ PriceLimit .Lot.Price.Current }}
+		<b>Цена:</b> {{ ApostrophyIntValue .Lot.Price.Current }}₽ {{ PriceLimit .Lot.Price.Current }}
 
-		100% безопасность при сделках в Telegram.
-		<b>Гарант от команды:</b> <a href="https://t.me/zzapusk">Запуск</a> @{{ .Settings.CashierUsername }}
-		
+		100% безопасность при сделках в Telegram. Гарант от команды: <a href="https://t.me/zzapusk">Запуск</a> @{{ .Settings.CashierUsername }}	
 	`
 }
 
@@ -52,9 +48,11 @@ func (lpt *LotPostText) Render() (string, error) {
 
 	tmpl, err := template.New("rendered lot").Funcs(
 		template.FuncMap{
-			"PriceHashTag": priceHashTag,
-			"PriceLimit":   priceInterval,
-			"LotLink":      lpt.Lot.Link,
+			"ApostrophyIntValue":     apostrophyIntValue,
+			"ApostrophyFloat64Value": apostrophyFloat64Value,
+			"PriceLimit":             priceInterval,
+			"LotLink":                lpt.Lot.Link,
+			"Month":                  month,
 		},
 	).Parse(t)
 	if err != nil {
@@ -69,8 +67,26 @@ func (lpt *LotPostText) Render() (string, error) {
 	return res.String(), nil
 }
 
-func priceHashTag(p int) string {
-	price := printer.Sprintf("%d", p)
+func month(payback float64) string {
+	n := int(math.Abs(payback)) % 100
+
+	switch {
+	case n >= 2 && n <= 4:
+		return "месяца"
+	case n == 1:
+		return "месяц"
+	default:
+		return "месяцев"
+	}
+}
+
+func apostrophyIntValue(v int) string {
+	price := printer.Sprintf("%d", v)
+	return strings.ReplaceAll(price, ",", "'")
+}
+
+func apostrophyFloat64Value(v float64) string {
+	price := printer.Sprintf("%.2f", v)
 	return strings.ReplaceAll(price, ",", "'")
 }
 

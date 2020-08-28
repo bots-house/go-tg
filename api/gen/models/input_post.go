@@ -20,6 +20,9 @@ type InputPost struct {
 	// ID лота.
 	LotID int64 `json:"lot_id,omitempty"`
 
+	// Наличие кнопки под постом.
+	LotLinkButton bool `json:"lot_link_button,omitempty"`
+
 	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`

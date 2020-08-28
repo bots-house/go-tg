@@ -3736,27 +3736,32 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 3
+          "x-order": 4
         },
         "lot_id": {
           "description": "ID лота.",
           "type": "integer",
           "x-order": 0
         },
+        "lot_link_button": {
+          "description": "Наличие кнопки под постом.",
+          "type": "boolean",
+          "x-order": 1
+        },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 1
+          "x-order": 2
         },
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 2
+          "x-order": 3
         }
       }
     },
@@ -4831,7 +4836,13 @@ func init() {
         "text"
       ],
       "properties": {
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 1
+        },
         "text": {
+          "description": "Текст поста.",
           "type": "string",
           "x-order": 0
         }
@@ -8992,27 +9003,32 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 3
+          "x-order": 4
         },
         "lot_id": {
           "description": "ID лота.",
           "type": "integer",
           "x-order": 0
         },
+        "lot_link_button": {
+          "description": "Наличие кнопки под постом.",
+          "type": "boolean",
+          "x-order": 1
+        },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 4
+          "x-order": 5
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 1
+          "x-order": 2
         },
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 2
+          "x-order": 3
         }
       }
     },
@@ -10113,7 +10129,13 @@ func init() {
         "text"
       ],
       "properties": {
+        "lot_id": {
+          "description": "ID лота.",
+          "type": "integer",
+          "x-order": 1
+        },
         "text": {
+          "description": "Текст поста.",
           "type": "string",
           "x-order": 0
         }

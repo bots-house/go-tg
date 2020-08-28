@@ -37,7 +37,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.8.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/magiconair/properties v1.8.1
+	github.com/magiconair/properties v1.8.2
 	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect

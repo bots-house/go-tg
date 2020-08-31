@@ -43,6 +43,9 @@ type Config struct {
 	InterkassaSecretKey     string `split_words:"true"`
 	InterkassaTestSecretKey string ` split_words:"true"`
 
+	UnitPayPublicKey string `split_words:"true"`
+	UnitPaySecretKey string `split_words:"true"`
+
 	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
 
 	SiteViewExpiration time.Duration `default:"24h" split_words:"true"`

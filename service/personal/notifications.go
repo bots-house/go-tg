@@ -42,8 +42,7 @@ func (n NewPaymentNotification) NotificationTemplate() string {
         <b>Шлюз</b>: {{ .Payment.Gateway }}
         <b>Запрошено</b>: {{ .Payment.Requested.Display }}
         <b>Оплачено</b>: {{ .Payment.Paid.Display }}
-        <b>Зачислено</b>: {{ .Payment.Received.Display }}
-
+        {{if .Payment.Received }}<b>Зачислено</b>: {{ .Payment.Received.Display }} {{ end }}
 
         #payment #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
     `

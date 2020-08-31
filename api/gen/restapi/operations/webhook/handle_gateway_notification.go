@@ -33,7 +33,7 @@ func NewHandleGatewayNotification(ctx *middleware.Context, handler HandleGateway
 
 Handle Gateway Notification
 
-Обработка уведомления о изменении состояния платжа
+Обработка уведомления о изменении состояния платeжа
 
 
 */

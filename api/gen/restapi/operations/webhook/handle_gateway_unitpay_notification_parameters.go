@@ -14,18 +14,18 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// NewHandleGatewayNotificationParams creates a new HandleGatewayNotificationParams object
+// NewHandleGatewayUnitpayNotificationParams creates a new HandleGatewayUnitpayNotificationParams object
 // no default values defined in spec.
-func NewHandleGatewayNotificationParams() HandleGatewayNotificationParams {
+func NewHandleGatewayUnitpayNotificationParams() HandleGatewayUnitpayNotificationParams {
 
-	return HandleGatewayNotificationParams{}
+	return HandleGatewayUnitpayNotificationParams{}
 }
 
-// HandleGatewayNotificationParams contains all the bound params for the handle gateway notification operation
+// HandleGatewayUnitpayNotificationParams contains all the bound params for the handle gateway unitpay notification operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters handleGatewayNotification
-type HandleGatewayNotificationParams struct {
+// swagger:parameters handleGatewayUnitpayNotification
+type HandleGatewayUnitpayNotificationParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -40,8 +40,8 @@ type HandleGatewayNotificationParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewHandleGatewayNotificationParams() beforehand.
-func (o *HandleGatewayNotificationParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewHandleGatewayUnitpayNotificationParams() beforehand.
+func (o *HandleGatewayUnitpayNotificationParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -58,7 +58,7 @@ func (o *HandleGatewayNotificationParams) BindRequest(r *http.Request, route *mi
 }
 
 // bindName binds and validates parameter Name from path.
-func (o *HandleGatewayNotificationParams) bindName(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *HandleGatewayUnitpayNotificationParams) bindName(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -77,7 +77,7 @@ func (o *HandleGatewayNotificationParams) bindName(rawData []string, hasKey bool
 }
 
 // validateName carries on validations for parameter Name
-func (o *HandleGatewayNotificationParams) validateName(formats strfmt.Registry) error {
+func (o *HandleGatewayUnitpayNotificationParams) validateName(formats strfmt.Registry) error {
 
 	if err := validate.EnumCase("name", "path", o.Name, []interface{}{"interkassa", "unitpay"}, true); err != nil {
 		return err

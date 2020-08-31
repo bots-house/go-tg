@@ -65,6 +65,7 @@ const (
 const (
 	PaymentGatewayInterkassa = "interkassa"
 	PaymentGatewayDirect     = "direct"
+	PaymentGatewayUnitpay    = "unitpay"
 )
 
 // Enum values for payment_purpose
@@ -83,7 +84,6 @@ const (
 
 // Enum values for joined_from
 const (
-	JoinedFromSite   = "site"
-	JoinedFromBot    = "bot"
-	JoinedFromOldBot = "old_bot"
+	JoinedFromSite = "site"
+	JoinedFromBot  = "bot"
 )

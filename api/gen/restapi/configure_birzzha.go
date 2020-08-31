@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml788553216 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/ty/9fw59_y54dz_3j7bv46bcjmh0000gn/T/swagger.yml209269899 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -315,6 +315,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.WebhookHandleGatewayNotificationHandler == nil {
 		api.WebhookHandleGatewayNotificationHandler = webhook.HandleGatewayNotificationHandlerFunc(func(params webhook.HandleGatewayNotificationParams) middleware.Responder {
 			return middleware.NotImplemented("operation webhook.HandleGatewayNotification has not yet been implemented")
+		})
+	}
+	if api.WebhookHandleGatewayUnitpayNotificationHandler == nil {
+		api.WebhookHandleGatewayUnitpayNotificationHandler = webhook.HandleGatewayUnitpayNotificationHandlerFunc(func(params webhook.HandleGatewayUnitpayNotificationParams) middleware.Responder {
+			return middleware.NotImplemented("operation webhook.HandleGatewayUnitpayNotification has not yet been implemented")
 		})
 	}
 	if api.BotHandleUpdateHandler == nil {

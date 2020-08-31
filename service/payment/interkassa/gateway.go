@@ -174,9 +174,7 @@ func (gw *Gateway) signature(vs url.Values, secretKey string) (string, error) {
 var (
 	ErrInvalidNotificationMethod      = core.NewError("invalid_notification_method", "invalid notification method (should be POST)")
 	ErrInvalidNotificationContentType = core.NewError("invalid_notification_content_type", "invalid notification content-type")
-	ErrInvalidNotificationSignature   = core.NewError("invalid_notification_signature", "invalid notification signature")
 	ErrInvalidNotificationCheckoutID  = core.NewError("invalid_notification_checkout_id", "invalid notification checkout id")
-	ErrInvalidNotificationData        = core.NewError("invalid_notification_data", "invalid notification data")
 )
 
 func (gw *Gateway) parsePayWayCurrency(payway string) string {
@@ -224,11 +222,11 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 	// calculate and compare signature
 	exceptedSignature, err := gw.signature(values, secret)
 	if err != nil {
-		return nil, ErrInvalidNotificationSignature
+		return nil, payment.ErrInvalidNotificationSignature
 	}
 
 	if signature != exceptedSignature {
-		return nil, ErrInvalidNotificationSignature
+		return nil, payment.ErrInvalidNotificationSignature
 	}
 
 	notification := &payment.GatewayNotification{Metadata: make(map[string]string)}
@@ -256,7 +254,7 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 	paymentID, err := strconv.Atoi(rawPaymentID)
 	if err != nil {
 		log.Warn(ctx, "invalid payment id", "id", rawPaymentID)
-		return nil, ErrInvalidNotificationData
+		return nil, payment.ErrInvalidNotificationData
 	}
 
 	notification.PaymentID = core.PaymentID(paymentID)
@@ -268,14 +266,14 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 		notification.Status = core.PaymentStatusFailed
 	default:
 		log.Warn(ctx, "invalid payment status", "id", rawPaymentID, "status", values.Get("ik_inv_st"))
-		return nil, ErrInvalidNotificationData
+		return nil, payment.ErrInvalidNotificationData
 	}
 
 	// requested money
 	requestedAmount, err := strconv.ParseFloat(values.Get("ik_am"), 64)
 	if err != nil {
 		log.Warn(ctx, "invalid requested amount", "id", rawPaymentID, "requested_amount", values.Get("ik_am"))
-		return nil, ErrInvalidNotificationData
+		return nil, payment.ErrInvalidNotificationData
 	}
 
 	requestedCurrency := values.Get("ik_cur")
@@ -290,7 +288,7 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 	paidAmount, err := strconv.ParseFloat(values.Get("ik_ps_price"), 64)
 	if err != nil {
 		log.Warn(ctx, "invalid paid amount", "id", rawPaymentID, "paid_amount", values.Get("ik_ps_price"))
-		return nil, ErrInvalidNotificationData
+		return nil, payment.ErrInvalidNotificationData
 	}
 	paidCurrency := gw.parsePayWayCurrency(payWay)
 
@@ -302,7 +300,7 @@ func (gw *Gateway) ParseNotification(ctx context.Context, r *http.Request) (*pay
 	if err != nil {
 		log.Warn(ctx, "invalid received amount", "id", rawPaymentID, "received_amount", values.Get("ik_co_rfn"))
 
-		return nil, ErrInvalidNotificationData
+		return nil, payment.ErrInvalidNotificationData
 	}
 
 	notification.Received = money.New(int64(receivedAmount*100), notification.Requested.Currency().Code)

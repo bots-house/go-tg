@@ -11,6 +11,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/bots-house/birzzha/service/payment/unitpay"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -94,6 +96,11 @@ func newParser(client *http.Client) core.LotExtraResourceParser {
 
 func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistry {
 	var gateways []payment.Gateway
+
+	gateways = append(gateways, &unitpay.Gateway{
+		PublicKey: cfg.UnitPayPublicKey,
+		SecretKey: cfg.UnitPaySecretKey,
+	})
 
 	if cfg.InterkassaCheckoutID != "" {
 		gateways = append(gateways, &interkassa.Gateway{

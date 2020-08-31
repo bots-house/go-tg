@@ -3,6 +3,8 @@ package personal
 import (
 	"context"
 
+	"github.com/bots-house/birzzha/pkg/log"
+
 	"github.com/Rhymond/go-money"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
@@ -10,6 +12,8 @@ import (
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/payment"
 )
+
+const unitPaySuccess = "магазин успешно обработал запрос"
 
 type ApplicationInvoice struct {
 	Lot             *OwnedLot
@@ -223,6 +227,61 @@ func (srv *Service) GetPaymentStatus(ctx context.Context, user *core.User, id co
 	}, nil
 }
 
+func (srv *Service) ProcessUnitPayNotification(ctx context.Context, notify *payment.GatewayNotification) (string, error) {
+	var (
+		message string
+		err     error
+	)
+	if notify.Status.IsCheck() {
+		_, err := srv.Payment.Query().ID(notify.PaymentID).One(ctx)
+		if err != nil {
+			return "", errors.Wrap(err, "query payment")
+		}
+		return unitPaySuccess, nil
+	}
+	err = srv.Txier(ctx, func(ctx context.Context) error {
+		message, err = srv.processUnitPayNotification(ctx, notify)
+		return err
+	})
+
+	return message, err
+}
+
+func (srv *Service) processUnitPayNotification(ctx context.Context, notify *payment.GatewayNotification) (string, error) {
+	p, err := srv.Payment.Query().ID(notify.PaymentID).One(ctx)
+	if err != nil {
+		return "", errors.Wrap(err, "query payment")
+	}
+	if p.Status.IsSuccess() {
+		return unitPaySuccess, nil
+	}
+	p.ExternalID.SetValid(notify.ExternalID)
+	p.Status = notify.Status
+	for k, v := range notify.Metadata {
+		p.Metadata[k] = v
+	}
+
+	switch {
+	case p.Status.IsSuccess():
+		if equal, _ := p.Requested.Equals(notify.Requested); !equal {
+			return "", core.NewError("payment_requested_is_not_equal", "payment requested amount invalid")
+		}
+		p.Paid = notify.Paid
+		p.Received = notify.Received
+		if err := srv.onPayment(ctx, p); err != nil {
+			return "", err
+		}
+	case p.Status.IsError():
+		log.Warn(ctx, "unit pay payment wasn't succeeded, but it might get success in the future", "id", p.ID, "errMsg", p.Metadata["error"])
+	}
+
+	if err := srv.Payment.Update(ctx, p); err != nil {
+		return "", errors.Wrap(err, "update payment")
+	}
+
+	return unitPaySuccess, nil
+}
+
 func (srv *Service) ProcessGatewayNotification(ctx context.Context, notify *payment.GatewayNotification) error {
 	return srv.Txier(ctx, func(ctx context.Context) error {
 		return srv.processGatewayNotification(ctx, notify)
@@ -262,6 +321,17 @@ func (srv *Service) processGatewayNotification(ctx context.Context, notify *paym
 		case core.PaymentPurposeChangePrice:
 			return srv.onPaymentChangePrice(ctx, payment)
 		}
+	}
+
+	return nil
+}
+
+func (srv *Service) onPayment(ctx context.Context, pm *core.Payment) error {
+	switch pm.Purpose {
+	case core.PaymentPurposeApplication:
+		return srv.onPaymentApplication(ctx, pm)
+	case core.PaymentPurposeChangePrice:
+		return srv.onPaymentChangePrice(ctx, pm)
 	}
 
 	return nil

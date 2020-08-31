@@ -18,6 +18,23 @@ func NewError(err *core.Error) *models.Error {
 	}
 }
 
+func NewUnitPayError(err *core.Error) *models.UnitPayErrorResp {
+	return &models.UnitPayErrorResp{
+		Error: &models.UnitPayErrorRespError{
+			Message: swag.String(err.Description),
+		},
+	}
+}
+
+func NewUnitPayInternalError(ctx context.Context, err error) *models.UnitPayErrorResp {
+	log.Error(ctx, internalErr, "error", err)
+	return &models.UnitPayErrorResp{
+		Error: &models.UnitPayErrorRespError{
+			Message: swag.String(err.Error()),
+		},
+	}
+}
+
 func NewInternalServerError(ctx context.Context, err error) *models.Error {
 	log.Error(ctx, internalErr, "error", err)
 	return NewError(&core.Error{

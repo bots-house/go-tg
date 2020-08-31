@@ -6,8 +6,12 @@ import (
 	"net/url"
 
 	"github.com/Rhymond/go-money"
-
 	"github.com/bots-house/birzzha/core"
+)
+
+var (
+	ErrInvalidNotificationSignature = core.NewError("invalid_notification_signature", "invalid notification signature")
+	ErrInvalidNotificationData      = core.NewError("invalid_notification_data", "invalid notification data")
 )
 
 type Form struct {

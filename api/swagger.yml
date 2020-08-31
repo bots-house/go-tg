@@ -908,7 +908,7 @@ paths:
           name: gateway
           required: true
           type: string
-          enum: [interkassa, direct]
+          enum: [unitpay, interkassa, direct]
       description: |
         Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
       operationId: createApplicationPayment
@@ -1005,7 +1005,7 @@ paths:
           name: gateway
           required: true
           type: string
-          enum: [interkassa, direct]
+          enum: [interkassa, direct, unitpay]
         - in: body
           name: price
           required: true
@@ -1062,13 +1062,13 @@ paths:
         type: string
         in: path
         required: true
-        enum: [interkassa]
+        enum: [interkassa, unitpay]
 
     post:
       operationId: handleGatewayNotification
       summary: Handle Gateway Notification
       description: |
-        Обработка уведомления о изменении состояния платжа
+        Обработка уведомления о изменении состояния платeжа
       tags: [webhook]
       consumes:
         - "application/x-www-form-urlencoded"
@@ -1084,6 +1084,29 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+
+    get:
+      operationId: handleGatewayUnitpayNotification
+      summary: Handle Gateway Notification
+      description: |
+        Обработка уведомления о изменении состояния платeжа (unitpay)
+      tags: [webhook]
+      consumes:
+        - "application/x-www-form-urlencoded"
+      security: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/UnitPaySuccessResp"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/UnitPayErrorResp"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/UnitPayErrorResp"
 
   /user/lots/{id}/cancel:
     parameters:
@@ -3620,7 +3643,32 @@ definitions:
         type: string
         description: Аватарка.
 
-  
+  UnitPaySuccessResp:
+    type: object
+    required:
+      - result
+    properties:
+      result:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+
+  UnitPayErrorResp:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+
   PostListItem:
     type: object
     required:
@@ -3653,7 +3701,7 @@ definitions:
       redis:
         description: Redis
         $ref: '#/definitions/HealthCheck'
-  
+
   HealthCheck:
     type: object
     required:

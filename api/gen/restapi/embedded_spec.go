@@ -1746,6 +1746,7 @@ func init() {
         "parameters": [
           {
             "enum": [
+              "unitpay",
               "interkassa",
               "direct"
             ],
@@ -1886,7 +1887,8 @@ func init() {
           {
             "enum": [
               "interkassa",
-              "direct"
+              "direct",
+              "unitpay"
             ],
             "type": "string",
             "name": "gateway",
@@ -2457,9 +2459,41 @@ func init() {
       ]
     },
     "/webhooks/gateways/{name}": {
+      "get": {
+        "security": [],
+        "description": "Обработка уведомления о изменении состояния платeжа (unitpay)\n",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "webhook"
+        ],
+        "summary": "Handle Gateway Notification",
+        "operationId": "handleGatewayUnitpayNotification",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/UnitPaySuccessResp"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/UnitPayErrorResp"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/UnitPayErrorResp"
+            }
+          }
+        }
+      },
       "post": {
         "security": [],
-        "description": "Обработка уведомления о изменении состояния платжа\n",
+        "description": "Обработка уведомления о изменении состояния платeжа\n",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -2489,7 +2523,8 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "interkassa"
+            "interkassa",
+            "unitpay"
           ],
           "type": "string",
           "name": "name",
@@ -5099,6 +5134,48 @@ func init() {
         }
       }
     },
+    "UnitPayErrorResp": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 0
+        }
+      }
+    },
+    "UnitPaySuccessResp": {
+      "type": "object",
+      "required": [
+        "result"
+      ],
+      "properties": {
+        "result": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 0
+        }
+      }
+    },
     "User": {
       "description": "Объект пользователя",
       "type": "object",
@@ -6967,6 +7044,7 @@ func init() {
         "parameters": [
           {
             "enum": [
+              "unitpay",
               "interkassa",
               "direct"
             ],
@@ -7107,7 +7185,8 @@ func init() {
           {
             "enum": [
               "interkassa",
-              "direct"
+              "direct",
+              "unitpay"
             ],
             "type": "string",
             "name": "gateway",
@@ -7686,9 +7765,41 @@ func init() {
       ]
     },
     "/webhooks/gateways/{name}": {
+      "get": {
+        "security": [],
+        "description": "Обработка уведомления о изменении состояния платeжа (unitpay)\n",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "webhook"
+        ],
+        "summary": "Handle Gateway Notification",
+        "operationId": "handleGatewayUnitpayNotification",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/UnitPaySuccessResp"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/UnitPayErrorResp"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/UnitPayErrorResp"
+            }
+          }
+        }
+      },
       "post": {
         "security": [],
-        "description": "Обработка уведомления о изменении состояния платжа\n",
+        "description": "Обработка уведомления о изменении состояния платeжа\n",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -7718,7 +7829,8 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "interkassa"
+            "interkassa",
+            "unitpay"
           ],
           "type": "string",
           "name": "name",
@@ -10481,6 +10593,74 @@ func init() {
           "x-order": 2
         }
       }
+    },
+    "UnitPayErrorResp": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 0
+        }
+      }
+    },
+    "UnitPayErrorRespError": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-order": 0
+        }
+      },
+      "x-order": 0
+    },
+    "UnitPaySuccessResp": {
+      "type": "object",
+      "required": [
+        "result"
+      ],
+      "properties": {
+        "result": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "x-order": 0
+            }
+          },
+          "x-order": 0
+        }
+      }
+    },
+    "UnitPaySuccessRespResult": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-order": 0
+        }
+      },
+      "x-order": 0
     },
     "User": {
       "description": "Объект пользователя",

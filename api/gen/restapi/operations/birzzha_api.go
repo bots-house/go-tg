@@ -206,6 +206,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		WebhookHandleGatewayNotificationHandler: webhook.HandleGatewayNotificationHandlerFunc(func(params webhook.HandleGatewayNotificationParams) middleware.Responder {
 			return middleware.NotImplemented("operation webhook.HandleGatewayNotification has not yet been implemented")
 		}),
+		WebhookHandleGatewayUnitpayNotificationHandler: webhook.HandleGatewayUnitpayNotificationHandlerFunc(func(params webhook.HandleGatewayUnitpayNotificationParams) middleware.Responder {
+			return middleware.NotImplemented("operation webhook.HandleGatewayUnitpayNotification has not yet been implemented")
+		}),
 		BotHandleUpdateHandler: bot.HandleUpdateHandlerFunc(func(params bot.HandleUpdateParams) middleware.Responder {
 			return middleware.NotImplemented("operation bot.HandleUpdate has not yet been implemented")
 		}),
@@ -387,6 +390,8 @@ type BirzzhaAPI struct {
 	PersonalAreaGetUserLotsHandler personal_area.GetUserLotsHandler
 	// WebhookHandleGatewayNotificationHandler sets the operation handler for the handle gateway notification operation
 	WebhookHandleGatewayNotificationHandler webhook.HandleGatewayNotificationHandler
+	// WebhookHandleGatewayUnitpayNotificationHandler sets the operation handler for the handle gateway unitpay notification operation
+	WebhookHandleGatewayUnitpayNotificationHandler webhook.HandleGatewayUnitpayNotificationHandler
 	// BotHandleUpdateHandler sets the operation handler for the handle update operation
 	BotHandleUpdateHandler bot.HandleUpdateHandler
 	// AuthLoginViaBotHandler sets the operation handler for the login via bot operation
@@ -630,6 +635,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.WebhookHandleGatewayNotificationHandler == nil {
 		unregistered = append(unregistered, "webhook.HandleGatewayNotificationHandler")
+	}
+	if o.WebhookHandleGatewayUnitpayNotificationHandler == nil {
+		unregistered = append(unregistered, "webhook.HandleGatewayUnitpayNotificationHandler")
 	}
 	if o.BotHandleUpdateHandler == nil {
 		unregistered = append(unregistered, "bot.HandleUpdateHandler")
@@ -962,6 +970,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/webhooks/gateways/{name}"] = webhook.NewHandleGatewayNotification(o.context, o.WebhookHandleGatewayNotificationHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/webhooks/gateways/{name}"] = webhook.NewHandleGatewayUnitpayNotification(o.context, o.WebhookHandleGatewayUnitpayNotificationHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

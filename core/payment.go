@@ -59,7 +59,21 @@ const (
 	PaymentStatusSuccess
 	PaymentStatusFailed
 	PaymentStatusRefunded
+	PaymentStatusError
+	PaymentStatusCheck
 )
+
+func (ps PaymentStatus) IsCheck() bool {
+	return ps == PaymentStatusCheck
+}
+
+func (ps PaymentStatus) IsError() bool {
+	return ps == PaymentStatusError
+}
+
+func (ps PaymentStatus) IsSuccess() bool {
+	return ps == PaymentStatusSuccess
+}
 
 func (ps PaymentStatus) IsFinal() bool {
 	return ps == PaymentStatusFailed || ps == PaymentStatusSuccess || ps == PaymentStatusRefunded
@@ -72,6 +86,7 @@ var (
 		PaymentStatusSuccess:  "success",
 		PaymentStatusFailed:   "failed",
 		PaymentStatusRefunded: "refunded",
+		PaymentStatusError:    "error",
 	}
 
 	stringToPaymentStatus = func() map[string]PaymentStatus {

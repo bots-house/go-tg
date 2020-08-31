@@ -50,7 +50,12 @@ func (srv *Service) GetText(ctx context.Context, id core.LotID) (string, error) 
 		SiteWithPathListChannel: srv.SiteWithPathListChannel,
 	}
 
-	return lt.Render()
+	s, err := lt.Render()
+	if err != nil {
+		return "", err
+	}
+
+	return strings.ReplaceAll(s, "\\n", "\n"), nil
 }
 
 func (srv *Service) SendPreview(ctx context.Context, user *core.User, post string, lot *core.Lot) error {

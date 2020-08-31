@@ -1746,9 +1746,7 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay",
-              "interkassa",
-              "direct"
+              "unitpay"
             ],
             "type": "string",
             "name": "gateway",
@@ -1886,8 +1884,6 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "interkassa",
-              "direct",
               "unitpay"
             ],
             "type": "string",
@@ -2523,7 +2519,6 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "interkassa",
             "unitpay"
           ],
           "type": "string",
@@ -3296,8 +3291,7 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "interkassa",
-              "direct"
+              "unitpay"
             ]
           },
           "x-order": 3
@@ -3370,8 +3364,7 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "interkassa",
-              "direct"
+              "unitpay"
             ]
           },
           "x-order": 3
@@ -7044,9 +7037,7 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay",
-              "interkassa",
-              "direct"
+              "unitpay"
             ],
             "type": "string",
             "name": "gateway",
@@ -7184,8 +7175,6 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "interkassa",
-              "direct",
               "unitpay"
             ],
             "type": "string",
@@ -7829,7 +7818,6 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "interkassa",
             "unitpay"
           ],
           "type": "string",
@@ -8602,8 +8590,7 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "interkassa",
-              "direct"
+              "unitpay"
             ]
           },
           "x-order": 3
@@ -8695,8 +8682,7 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "interkassa",
-              "direct"
+              "unitpay"
             ]
           },
           "x-order": 3

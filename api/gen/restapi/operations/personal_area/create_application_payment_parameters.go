@@ -99,7 +99,7 @@ func (o *CreateApplicationPaymentParams) bindGateway(rawData []string, hasKey bo
 // validateGateway carries on validations for parameter Gateway
 func (o *CreateApplicationPaymentParams) validateGateway(formats strfmt.Registry) error {
 
-	if err := validate.EnumCase("gateway", "query", o.Gateway, []interface{}{"unitpay", "interkassa", "direct"}, true); err != nil {
+	if err := validate.EnumCase("gateway", "query", o.Gateway, []interface{}{"unitpay"}, true); err != nil {
 		return err
 	}
 

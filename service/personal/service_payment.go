@@ -257,8 +257,12 @@ func (srv *Service) processUnitPayNotification(ctx context.Context, notify *paym
 	}
 	p.ExternalID.SetValid(notify.ExternalID)
 	p.Status = notify.Status
-	for k, v := range notify.Metadata {
-		p.Metadata[k] = v
+	if len(p.Metadata) != 0 {
+		for k, v := range notify.Metadata {
+			p.Metadata[k] = v
+		}
+	} else {
+		p.Metadata = notify.Metadata
 	}
 
 	switch {

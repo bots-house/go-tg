@@ -30,8 +30,7 @@ func (lpt *LotPostText) template() string {
 		<b>Канал:</b> <a href="{{ LotLink }}">{{ .Lot.Name }}</a> {{ $url:= .SiteWithPathListChannel }}
 		{{ if .Lot.ExtraResources }}<b>Дополнительные ресурсы:</b>{{ range $extra := .Lot.ExtraResources }} <a href="{{ $extra.URL }}">{{ $extra.Title }}</a>{{ end }}\n{{ end }}<b>Тематика:</b>{{ range .Topics }} <a href="{{ $url }}/lots?topics={{ .ID }}&from=channel">#{{ .MinifiedName }} </a>{{ end }}
 		<b>Подписчиков:</b> {{ ApostrophyIntValue .Lot.Metrics.MembersCount }} ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
-		<b>Просмотров на пост:</b> {{ ApostrophyFloat64Value .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)
-		<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }} ₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}) {{end}}
+		{{ if .Lot.Metrics.PricePerView }}<b>Просмотров на пост:</b> {{ ApostrophyFloat64Value .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)\n{{ end }}<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }}₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}){{ end }}
 
 		<b>Комментарий:</b> «{{ .Lot.ShortComment }}»
 

@@ -429,6 +429,7 @@ func (srv *Service) CancelLot(ctx context.Context, user *core.User, id core.LotI
 	}
 
 	lot.CanceledReasonID = canceledReason.ID
+	lot.Status = core.LotStatusCanceled
 	if err := srv.Lot.Update(ctx, lot); err != nil {
 		return errors.Wrap(err, "update lot")
 	}

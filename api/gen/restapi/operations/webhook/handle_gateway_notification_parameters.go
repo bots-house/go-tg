@@ -79,7 +79,7 @@ func (o *HandleGatewayNotificationParams) bindName(rawData []string, hasKey bool
 // validateName carries on validations for parameter Name
 func (o *HandleGatewayNotificationParams) validateName(formats strfmt.Registry) error {
 
-	if err := validate.EnumCase("name", "path", o.Name, []interface{}{"unitpay"}, true); err != nil {
+	if err := validate.EnumCase("name", "path", o.Name, []interface{}{"unitpay", "interkassa"}, true); err != nil {
 		return err
 	}
 

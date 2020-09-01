@@ -50,8 +50,8 @@ type Config struct {
 
 	SiteViewExpiration time.Duration `default:"24h" split_words:"true"`
 
-	SitePathSellChannel string `default:"/channels/sell" split_words:"true"`
-	SitePathListChannel string `default:"/channels" split_words:"true"`
+	SitePathSellChannel string `default:"/lots/new" split_words:"true"`
+	SitePathListChannel string `default:"/lots" split_words:"true"`
 
 	SitePathPaymentSuccess string `split_words:"true" default:"/payment/success"`
 	SitePathPaymentFailed  string `split_words:"true" default:"/payment/failed"`

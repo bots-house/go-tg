@@ -80,16 +80,19 @@ const (
 	PaymentStatusPending = "pending"
 	PaymentStatusSuccess = "success"
 	PaymentStatusFailed  = "failed"
+	PaymentStatusError   = "error"
 )
 
 // Enum values for post_status
 const (
 	PostStatusScheduled = "scheduled"
 	PostStatusPublished = "published"
+	PostStatusFailed    = "failed"
 )
 
 // Enum values for joined_from
 const (
-	JoinedFromSite = "site"
-	JoinedFromBot  = "bot"
+	JoinedFromSite   = "site"
+	JoinedFromBot    = "bot"
+	JoinedFromOldBot = "old_bot"
 )

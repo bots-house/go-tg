@@ -95,12 +95,14 @@ type PostStatus int8
 const (
 	PostStatusScheduled PostStatus = iota + 1
 	PostStatusPublished
+	PostStatusFailed
 )
 
 var (
 	postStatusToString = map[PostStatus]string{
 		PostStatusScheduled: "scheduled",
 		PostStatusPublished: "published",
+		PostStatusFailed:    "failed",
 	}
 
 	stringToPostStatus = func() map[string]PostStatus {

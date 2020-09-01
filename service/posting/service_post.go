@@ -88,54 +88,57 @@ func (srv *Service) SendPreview(ctx context.Context, user *core.User, post strin
 }
 
 func (srv *Service) SendPosts(ctx context.Context) error {
-	return srv.Txier(ctx, func(ctx context.Context) error {
-		settings, err := srv.Settings.Get(ctx)
-		if err != nil {
-			return errors.Wrap(err, "get settings")
-		}
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get settings")
+	}
 
-		posts, err := srv.Post.Pull(ctx)
-		if err != nil {
-			return errors.Wrap(err, "get posts")
-		}
+	posts, err := srv.Post.Pull(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get posts")
+	}
 
-		lots, err := srv.Lot.Query().ID(posts.LotIDs()...).All(ctx)
-		if err != nil {
-			return errors.Wrap(err, "get lots")
-		}
+	lots, err := srv.Lot.Query().ID(posts.LotIDs()...).All(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get lots")
+	}
 
-		for _, post := range posts {
-			msg := tgbotapi.MessageConfig{
-				BaseChat: tgbotapi.BaseChat{
-					ChatID: settings.Channel.PrivateID,
-				},
-				Text:                  post.Text,
-				ParseMode:             "HTML",
-				DisableWebPagePreview: post.DisableWebPagePreview,
-			}
-			if post.LotID != 0 && post.Buttons.LotLink {
-				markup := tgbotapi.NewInlineKeyboardMarkup(
-					tgbotapi.NewInlineKeyboardRow(
-						tgbotapi.InlineKeyboardButton{
-							Text: "Подробней",
-							LoginURL: &tgbotapi.LoginURL{
-								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
-							},
+	for _, post := range posts {
+		msg := tgbotapi.MessageConfig{
+			BaseChat: tgbotapi.BaseChat{
+				ChatID: settings.Channel.PrivateID,
+			},
+			Text:                  post.Text,
+			ParseMode:             "HTML",
+			DisableWebPagePreview: post.DisableWebPagePreview,
+		}
+		if post.LotID != 0 && post.Buttons.LotLink {
+			markup := tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.InlineKeyboardButton{
+						Text: "Подробней",
+						LoginURL: &tgbotapi.LoginURL{
+							URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
 						},
-					),
-				)
-				msg.BaseChat.ReplyMarkup = markup
+					},
+				),
+			)
+			msg.BaseChat.ReplyMarkup = markup
+		}
+		msg1, err := srv.TgClient.Send(msg)
+		if err != nil {
+			post.Status = core.PostStatusFailed
+			if err := srv.Post.Update(ctx, post); err != nil {
+				log.Error(ctx, "update post", "error", err)
 			}
-			msg1, err := srv.TgClient.Send(msg)
-			if err != nil {
-				return errors.Wrap(err, "send post")
-			}
+			log.Error(ctx, "send post", "error", err)
+		} else {
 
 			post.PublishedAt = null.TimeFrom(time.Now())
 			post.MessageID = null.IntFrom(msg1.MessageID)
 			post.Status = core.PostStatusPublished
 			if err := srv.Post.Update(ctx, post); err != nil {
-				return errors.Wrap(err, "update post")
+				log.Error(ctx, "update post", "error", err)
 			}
 
 			if post.LotID != 0 {
@@ -143,7 +146,7 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 				lot.Status = core.LotStatusPublished
 				lot.PublishedAt = post.PublishedAt
 				if err := srv.Lot.Update(ctx, lot); err != nil {
-					return errors.Wrap(err, "update lot")
+					log.Error(ctx, "update lot", "error", err)
 				}
 
 				date, err := formatDate(lot.ScheduledAt.Time)
@@ -154,8 +157,8 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 				}
 			}
 		}
-		return nil
-	})
+	}
+	return nil
 }
 
 func formatDate(t time.Time) (string, error) {

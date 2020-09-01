@@ -140,7 +140,7 @@ func (store *PostStore) Pull(ctx context.Context) (core.PostSlice, error) {
 
 	rows, err := dal.Posts(
 		dal.PostWhere.ScheduledAt.LTE(time.Now()),
-		dal.PostWhere.PublishedAt.IsNull(),
+		dal.PostWhere.Status.EQ("scheduled"),
 		qm.For("UPDATE SKIP LOCKED"),
 	).All(ctx, executor)
 	if err != nil {

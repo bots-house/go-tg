@@ -97,10 +97,14 @@ func newParser(client *http.Client) core.LotExtraResourceParser {
 func newGatewayRegistry(ctx context.Context, cfg Config) *payment.GatewayRegistry {
 	var gateways []payment.Gateway
 
-	gateways = append(gateways, &unitpay.Gateway{
-		PublicKey: cfg.UnitPayPublicKey,
-		SecretKey: cfg.UnitPaySecretKey,
-	})
+	if cfg.UnitPayPublicKey != "" {
+		gateways = append(gateways, &unitpay.Gateway{
+			PublicKey: cfg.UnitPayPublicKey,
+			SecretKey: cfg.UnitPaySecretKey,
+		})
+	} else {
+		log.Warn(ctx, "unitpay gateway is not configured")
+	}
 
 	if cfg.InterkassaCheckoutID != "" {
 		gateways = append(gateways, &interkassa.Gateway{

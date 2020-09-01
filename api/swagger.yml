@@ -908,7 +908,7 @@ paths:
           name: gateway
           required: true
           type: string
-          enum: [unitpay]
+          enum: [unitpay, interkassa]
       description: |
         Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
       operationId: createApplicationPayment
@@ -1005,7 +1005,7 @@ paths:
           name: gateway
           required: true
           type: string
-          enum: [unitpay]
+          enum: [unitpay, interkassa]
         - in: body
           name: price
           required: true
@@ -1062,7 +1062,7 @@ paths:
         type: string
         in: path
         required: true
-        enum: [unitpay]
+        enum: [unitpay, interkassa]
 
     post:
       operationId: handleGatewayNotification
@@ -2044,6 +2044,7 @@ definitions:
           type: string
           enum:
             - unitpay
+            - interkassa
 
   InputChangePricePayment:
     type: object

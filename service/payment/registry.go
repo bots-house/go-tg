@@ -39,6 +39,18 @@ func (registry *GatewayRegistry) Get(name string) Gateway {
 	return gateway
 }
 
+func (registry *GatewayRegistry) Names() []string {
+	gws := registry.List()
+
+	names := make([]string, len(gws))
+
+	for i, gw := range gws {
+		names[i] = gw.Name()
+	}
+
+	return names
+}
+
 // List of gateways.
 func (registry *GatewayRegistry) List() []Gateway {
 	registry.lock.RLock()

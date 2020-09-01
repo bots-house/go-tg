@@ -1754,7 +1754,8 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ],
             "type": "string",
             "name": "gateway",
@@ -1892,7 +1893,8 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ],
             "type": "string",
             "name": "gateway",
@@ -2527,7 +2529,8 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "unitpay"
+            "unitpay",
+            "interkassa"
           ],
           "type": "string",
           "name": "name",
@@ -3300,7 +3303,8 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ]
           },
           "x-order": 3
@@ -7074,7 +7078,8 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ],
             "type": "string",
             "name": "gateway",
@@ -7212,7 +7217,8 @@ func init() {
         "parameters": [
           {
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ],
             "type": "string",
             "name": "gateway",
@@ -7855,7 +7861,8 @@ func init() {
       "parameters": [
         {
           "enum": [
-            "unitpay"
+            "unitpay",
+            "interkassa"
           ],
           "type": "string",
           "name": "name",
@@ -8628,7 +8635,8 @@ func init() {
           "items": {
             "type": "string",
             "enum": [
-              "unitpay"
+              "unitpay",
+              "interkassa"
             ]
           },
           "x-order": 3

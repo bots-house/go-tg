@@ -126,12 +126,14 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 				)
 				msg.BaseChat.ReplyMarkup = markup
 			}
-			_, err := srv.TgClient.Send(msg)
+			msg1, err := srv.TgClient.Send(msg)
 			if err != nil {
 				return errors.Wrap(err, "send post")
 			}
 
 			post.PublishedAt = null.TimeFrom(time.Now())
+			post.MessageID = null.IntFrom(msg1.MessageID)
+			post.Status = core.PostStatusPublished
 			if err := srv.Post.Update(ctx, post); err != nil {
 				return errors.Wrap(err, "update post")
 			}

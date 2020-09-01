@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
+
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
@@ -28,6 +30,11 @@ type Post struct {
 	// Название поста.
 	// Required: true
 	Title *string `json:"title"`
+
+	// Статус поста.
+	// Required: true
+	// Enum: [scheduled published]
+	Status *string `json:"status"`
 
 	// Текст поста.
 	// Required: true
@@ -59,6 +66,10 @@ func (m *Post) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateTitle(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStatus(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -105,6 +116,49 @@ func (m *Post) validateLotID(formats strfmt.Registry) error {
 func (m *Post) validateTitle(formats strfmt.Registry) error {
 
 	if err := validate.Required("title", "body", m.Title); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var postTypeStatusPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["scheduled","published"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		postTypeStatusPropEnum = append(postTypeStatusPropEnum, v)
+	}
+}
+
+const (
+
+	// PostStatusScheduled captures enum value "scheduled"
+	PostStatusScheduled string = "scheduled"
+
+	// PostStatusPublished captures enum value "published"
+	PostStatusPublished string = "published"
+)
+
+// prop value enum
+func (m *Post) validateStatusEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, postTypeStatusPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Post) validateStatus(formats strfmt.Registry) error {
+
+	if err := validate.Required("status", "body", m.Status); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
 		return err
 	}
 

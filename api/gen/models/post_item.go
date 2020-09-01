@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
+
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
@@ -28,6 +30,11 @@ type PostItem struct {
 	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`
+
+	// Статус поста.
+	// Required: true
+	// Enum: [scheduled published]
+	Status *string `json:"status"`
 
 	// Название поста.
 	// Required: true
@@ -59,6 +66,10 @@ func (m *PostItem) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateText(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStatus(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -114,6 +125,49 @@ func (m *PostItem) validateLot(formats strfmt.Registry) error {
 func (m *PostItem) validateText(formats strfmt.Registry) error {
 
 	if err := validate.Required("text", "body", m.Text); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var postItemTypeStatusPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["scheduled","published"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		postItemTypeStatusPropEnum = append(postItemTypeStatusPropEnum, v)
+	}
+}
+
+const (
+
+	// PostItemStatusScheduled captures enum value "scheduled"
+	PostItemStatusScheduled string = "scheduled"
+
+	// PostItemStatusPublished captures enum value "published"
+	PostItemStatusPublished string = "published"
+)
+
+// prop value enum
+func (m *PostItem) validateStatusEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, postItemTypeStatusPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PostItem) validateStatus(formats strfmt.Registry) error {
+
+	if err := validate.Required("status", "body", m.Status); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
 		return err
 	}
 

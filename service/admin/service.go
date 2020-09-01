@@ -7,6 +7,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/posting"
 	"github.com/bots-house/birzzha/store"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
 )
 
 type Service struct {
@@ -30,6 +31,7 @@ type Service struct {
 
 	Storage        storage.Storage
 	AvatarResolver tg.AvatarResolver
+	TgClient       *tgbotapi.BotAPI
 }
 
 var (

@@ -1536,6 +1536,13 @@ paths:
             $ref: "#/definitions/Error"
     
     delete:
+      parameters:
+        - in: query
+          type: boolean
+          description: Маркер который служит для того что бы знать удалять ли пост с канала.
+          name: delete_from_channel
+
+          
       summary: Delete Post
       description: Удалить пост.
       operationId: adminDeletePost
@@ -3106,6 +3113,7 @@ definitions:
           - published
           - declined
           - canceled
+          - scheduled
       canceled_reason:
         type: string
         description: Текст причины снятия лота.
@@ -3558,6 +3566,7 @@ definitions:
       - lot_id
       - text
       - title
+      - status
       - disable_web_page_preview
       - scheduled_at
       - published_at
@@ -3571,6 +3580,12 @@ definitions:
       title:
         type: string
         description: Название поста.
+      status:
+        type: string
+        enum:
+          - scheduled
+          - published
+        description: Статус поста.
       text:
         type: string
         description: Текст поста.
@@ -3591,6 +3606,7 @@ definitions:
       - text
       - title
       - lot
+      - status
       - disable_web_page_preview
       - scheduled_at
       - published_at
@@ -3603,6 +3619,12 @@ definitions:
       text:
         type: string
         description: Текст поста.
+      status:
+        type: string
+        enum:
+          - scheduled
+          - published
+        description: Статус поста.
       title:
         type: string
         description: Название поста.

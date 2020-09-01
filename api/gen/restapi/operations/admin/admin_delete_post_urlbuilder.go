@@ -18,6 +18,8 @@ import (
 type AdminDeletePostURL struct {
 	ID int64
 
+	DeleteFromChannel *bool
+
 	_basePath string
 	// avoid unkeyed usage
 	_ struct{}
@@ -56,6 +58,18 @@ func (o *AdminDeletePostURL) Build() (*url.URL, error) {
 		_basePath = "/v1"
 	}
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var deleteFromChannelQ string
+	if o.DeleteFromChannel != nil {
+		deleteFromChannelQ = swag.FormatBool(*o.DeleteFromChannel)
+	}
+	if deleteFromChannelQ != "" {
+		qs.Set("delete_from_channel", deleteFromChannelQ)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

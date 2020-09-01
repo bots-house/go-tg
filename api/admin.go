@@ -422,7 +422,7 @@ func (h *Handler) adminDeletePost(params adminops.AdminDeletePostParams, identit
 	ctx := params.HTTPRequest.Context()
 	id := core.PostID(int(params.ID))
 
-	if err := h.Admin.DeletePost(ctx, identity.GetUser(), id); err != nil {
+	if err := h.Admin.DeletePost(ctx, identity.GetUser(), id, swag.BoolValue(params.DeleteFromChannel)); err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminDeletePostBadRequest().WithPayload(models.NewError(err2))
 		}

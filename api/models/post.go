@@ -17,6 +17,7 @@ func NewPost(in *core.Post) *models.Post {
 		DisableWebPagePreview: swag.Bool(in.DisableWebPagePreview),
 		ScheduledAt:           timeToUnix(in.ScheduledAt),
 		PublishedAt:           nullTimeToUnix(in.PublishedAt),
+		Status:                swag.String(in.Status.String()),
 	}
 }
 
@@ -28,6 +29,7 @@ func NewPostItem(s storage.Storage, in *admin.PostItem) *models.PostItem {
 		DisableWebPagePreview: swag.Bool(in.DisableWebPagePreview),
 		ScheduledAt:           timeToUnix(in.ScheduledAt),
 		PublishedAt:           nullTimeToUnix(in.PublishedAt),
+		Status:                swag.String(in.Status.String()),
 	}
 
 	if in.Lot != nil {

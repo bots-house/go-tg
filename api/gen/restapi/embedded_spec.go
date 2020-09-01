@@ -505,6 +505,14 @@ func init() {
         ],
         "summary": "Delete Post",
         "operationId": "adminDeletePost",
+        "parameters": [
+          {
+            "type": "boolean",
+            "description": "Маркер который служит для того что бы знать удалять ли пост с канала.",
+            "name": "delete_from_channel",
+            "in": "query"
+          }
+        ],
         "responses": {
           "204": {
             "description": "No Content"
@@ -2890,7 +2898,8 @@ func init() {
             "paid",
             "published",
             "declined",
-            "canceled"
+            "canceled",
+            "scheduled"
           ],
           "x-order": 7
         },
@@ -4711,6 +4720,7 @@ func init() {
         "lot_id",
         "text",
         "title",
+        "status",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -4719,7 +4729,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 4
+          "x-order": 5
         },
         "id": {
           "description": "ID поста.",
@@ -4734,17 +4744,26 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
+        },
+        "status": {
+          "description": "Статус поста.",
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "published"
+          ],
+          "x-order": 3
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 3
+          "x-order": 4
         },
         "title": {
           "description": "Название поста.",
@@ -4760,6 +4779,7 @@ func init() {
         "text",
         "title",
         "lot",
+        "status",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -4768,7 +4788,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 4
+          "x-order": 5
         },
         "id": {
           "description": "ID поста.",
@@ -4782,12 +4802,21 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
+        },
+        "status": {
+          "description": "Статус поста.",
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "published"
+          ],
+          "x-order": 3
         },
         "text": {
           "description": "Текст поста.",
@@ -4797,7 +4826,7 @@ func init() {
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 3
+          "x-order": 4
         }
       }
     },
@@ -5784,6 +5813,14 @@ func init() {
         ],
         "summary": "Delete Post",
         "operationId": "adminDeletePost",
+        "parameters": [
+          {
+            "type": "boolean",
+            "description": "Маркер который служит для того что бы знать удалять ли пост с канала.",
+            "name": "delete_from_channel",
+            "in": "query"
+          }
+        ],
         "responses": {
           "204": {
             "description": "No Content"
@@ -8189,7 +8226,8 @@ func init() {
             "paid",
             "published",
             "declined",
-            "canceled"
+            "canceled",
+            "scheduled"
           ],
           "x-order": 7
         },
@@ -10074,6 +10112,7 @@ func init() {
         "lot_id",
         "text",
         "title",
+        "status",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -10082,7 +10121,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 4
+          "x-order": 5
         },
         "id": {
           "description": "ID поста.",
@@ -10097,17 +10136,26 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
+        },
+        "status": {
+          "description": "Статус поста.",
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "published"
+          ],
+          "x-order": 3
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 3
+          "x-order": 4
         },
         "title": {
           "description": "Название поста.",
@@ -10123,6 +10171,7 @@ func init() {
         "text",
         "title",
         "lot",
+        "status",
         "disable_web_page_preview",
         "scheduled_at",
         "published_at"
@@ -10131,7 +10180,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 4
+          "x-order": 5
         },
         "id": {
           "description": "ID поста.",
@@ -10145,12 +10194,21 @@ func init() {
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 5
+          "x-order": 6
+        },
+        "status": {
+          "description": "Статус поста.",
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "published"
+          ],
+          "x-order": 3
         },
         "text": {
           "description": "Текст поста.",
@@ -10160,7 +10218,7 @@ func init() {
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 3
+          "x-order": 4
         }
       }
     },

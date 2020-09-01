@@ -82,6 +82,12 @@ const (
 	PaymentStatusFailed  = "failed"
 )
 
+// Enum values for post_status
+const (
+	PostStatusScheduled = "scheduled"
+	PostStatusPublished = "published"
+)
+
 // Enum values for joined_from
 const (
 	JoinedFromSite = "site"

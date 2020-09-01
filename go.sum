@@ -79,6 +79,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a h1:WmvU6SBjJmTmhnKxDczRJLjkFtIccw1c0QvM3T18AlU=
 github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a/go.mod h1:BVy5GfeB5jvufnjgYiU1QCRtfVtADlTbXN0H+AhRG08=
+github.com/bots-house/telegram-bot-api v1.0.1-0.20200817125648-1a1ae0c36665 h1:Kwg+MDUrDuhF89ws7xKfpJs3ZXV77EkRmEu5R0/JvRI=
+github.com/bots-house/telegram-bot-api v1.0.1-0.20200817125648-1a1ae0c36665/go.mod h1:BVy5GfeB5jvufnjgYiU1QCRtfVtADlTbXN0H+AhRG08=
 github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab h1:L1MFYYDXZ/VTlCkFBztvMPIeoXGQ6TUCOyc68QkOomg=
 github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab/go.mod h1:hKaPATcsFoHiswJy6H7SFND+czOqvmhfq7TMXe+svtA=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=

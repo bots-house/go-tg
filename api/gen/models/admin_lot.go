@@ -50,7 +50,7 @@ type AdminLot struct {
 
 	// status
 	// Required: true
-	// Enum: [created paid published declined canceled]
+	// Enum: [created paid published declined canceled scheduled]
 	Status *string `json:"status"`
 
 	// Текст причины снятия лота.
@@ -252,7 +252,7 @@ var adminLotTypeStatusPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["created","paid","published","declined","canceled"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["created","paid","published","declined","canceled","scheduled"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -276,6 +276,9 @@ const (
 
 	// AdminLotStatusCanceled captures enum value "canceled"
 	AdminLotStatusCanceled string = "canceled"
+
+	// AdminLotStatusScheduled captures enum value "scheduled"
+	AdminLotStatusScheduled string = "scheduled"
 )
 
 // prop value enum

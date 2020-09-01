@@ -10,7 +10,7 @@ require (
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.34.13
 	github.com/benbjohnson/clock v1.0.3
-	github.com/bots-house/telegram-bot-api v1.0.1-0.20200629165222-b5f71d11bd3a
+	github.com/bots-house/telegram-bot-api v1.0.1-0.20200817125648-1a1ae0c36665
 	github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab
 	github.com/cristalhq/jwt v1.2.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect

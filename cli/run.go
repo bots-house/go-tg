@@ -346,6 +346,7 @@ func run(ctx context.Context, revision string) error {
 		},
 		Posting:          postingSrv,
 		Post:             pg.Post,
+		TgClient:         tgClient,
 		UserNotification: usrNotif,
 	}
 

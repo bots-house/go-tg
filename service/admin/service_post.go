@@ -6,6 +6,7 @@ import (
 
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/store"
+	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null/v8"
 )
@@ -27,7 +28,7 @@ func (srv *Service) CreatePost(ctx context.Context, user *core.User, in *PostInp
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
-	post := core.NewPost(in.LotID, in.Text, in.Title, in.DisableWebPagePreview, in.ScheduledAt, in.LotLinkButton)
+	post := core.NewPost(in.LotID, in.Text, in.Title, in.DisableWebPagePreview, in.ScheduledAt, core.PostStatusScheduled, in.LotLinkButton)
 
 	if err := srv.Txier(ctx, func(ctx context.Context) error {
 
@@ -84,12 +85,31 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 		return nil, errors.Wrap(err, "get post")
 	}
 
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get settings")
+	}
+
 	post.Title = in.Title
 	post.Text = in.Text
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
 	post.Buttons.LotLink = in.LotLinkButton
 
+	if post.MessageID.Valid {
+		_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{
+			BaseEdit: tgbotapi.BaseEdit{
+				ChatID:    settings.Channel.PrivateID,
+				MessageID: post.MessageID.Int,
+			},
+			Text:                  in.Text,
+			DisableWebPagePreview: in.DisableWebPagePreview,
+			ParseMode:             "HTML",
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "edit message")
+		}
+	}
 	item := &PostItem{
 		Post: post,
 	}
@@ -117,9 +137,31 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	return item, nil
 }
 
-func (srv *Service) DeletePost(ctx context.Context, user *core.User, id core.PostID) error {
+func (srv *Service) DeletePost(ctx context.Context, user *core.User, id core.PostID, deleteFromChannel bool) error {
 	if err := srv.IsAdmin(user); err != nil {
 		return err
+	}
+
+	settings, err := srv.Settings.Get(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get settings")
+	}
+
+	post, err := srv.Post.Query().ID(id).One(ctx)
+	if err != nil {
+		return errors.Wrap(err, "get post")
+	}
+
+	if deleteFromChannel {
+		if post.MessageID.Valid {
+			_, err := srv.TgClient.DeleteMessage(tgbotapi.DeleteMessageConfig{
+				ChatID:    settings.Channel.PrivateID,
+				MessageID: post.MessageID.Int,
+			})
+			if err != nil {
+				return errors.Wrap(err, "delete post from channel")
+			}
+		}
 	}
 
 	return srv.Post.Delete(ctx, id)

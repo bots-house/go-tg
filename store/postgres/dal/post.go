@@ -32,6 +32,8 @@ type Post struct {
 	ScheduledAt           time.Time   `boil:"scheduled_at" json:"scheduled_at" toml:"scheduled_at" yaml:"scheduled_at"`
 	PublishedAt           null.Time   `boil:"published_at" json:"published_at,omitempty" toml:"published_at" yaml:"published_at,omitempty"`
 	Title                 null.String `boil:"title" json:"title,omitempty" toml:"title" yaml:"title,omitempty"`
+	MessageID             null.Int    `boil:"message_id" json:"message_id,omitempty" toml:"message_id" yaml:"message_id,omitempty"`
+	Status                string      `boil:"status" json:"status" toml:"status" yaml:"status"`
 
 	R *postR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L postL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -46,6 +48,8 @@ var PostColumns = struct {
 	ScheduledAt           string
 	PublishedAt           string
 	Title                 string
+	MessageID             string
+	Status                string
 }{
 	ID:                    "id",
 	LotID:                 "lot_id",
@@ -55,6 +59,8 @@ var PostColumns = struct {
 	ScheduledAt:           "scheduled_at",
 	PublishedAt:           "published_at",
 	Title:                 "title",
+	MessageID:             "message_id",
+	Status:                "status",
 }
 
 // Generated where
@@ -68,6 +74,8 @@ var PostWhere = struct {
 	ScheduledAt           whereHelpertime_Time
 	PublishedAt           whereHelpernull_Time
 	Title                 whereHelpernull_String
+	MessageID             whereHelpernull_Int
+	Status                whereHelperstring
 }{
 	ID:                    whereHelperint{field: "\"post\".\"id\""},
 	LotID:                 whereHelpernull_Int{field: "\"post\".\"lot_id\""},
@@ -77,6 +85,8 @@ var PostWhere = struct {
 	ScheduledAt:           whereHelpertime_Time{field: "\"post\".\"scheduled_at\""},
 	PublishedAt:           whereHelpernull_Time{field: "\"post\".\"published_at\""},
 	Title:                 whereHelpernull_String{field: "\"post\".\"title\""},
+	MessageID:             whereHelpernull_Int{field: "\"post\".\"message_id\""},
+	Status:                whereHelperstring{field: "\"post\".\"status\""},
 }
 
 // PostRels is where relationship names are stored.
@@ -100,8 +110,8 @@ func (*postR) NewStruct() *postR {
 type postL struct{}
 
 var (
-	postAllColumns            = []string{"id", "lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title"}
-	postColumnsWithoutDefault = []string{"lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title"}
+	postAllColumns            = []string{"id", "lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title", "message_id", "status"}
+	postColumnsWithoutDefault = []string{"lot_id", "text", "buttons", "disable_web_page_preview", "scheduled_at", "published_at", "title", "message_id", "status"}
 	postColumnsWithDefault    = []string{"id"}
 	postPrimaryKeyColumns     = []string{"id"}
 )

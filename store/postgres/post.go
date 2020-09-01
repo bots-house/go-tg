@@ -34,6 +34,8 @@ func (store *PostStore) toRow(post *core.Post) (*dal.Post, error) {
 		ScheduledAt:           post.ScheduledAt,
 		PublishedAt:           post.PublishedAt,
 		DisableWebPagePreview: post.DisableWebPagePreview,
+		Status:                post.Status.String(),
+		MessageID:             post.MessageID,
 	}
 	if post.LotID != 0 {
 		row.LotID = null.IntFrom(int(post.LotID))
@@ -49,6 +51,11 @@ func (store *PostStore) fromRow(row *dal.Post) (*core.Post, error) {
 		return nil, errors.Wrap(err, "unmarshal post buttons")
 	}
 
+	status, err := core.ParsePostStatus(row.Status)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse status")
+	}
+
 	post := &core.Post{
 		ID:                    core.PostID(row.ID),
 		Text:                  row.Text,
@@ -57,6 +64,8 @@ func (store *PostStore) fromRow(row *dal.Post) (*core.Post, error) {
 		ScheduledAt:           row.ScheduledAt,
 		PublishedAt:           row.PublishedAt,
 		DisableWebPagePreview: row.DisableWebPagePreview,
+		Status:                status,
+		MessageID:             row.MessageID,
 	}
 
 	if row.LotID.Valid {

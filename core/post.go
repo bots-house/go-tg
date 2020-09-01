@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/bots-house/birzzha/store"
@@ -19,8 +20,14 @@ type Post struct {
 	// Related lot ID
 	LotID LotID
 
+	// Post Message ID
+	MessageID null.Int
+
 	// Text of post
 	Text string
+
+	// Status
+	Status PostStatus
 
 	// Title of post
 	Title null.String
@@ -44,6 +51,7 @@ func NewPost(
 	title null.String,
 	disableWebPagePreview bool,
 	scheduledAt time.Time,
+	status PostStatus,
 	lotLinkButton bool,
 ) *Post {
 	return &Post{
@@ -52,6 +60,7 @@ func NewPost(
 		Title:                 title,
 		DisableWebPagePreview: disableWebPagePreview,
 		ScheduledAt:           scheduledAt,
+		Status:                status,
 		Buttons:               PostButtons{Like: true, LotLink: lotLinkButton},
 	}
 }
@@ -80,6 +89,46 @@ type PostField int8
 const (
 	PostFieldScheduledAt PostField = iota + 1
 )
+
+type PostStatus int8
+
+const (
+	PostStatusScheduled PostStatus = iota + 1
+	PostStatusPublished
+)
+
+var (
+	postStatusToString = map[PostStatus]string{
+		PostStatusScheduled: "scheduled",
+		PostStatusPublished: "published",
+	}
+
+	stringToPostStatus = func() map[string]PostStatus {
+		result := make(map[string]PostStatus, len(postStatusToString))
+
+		for k, v := range postStatusToString {
+			result[v] = k
+		}
+
+		return result
+	}()
+
+	ErrPostStatusInvalid = NewError("post_status_invalid", "post status is invalid")
+)
+
+// ParsePostStatus returns post status by string
+func ParsePostStatus(v string) (PostStatus, error) {
+	status, ok := stringToPostStatus[strings.ToLower(v)]
+	if !ok {
+		return PostStatus(-1), ErrPostStatusInvalid
+	}
+	return status, nil
+}
+
+// String representation of post status.
+func (ls PostStatus) String() string {
+	return postStatusToString[ls]
+}
 
 var (
 	stringToPostField = map[string]PostField{

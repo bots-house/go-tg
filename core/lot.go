@@ -271,7 +271,7 @@ func (lot *Lot) ShortComment() string {
 }
 
 func (lot *Lot) CanCancel() bool {
-	return lot.Status == LotStatusPublished || lot.Status == LotStatusPaid
+	return lot.Status == LotStatusPublished || lot.Status == LotStatusScheduled
 }
 
 func (lot *Lot) CanChangePriceFree() bool {

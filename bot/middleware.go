@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func newAuthMiddleware(srv *auth.Service) tg.Middleware {
+func newAuthMiddleware(tgClient *tgbotapi.BotAPI, srv *auth.Service) tg.Middleware {
 	return func(next tg.Handler) tg.Handler {
 		return tg.HandlerFunc(func(ctx context.Context, update *tgbotapi.Update) error {
 			var tgUser *tgbotapi.User
@@ -37,6 +37,25 @@ func newAuthMiddleware(srv *auth.Service) tg.Middleware {
 				LastName:     tgUser.LastName,
 				Username:     tgUser.UserName,
 				LanguageCode: tgUser.LanguageCode,
+				GetAvatar: func(ctx context.Context) (string, error) {
+					chat, err := tgClient.GetChat(tgbotapi.ChatConfig{
+						ChatID: int64(tgUser.ID),
+					})
+
+					if err != nil {
+						return "", errors.Wrap(err, "get chat")
+					}
+
+					if chat.Photo != nil {
+						avatarURL, err := tgClient.GetFileDirectURL(chat.Photo.SmallFileID)
+						if err != nil {
+							return "", errors.Wrap(err, "get avatar")
+						}
+						return avatarURL, nil
+					}
+
+					return "", nil
+				},
 			})
 
 			if err != nil {

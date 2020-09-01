@@ -183,14 +183,28 @@ func (srv *Service) Authorize(ctx context.Context, token *jwt.Token) (*core.User
 }
 
 func (srv *Service) newUserFromTelegramUserInfo(ctx context.Context, info *TelegramUserInfo) (*core.User, error) {
+	var avatarURL string
+
+	if info.GetAvatar != nil {
+		avatar, err := info.GetAvatar(ctx)
+		if err != nil {
+			log.Warn(ctx, "get avatar failed", "err", err)
+		}
+
+		avatarURL, err = srv.Storage.AddByURL(ctx, userAvatarDir, avatar)
+		if err != nil {
+			log.Warn(ctx, "upload avatar failed", "err", err)
+		}
+	}
+
 	user := &core.User{
 		Telegram: core.UserTelegram{
 			ID:       info.ID,
 			Username: null.NewString(info.Username, info.Username != ""),
 		},
-		FirstName: info.FirstName,
-		LastName:  null.NewString(info.LastName, info.LastName != ""),
-		// Avatar:     null.NewString(avatar, avatar != ""),
+		FirstName:  info.FirstName,
+		LastName:   null.NewString(info.LastName, info.LastName != ""),
+		Avatar:     null.NewString(avatarURL, avatarURL != ""),
 		JoinedFrom: core.JoinedFromBot,
 		JoinedAt:   time.Now(),
 	}

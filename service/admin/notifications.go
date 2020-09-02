@@ -18,3 +18,17 @@ func (n userNotifyScheduledLot) NotificationTemplate() string {
 		#лот{{ .Self.Lot.ID }}
 	`
 }
+
+type userNotifyDeclineLot struct {
+	Lot *core.Lot
+}
+
+func (n userNotifyDeclineLot) NotificationTemplate() string {
+	return `
+		🙅‍♂️ Заявка на размещение канала <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a> <b>не прошла</b> модерацию, по причине: «{{ .Self.Lot.DeclineReason.String }}».
+
+		Средства будут возвращены в течении <b>7 дней</b>.
+
+		#лот{{ .Self.Lot.ID }}
+	`
+}

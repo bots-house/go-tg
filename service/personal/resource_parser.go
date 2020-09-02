@@ -43,6 +43,10 @@ func (parser LotExtraResourceParser) Parse(ctx context.Context, url string) (*co
 		return nil, err
 	}
 
+	if res != nil {
+		return res, nil
+	}
+
 	if res == nil {
 		return parser.parseSiteLotExtraResource(ctx, url)
 	}

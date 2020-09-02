@@ -319,12 +319,7 @@ func (srv *Service) processGatewayNotification(ctx context.Context, notify *paym
 	}
 
 	if payment.Status == core.PaymentStatusSuccess {
-		switch payment.Purpose {
-		case core.PaymentPurposeApplication:
-			return srv.onPaymentApplication(ctx, payment)
-		case core.PaymentPurposeChangePrice:
-			return srv.onPaymentChangePrice(ctx, payment)
-		}
+		return srv.onPayment(ctx, payment)
 	}
 
 	return nil
@@ -336,9 +331,9 @@ func (srv *Service) onPayment(ctx context.Context, pm *core.Payment) error {
 		return srv.onPaymentApplication(ctx, pm)
 	case core.PaymentPurposeChangePrice:
 		return srv.onPaymentChangePrice(ctx, pm)
+	default:
+		return errors.New("unknown purpose of payment")
 	}
-
-	return nil
 }
 
 func (srv *Service) onPaymentApplication(ctx context.Context, pm *core.Payment) error {
@@ -353,10 +348,14 @@ func (srv *Service) onPaymentApplication(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.Notify.Send(NewPaymentNotification{
+	srv.Notify.Send(adminNewPaymentNotification{
 		Payment:   pm,
 		Lot:       lot,
 		channelID: srv.AdminNotificationsChannelID,
+	})
+
+	srv.Notify.SendUser(pm.PayerID, userNewPaymentNotification{
+		Lot: lot,
 	})
 
 	return nil
@@ -379,7 +378,7 @@ func (srv *Service) onPaymentChangePrice(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.Notify.Send(NewPaymentNotification{
+	srv.Notify.Send(adminNewPaymentNotification{
 		Payment:   pm,
 		Lot:       lot,
 		channelID: srv.AdminNotificationsChannelID,

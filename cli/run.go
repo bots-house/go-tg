@@ -18,9 +18,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/benbjohnson/clock"
-	"github.com/bots-house/birzzha/pkg/notifications"
 	"github.com/bots-house/birzzha/pkg/rate"
 	"github.com/bots-house/birzzha/pkg/sentrylog"
+	"github.com/bots-house/birzzha/service/notifications"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	tgme "github.com/bots-house/tg-me"
 	"github.com/getsentry/sentry-go"
@@ -258,8 +258,13 @@ func run(ctx context.Context, revision string) error {
 	var notifs *notifications.Notifications
 
 	if cfg.AdminNotificationsChannelID != 0 {
-		notifs = notifications.New(tgClient)
+		notifs = notifications.New(tgClient, pg.User, pg.Settings, cfg.AdminNotificationsChannelID, notifications.Paths{
+			Site: cfg.Site,
+			Lots: cfg.SitePathListLot,
+		})
 		defer notifs.Close()
+	} else {
+		log.Warn(ctx, "admin notifications channel is not provided")
 	}
 
 	botLinkBuilder := bot.NewLinkBuilder(tgClient.Self.UserName)
@@ -311,11 +316,6 @@ func run(ctx context.Context, revision string) error {
 		TelegramStat: telemetr,
 	}
 
-	usrNotif := notifications.UserNotification{
-		UsrStore: pg.User,
-		Notifier: notifs,
-	}
-
 	postingSrv := &posting.Service{
 		Lot:      pg.Lot,
 		Settings: pg.Settings,
@@ -327,8 +327,8 @@ func run(ctx context.Context, revision string) error {
 		Post:                    pg.Post,
 		Txier:                   pg.Tx,
 		TgClient:                tgClient,
-		UserNotification:        usrNotif,
-		SiteWithPathListChannel: cfg.getSiteFullPath(cfg.SitePathListChannel),
+		Notify:                  notifs,
+		SiteWithPathListChannel: cfg.getSiteFullPath(cfg.SitePathListLot),
 	}
 
 	adminSrv := &admin.Service{
@@ -348,10 +348,10 @@ func run(ctx context.Context, revision string) error {
 		AvatarResolver: tg.AvatarResolver{
 			Client: http.DefaultClient,
 		},
-		Posting:          postingSrv,
-		Post:             pg.Post,
-		TgClient:         tgClient,
-		UserNotification: usrNotif,
+		Posting:  postingSrv,
+		Post:     pg.Post,
+		TgClient: tgClient,
+		Notify:   notifs,
 	}
 
 	landingSrv := &landing.Service{
@@ -363,8 +363,8 @@ func run(ctx context.Context, revision string) error {
 
 	bot := bot.New(bot.Config{
 		Site:            cfg.Site,
-		PathSellChannel: cfg.SitePathSellChannel,
-		PathListChannel: cfg.SitePathListChannel,
+		PathSellChannel: cfg.SitePathCreateLot,
+		PathListChannel: cfg.SitePathListLot,
 	}, tgClient, authSrv, adminSrv)
 
 	if err := bot.SetWebhookIfNeed(ctx, cfg.BotWebhookDomain, cfg.BotWebhookPath); err != nil {

@@ -2,74 +2,82 @@ package personal
 
 import "github.com/bots-house/birzzha/core"
 
-type NewLotNotification struct {
+type adminNewLotNotification struct {
 	User      *core.User
 	Lot       *core.Lot
 	channelID int64
 }
 
-func (n NewLotNotification) NotificationTemplate() string {
+func (n adminNewLotNotification) NotificationTemplate() string {
 	return `
         🆕 <b>Новая заяка!</b>
 
-        <a href="{{ .User.TelegramLink }}">{{ .User.Name }}</a> {{ if .User.Telegram.Username.Valid }}@{{ .User.Telegram.Username.String }}{{ end }}
+        <a href="{{ .Self.User.TelegramLink }}">{{ .Self.User.Name }}</a> {{ if .Self.User.Telegram.Username.Valid }}@{{ .Self.User.Telegram.Username.String }}{{ end }}
 
-        <b>№{{ .Lot.ID }}</b> <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a>
+        <b>№{{ .Self.Lot.ID }}</b> <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a>
 
-        <b>Цена:</b> {{ .Lot.Price.Current }} руб.
+        <b>Цена:</b> {{ .Self.Lot.Price.Current }} руб.
 
-        #signup #user{{ .User.ID }} #lot{{ .Lot.ID }}
+        #signup #user{{ .Self.User.ID }} #lot{{ .Self.Lot.ID }}
     `
 }
 
-func (n NewLotNotification) ChatID() int64 {
+func (n adminNewLotNotification) ChatID() int64 {
 	return n.channelID
 }
 
-type NewPaymentNotification struct {
+type adminNewPaymentNotification struct {
 	Lot       *core.Lot
 	Payment   *core.Payment
 	channelID int64
 }
 
-func (n NewPaymentNotification) NotificationTemplate() string {
+func (n adminNewPaymentNotification) NotificationTemplate() string {
 	return `
        💰 <b>Зачислен платеж!</b>
 
-        <b>№{{ .Lot.ID }}</b> <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a>
+        <b>№{{ .Self.Lot.ID }}</b> <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a>
 
-        <b>Назначение</b>: {{ .Payment.Purpose.String }}
-        <b>Шлюз</b>: {{ .Payment.Gateway }}
-        <b>Запрошено</b>: {{ .Payment.Requested.Display }}
-        <b>Оплачено</b>: {{ .Payment.Paid.Display }}
-        {{if .Payment.Received }}<b>Зачислено</b>: {{ .Payment.Received.Display }} {{ end }}
+        <b>Назначение</b>: {{ .Self.Payment.Purpose.String }}
+        <b>Шлюз</b>: {{ .Self.Payment.Gateway }}
+        <b>Запрошено</b>: {{ .Self.Payment.Requested.Display }}
+        <b>Оплачено</b>: {{ .Self.Payment.Paid.Display }}
+        {{if .Self.Payment.Received }}<b>Зачислено</b>: {{ .Self.Payment.Received.Display }} {{ end }}
 
-        #payment #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
+        #payment #user{{ .Self.Lot.OwnerID }} #lot{{ .Self.Lot.ID }}
     `
 }
 
-func (n NewPaymentNotification) ChatID() int64 {
-	return n.channelID
+type userNewPaymentNotification struct {
+	Lot *core.Lot
 }
 
-type CanceledLotNotification struct {
+func (n userNewPaymentNotification) NotificationTemplate() string {
+	return `
+        💸 Платеж по заявке на размещение канала <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a> зачислен! Ожидайте модерации.
+
+        #лот{{ .Self.Lot.ID }}
+    `
+}
+
+type adminCanceledLotNotification struct {
 	Lot       *core.Lot
 	Reason    *core.LotCanceledReason
 	channelID int64
 }
 
-func (n CanceledLotNotification) NotificationTemplate() string {
+func (n adminCanceledLotNotification) NotificationTemplate() string {
 	return `
         👋 <b>Лот снят с продажи!</b>
 
-        <b>№{{ .Lot.ID }}</b> <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a>
+        <b>№{{ .Self.Lot.ID }}</b> <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a>
 
-        <b>Причина</b>: {{ .Reason.Why }}
+        <b>Причина</b>: {{ .Self.Reason.Why }}
 
-        #cancel #user{{ .Lot.OwnerID }} #lot{{ .Lot.ID }}
+        #cancel #user{{ .Self.Lot.OwnerID }} #lot{{ .Self.Lot.ID }}
     `
 }
 
-func (n CanceledLotNotification) ChatID() int64 {
+func (n adminCanceledLotNotification) ChatID() int64 {
 	return n.channelID
 }

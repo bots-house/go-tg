@@ -2,7 +2,7 @@ package posting
 
 import (
 	"github.com/bots-house/birzzha/core"
-	"github.com/bots-house/birzzha/pkg/notifications"
+	"github.com/bots-house/birzzha/service/notifications"
 	"github.com/bots-house/birzzha/store"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 )
@@ -24,7 +24,7 @@ type Service struct {
 
 	TgClient *tgbotapi.BotAPI
 
-	UserNotification notifications.UserNotification
+	Notify *notifications.Notifications
 
 	SiteWithPathListChannel string
 }

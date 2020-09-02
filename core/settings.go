@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Rhymond/go-money"
 	"github.com/volatiletech/null/v8"
@@ -16,6 +17,21 @@ type SettingsChannel struct {
 	PublicUsername string
 	PrivateLink    string
 	PrivateID      int64
+}
+
+func (settings *SettingsChannel) PostLink(id int) string {
+	return fmt.Sprintf("https://t.me/%s/%d",
+		settings.PublicUsername,
+		id,
+	)
+}
+
+func (settings *SettingsChannel) Link() string {
+	if settings.PrivateLink != "" {
+		return settings.PrivateLink
+	} else {
+		return settings.PublicUsername
+	}
 }
 
 type Garant struct {

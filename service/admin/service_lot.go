@@ -308,8 +308,6 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.UserNotification.Send(ctx, lot, new(DeclineNotification))
-
 	return nil
 }
 

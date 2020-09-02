@@ -1,13 +1,16 @@
 package posting
 
-type LotPublishedNotification struct {
-	PublishedAt string
+import "github.com/bots-house/birzzha/core"
+
+type userLotPublishedNotification struct {
+	PostID int
+	Lot    *core.Lot
 }
 
-func (l LotPublishedNotification) Build() string {
+func (l userLotPublishedNotification) NotificationTemplate() string {
 	return `
-		 📅 <b>Лот <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a> (#{{ .Lot.ID }})</b> прошел модерацию и доступен на <a href="https://birzzha.me/lots/{{ .Lot.ID }}">сайте</a>
-		
-В <a href="https://t.me/birzzha">канале</a> объявление будет опубликовано <b>` + l.PublishedAt + ` по МСК</b>.
+		👀 Пост о продаже канала <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a> опубликован <a href="{{ .Settings.Channel.PostLink .Self.PostID }}">в канале</a>. 
+
+		#лот{{ .Self.Lot.ID }}
 	`
 }

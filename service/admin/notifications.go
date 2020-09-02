@@ -1,28 +1,20 @@
 package admin
 
 import (
-	"strconv"
-
 	"github.com/bots-house/birzzha/core"
 )
 
-type DeclineNotification string
-
-func (d DeclineNotification) Build() string {
-	return `
-        🙅 <b>Лот <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a> (#{{ .Lot.ID }})</b> не прошел модерацию и был отклонен модератором.
-
-Причина: {{ .Lot.DeclineReason.String }}
-    `
+type userNotifyScheduledLot struct {
+	Lot      *core.Lot
+	Settings *core.Settings
 }
 
-type CreatePostNotification struct {
-	postTgID core.PostID
-}
-
-func (c CreatePostNotification) Build() string {
+func (n userNotifyScheduledLot) NotificationTemplate() string {
 	return `
-        👌 <b>Лот <a href="{{ .Lot.Link }}">{{ .Lot.Name }}</a> (#{{ .Lot.ID }})</b> опубликован в канале
+		📅 Заявка на размещение канала <a href="{{ .Self.Lot.Link }}">{{ .Self.Lot.Name }}</a> прошла модерацию и уже доступна <a href="{{ lotSiteURL .Self.Lot.ID }}">на сайте</a>. 
 
-https://t.me/birzzha/` + strconv.Itoa(int(c.postTgID))
+		В <a href="{{ .Settings.Channel.Link }}">канале</a> пост будет размещен в <b>{{ mskTime .Self.Lot.ScheduledAt.Time }}</b>.
+
+		#лот{{ .Self.Lot.ID }}
+	`
 }

@@ -46,16 +46,16 @@ type Config struct {
 	UnitPayPublicKey string `split_words:"true"`
 	UnitPaySecretKey string `split_words:"true"`
 
-	Site string `default:"https://dev.birzzha.me/" split_words:"true"`
+	Site string `default:"http://local.birzzha.me/" split_words:"true"`
 
 	SiteViewExpiration time.Duration `default:"24h" split_words:"true"`
 
-	SitePathSellChannel string `default:"/lots/new" split_words:"true"`
-	SitePathListChannel string `default:"/lots" split_words:"true"`
+	SitePathCreateLot string `default:"/lots/new" split_words:"true"`
+	SitePathListLot   string `default:"/lots" split_words:"true"`
 
-	SitePathPaymentSuccess string `split_words:"true" default:"/payment/success"`
-	SitePathPaymentFailed  string `split_words:"true" default:"/payment/failed"`
-	SitePathPaymentPending string `split_words:"true" default:"/payment/pending"`
+	SitePathPaymentSuccess string `split_words:"true" default:"/payment?status=success"`
+	SitePathPaymentFailed  string `split_words:"true" default:"/payment?status=failed"`
+	SitePathPaymentPending string `split_words:"true" default:"/payment?status=pending"`
 
 	FileProxyCachePath string `default:".cache" split_words:"true"`
 

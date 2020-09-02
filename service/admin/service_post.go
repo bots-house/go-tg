@@ -52,7 +52,9 @@ func (srv *Service) CreatePost(ctx context.Context, user *core.User, in *PostInp
 				return errors.Wrap(err, "update lot")
 			}
 
-			srv.UserNotification.Send(ctx, lot, CreatePostNotification{postTgID: post.ID})
+			srv.Notify.SendUser(lot.OwnerID, userNotifyScheduledLot{
+				Lot: lot,
+			})
 		}
 
 		return nil

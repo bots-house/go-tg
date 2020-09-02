@@ -221,7 +221,7 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 		return nil, err
 	}
 
-	srv.Notify.Send(&NewLotNotification{
+	srv.Notify.Send(&adminNewLotNotification{
 		User:      user,
 		Lot:       lot,
 		channelID: srv.AdminNotificationsChannelID,
@@ -247,7 +247,6 @@ func (srv *Service) ChangeLotPrice(
 		return nil, ErrCantChangeLotPriceFree
 	}
 
-	lot.Price.Previous = null.IntFrom(lot.Price.Current)
 	lot.Price.Current = price
 
 	if err := srv.Lot.Update(ctx, lot.Lot); err != nil {
@@ -286,7 +285,7 @@ func (srv *Service) CancelLot(
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.Notify.Send(&CanceledLotNotification{
+	srv.Notify.Send(&adminCanceledLotNotification{
 		Lot:       lot.Lot,
 		Reason:    reason,
 		channelID: srv.AdminNotificationsChannelID,

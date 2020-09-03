@@ -128,17 +128,20 @@ var PaymentWhere = struct {
 
 // PaymentRels is where relationship names are stored.
 var PaymentRels = struct {
-	Lot   string
-	Payer string
+	Lot           string
+	Payer         string
+	CouponApplies string
 }{
-	Lot:   "Lot",
-	Payer: "Payer",
+	Lot:           "Lot",
+	Payer:         "Payer",
+	CouponApplies: "CouponApplies",
 }
 
 // paymentR is where relationships are stored.
 type paymentR struct {
-	Lot   *Lot  `boil:"Lot" json:"Lot" toml:"Lot" yaml:"Lot"`
-	Payer *User `boil:"Payer" json:"Payer" toml:"Payer" yaml:"Payer"`
+	Lot           *Lot             `boil:"Lot" json:"Lot" toml:"Lot" yaml:"Lot"`
+	Payer         *User            `boil:"Payer" json:"Payer" toml:"Payer" yaml:"Payer"`
+	CouponApplies CouponApplySlice `boil:"CouponApplies" json:"CouponApplies" toml:"CouponApplies" yaml:"CouponApplies"`
 }
 
 // NewStruct creates a new relationship struct
@@ -271,6 +274,27 @@ func (o *Payment) Payer(mods ...qm.QueryMod) userQuery {
 
 	query := Users(queryMods...)
 	queries.SetFrom(query.Query, "\"user\"")
+
+	return query
+}
+
+// CouponApplies retrieves all the coupon_apply's CouponApplies with an executor.
+func (o *Payment) CouponApplies(mods ...qm.QueryMod) couponApplyQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"coupon_apply\".\"payment_id\"=?", o.ID),
+	)
+
+	query := CouponApplies(queryMods...)
+	queries.SetFrom(query.Query, "\"coupon_apply\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"coupon_apply\".*"})
+	}
 
 	return query
 }
@@ -467,6 +491,97 @@ func (paymentL) LoadPayer(ctx context.Context, e boil.ContextExecutor, singular 
 	return nil
 }
 
+// LoadCouponApplies allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (paymentL) LoadCouponApplies(ctx context.Context, e boil.ContextExecutor, singular bool, maybePayment interface{}, mods queries.Applicator) error {
+	var slice []*Payment
+	var object *Payment
+
+	if singular {
+		object = maybePayment.(*Payment)
+	} else {
+		slice = *maybePayment.(*[]*Payment)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &paymentR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &paymentR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`coupon_apply`),
+		qm.WhereIn(`coupon_apply.payment_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load coupon_apply")
+	}
+
+	var resultSlice []*CouponApply
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice coupon_apply")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on coupon_apply")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for coupon_apply")
+	}
+
+	if singular {
+		object.R.CouponApplies = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &couponApplyR{}
+			}
+			foreign.R.Payment = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.PaymentID {
+				local.R.CouponApplies = append(local.R.CouponApplies, foreign)
+				if foreign.R == nil {
+					foreign.R = &couponApplyR{}
+				}
+				foreign.R.Payment = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // SetLot of the payment to the related item.
 // Sets o.R.Lot to related.
 // Adds o to related.R.Payments.
@@ -558,6 +673,59 @@ func (o *Payment) SetPayer(ctx context.Context, exec boil.ContextExecutor, inser
 		related.R.PayerPayments = append(related.R.PayerPayments, o)
 	}
 
+	return nil
+}
+
+// AddCouponApplies adds the given related objects to the existing relationships
+// of the payment, optionally inserting them as new records.
+// Appends related to o.R.CouponApplies.
+// Sets related.R.Payment appropriately.
+func (o *Payment) AddCouponApplies(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*CouponApply) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.PaymentID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"coupon_apply\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"payment_id"}),
+				strmangle.WhereClause("\"", "\"", 2, couponApplyPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.PaymentID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &paymentR{
+			CouponApplies: related,
+		}
+	} else {
+		o.R.CouponApplies = append(o.R.CouponApplies, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &couponApplyR{
+				Payment: o,
+			}
+		} else {
+			rel.R.Payment = o
+		}
+	}
 	return nil
 }
 

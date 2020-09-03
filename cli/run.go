@@ -348,10 +348,12 @@ func run(ctx context.Context, revision string) error {
 		AvatarResolver: tg.AvatarResolver{
 			Client: http.DefaultClient,
 		},
-		Posting:  postingSrv,
-		Post:     pg.Post,
-		TgClient: tgClient,
-		Notify:   notifs,
+		Coupon:      pg.Coupon,
+		CouponApply: pg.CouponApply,
+		Posting:     postingSrv,
+		Post:        pg.Post,
+		TgClient:    tgClient,
+		Notify:      notifs,
 	}
 
 	landingSrv := &landing.Service{
@@ -388,6 +390,8 @@ func run(ctx context.Context, revision string) error {
 		LotFile:                     pg.LotFile,
 		Parser:                      newParser(&http.Client{}),
 		AdminNotificationsChannelID: cfg.AdminNotificationsChannelID,
+		Coupon:                      pg.Coupon,
+		CouponApply:                 pg.CouponApply,
 	}
 
 	viewsSrv := &views.Service{

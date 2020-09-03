@@ -10,16 +10,13 @@ import (
 	"net/url"
 	golangswaggerpaths "path"
 	"strings"
-
-	"github.com/go-openapi/swag"
 )
 
-// CreateApplicationPaymentURL generates an URL for the create application payment operation
-type CreateApplicationPaymentURL struct {
-	ID int64
+// GetCouponURL generates an URL for the get coupon operation
+type GetCouponURL struct {
+	Code string
 
-	Coupon  *string
-	Gateway string
+	Purpose string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -29,7 +26,7 @@ type CreateApplicationPaymentURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *CreateApplicationPaymentURL) WithBasePath(bp string) *CreateApplicationPaymentURL {
+func (o *GetCouponURL) WithBasePath(bp string) *GetCouponURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -37,21 +34,21 @@ func (o *CreateApplicationPaymentURL) WithBasePath(bp string) *CreateApplication
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *CreateApplicationPaymentURL) SetBasePath(bp string) {
+func (o *GetCouponURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *CreateApplicationPaymentURL) Build() (*url.URL, error) {
+func (o *GetCouponURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/lots/{id}/application-payment"
+	var _path = "/coupons/{code}"
 
-	id := swag.FormatInt64(o.ID)
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	code := o.Code
+	if code != "" {
+		_path = strings.Replace(_path, "{code}", code, -1)
 	} else {
-		return nil, errors.New("id is required on CreateApplicationPaymentURL")
+		return nil, errors.New("code is required on GetCouponURL")
 	}
 
 	_basePath := o._basePath
@@ -62,17 +59,9 @@ func (o *CreateApplicationPaymentURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
-	var couponQ string
-	if o.Coupon != nil {
-		couponQ = *o.Coupon
-	}
-	if couponQ != "" {
-		qs.Set("coupon", couponQ)
-	}
-
-	gatewayQ := o.Gateway
-	if gatewayQ != "" {
-		qs.Set("gateway", gatewayQ)
+	purposeQ := o.Purpose
+	if purposeQ != "" {
+		qs.Set("purpose", purposeQ)
 	}
 
 	_result.RawQuery = qs.Encode()
@@ -81,7 +70,7 @@ func (o *CreateApplicationPaymentURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *CreateApplicationPaymentURL) Must(u *url.URL, err error) *url.URL {
+func (o *GetCouponURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -92,17 +81,17 @@ func (o *CreateApplicationPaymentURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *CreateApplicationPaymentURL) String() string {
+func (o *GetCouponURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *CreateApplicationPaymentURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *GetCouponURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on CreateApplicationPaymentURL")
+		return nil, errors.New("scheme is required for a full url on GetCouponURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on CreateApplicationPaymentURL")
+		return nil, errors.New("host is required for a full url on GetCouponURL")
 	}
 
 	base, err := o.Build()
@@ -116,6 +105,6 @@ func (o *CreateApplicationPaymentURL) BuildFull(scheme, host string) (*url.URL, 
 }
 
 // StringFull returns the string representation of a complete url
-func (o *CreateApplicationPaymentURL) StringFull(scheme, host string) string {
+func (o *GetCouponURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

@@ -22,6 +22,8 @@ type Service struct {
 	Landing           core.LandingStore
 	Favorite          core.FavoriteStore
 	Post              core.PostStore
+	Coupon            core.CouponStore
+	CouponApply       core.CouponApplyStore
 	BotLinkBuilder    *core.BotLinkBuilder
 	Posting           *posting.Service
 

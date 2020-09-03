@@ -332,7 +332,7 @@ paths:
       tags: [admin]
       responses:
         204:
-          description: No content
+          description: No Content
         400:
           description: Bad Request
           schema:
@@ -909,6 +909,11 @@ paths:
           required: true
           type: string
           enum: [unitpay, interkassa]
+        - in: query
+          name: coupon
+          type: string
+          description: Купон.
+
       description: |
         Создает платеж и возвращает данные формы с помощью которой пользователя нужно отправить на платежную систему.
       operationId: createApplicationPayment
@@ -1006,6 +1011,11 @@ paths:
           required: true
           type: string
           enum: [unitpay, interkassa]
+
+        - in: query
+          name: coupon
+          type: string
+          description: Купон.
         - in: body
           name: price
           required: true
@@ -1164,6 +1174,51 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /coupons/{code}:
+    get:
+      parameters:
+        - in: path
+          type: string
+          name: code
+          required: true
+          description: Код купона.
+        - in: query
+          type: string
+          name: purpose
+          enum:
+            - change_price
+            - application
+          required: true
+          description: Для какого платежа.
+      
+      summary: Get Coupon
+      operationId: getCoupon
+      description: |
+        Получить информацию о купоне.
+
+        Возможные ошибки:
+          - `coupon_is_not_valid_for_payment` - Купон не предназначен для этого типа платежа;
+          - `coupon_expired` - Срок годности купона истек;
+          - `coupon_max_user_applying_limit` - Лимит использования купона пользователем превышен;
+          - `coupon_max_applying_limit` - Лимит использования купона превышен;
+          - `coupon_not_found` - Купона не существует;
+      tags: ["personal-area"]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CouponInfo"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+
+
 
   /admin/users:
     get:
@@ -1786,7 +1841,7 @@ paths:
       tags: [admin]
       responses:
         204:
-          description: No content
+          description: No Content
         400:
           description: Bad Request
           schema:
@@ -1866,7 +1921,7 @@ paths:
       tags: [admin]
       responses:
         204:
-          description: No content
+          description: No Content
         400:
           description: Bad Request
           schema:
@@ -1895,6 +1950,127 @@ paths:
           description: Service Unavailable 
           schema:
             $ref: "#/definitions/Health"
+  
+  /admin/coupons:
+    get:
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: Лимит.
+        - in: query
+          name: offset
+          type: integer
+          description: Офсет.
+          
+      summary: Get Coupons
+      operationId: adminGetCoupons
+      description: Получение не удаленных купонов.
+
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CouponListItem"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"     
+
+    post:
+      parameters:
+        - in: body
+          required: true
+          name: coupon
+          schema:
+            $ref: "#/definitions/InputCoupon"
+          description: Купон.
+  
+      summary: Create Coupon
+      operationId: adminCreateCoupon
+      description: |
+        Создание купона.
+
+        Возможные ошибки:
+          - `coupon_with_this_code_already_exist` - Купон с таким кодом уже существует;
+          - `coupon_discount_must_be_greater_than_zero` - Скидка купона должна быть выше 0;
+          
+      tags: [admin]
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/CouponItem"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /admin/coupons/{id}:
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: ID купона.
+    
+    put:
+      summary: Update Coupon
+      operationId: adminUpdateCoupon
+      description: |
+        Обновление купона.
+
+        Возможные ошибки:
+          - `coupon_with_this_code_already_exist` - Купон с таким кодом уже существует;
+          - `coupon_discount_must_be_greater_than_zero` - Скидка купона должна быть выше 0;
+          
+      tags: [admin]
+      parameters:
+        - in: body
+          required: true
+          name: coupon
+          schema:
+            $ref: "#/definitions/InputCoupon"
+          description: Купон.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CouponItem"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"      
+    
+    delete:
+      summary: Delete Coupon
+      operationId: adminDeleteCoupon
+      description: Удаление купона.
+      tags: [admin]
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"      
 
 definitions:
   AdminSettingsLandingInput:
@@ -3739,3 +3915,111 @@ definitions:
         description: Время которое заняла проверка
         type: string
         format: duration
+  
+  InputCoupon:
+    type: object
+    required:
+      - code
+      - discount
+      - purposes
+    properties:
+      code:
+        type: string
+        description: Код купона.
+      discount:
+        type: number
+        description: |
+          Скидка (пример: 0.1 = 10%)
+      purposes:
+        type: array
+        description: Для каких типов платежей применим.
+        items:
+          type: string
+          enum:
+            - application
+            - change_price
+        minItems: 1
+        maxItems: 2
+      expire_at:
+        type: integer
+        description: Дата истечения купона.
+      max_applies_by_user_limit:
+        type: integer
+        description: Сколько может применятся одним пользователем.
+      max_applies_limit:
+        type: integer
+        description: Количество применений всеми пользователями.
+
+  CouponItem:
+    type: object
+    required:
+      - id
+      - code
+      - discount
+      - purposes
+      - expire_at
+      - created_at
+      - max_applies_by_user_limit
+      - max_applies_limit
+      - applies_count
+    properties:
+      id:
+        type: integer
+        description: ID купона.
+      code:
+        type: string
+        description: Код купона.
+      discount:
+        type: number
+        description: |
+          Скидка (пример: 0.1 = 10%)
+      purposes:
+        type: array
+        description: Для каких типов платежей применим.
+        items:
+          type: string
+          enum:
+            - application
+            - change_price
+        minItems: 1
+        maxItems: 2
+      expire_at:
+        type: integer
+        description: Дата истечения купона.
+      created_at:
+        type: integer
+        description: Дата создания купона.
+      applies_count:    
+        type: integer
+        description: Количество применений.  
+      max_applies_by_user_limit:
+        type: integer
+        description: Сколько может применятся одним пользователем.
+      max_applies_limit:
+        type: integer
+        description: Количество применений всеми пользователями.
+  
+
+  CouponInfo:
+    type: object
+    required: 
+      - discount
+    properties:
+      discount:
+        type: number
+        description: Скидка.
+
+  CouponListItem:
+    type: object
+    required:
+      - total
+      - items
+    properties:
+      total:
+        type: integer
+        description: Количество купонов.
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/CouponItem"
+          

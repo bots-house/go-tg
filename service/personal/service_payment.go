@@ -100,12 +100,13 @@ func (srv *Service) CreateApplicationPayment(
 	user *core.User,
 	id core.LotID,
 	gatewayName string,
+	coupon string,
 ) (*payment.Form, error) {
 	var form *payment.Form
 
 	err := srv.Txier(ctx, func(ctx context.Context) error {
 		var err error
-		form, err = srv.createApplicationPayment(ctx, user, id, gatewayName)
+		form, err = srv.createApplicationPayment(ctx, user, id, gatewayName, coupon)
 		if err != nil {
 			return err
 		}
@@ -115,11 +116,40 @@ func (srv *Service) CreateApplicationPayment(
 	return form, err
 }
 
+func (srv *Service) ApplyCoupon(
+	ctx context.Context,
+	user *core.User,
+	coupon string,
+	payment *core.Payment,
+) (*core.Payment, error) {
+	c, err := srv.Coupon.Query().Code(coupon).IsDeleted(false).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get coupon")
+	}
+
+	if err := srv.ValidateCoupon(ctx, user, c, payment.Purpose); err != nil {
+		return nil, err
+	}
+
+	payment.Requested = money.New(int64((payment.Requested.AsMajorUnits()-payment.Requested.AsMajorUnits()*c.Discount)*100.0), payment.Requested.Currency().Code)
+	if err := srv.Payment.Update(ctx, payment); err != nil {
+		return nil, errors.Wrap(err, "update payment")
+	}
+
+	apply := core.NewCouponApply(c.ID, payment.ID)
+	if err := srv.CouponApply.Add(ctx, apply); err != nil {
+		return nil, errors.Wrap(err, "create coupon apply")
+	}
+
+	return payment, nil
+}
+
 func (srv *Service) createApplicationPayment(
 	ctx context.Context,
 	user *core.User,
 	id core.LotID,
 	gatewayName string,
+	coupon string,
 ) (*payment.Form, error) {
 	invoice, err := srv.GetApplicationInvoice(ctx, user, id)
 	if err != nil {
@@ -143,6 +173,13 @@ func (srv *Service) createApplicationPayment(
 		return nil, errors.Wrap(err, "add payment to store")
 	}
 
+	if coupon != "" {
+		payment, err = srv.ApplyCoupon(ctx, user, coupon, payment)
+		if err != nil {
+			return nil, errors.Wrap(err, "apply coupon")
+		}
+	}
+
 	form, err := gateway.NewPayment(ctx, user, payment)
 	if err != nil {
 		return nil, errors.Wrap(err, "new payment")
@@ -157,12 +194,13 @@ func (srv *Service) CreateChangePricePayment(
 	id core.LotID,
 	gatewayName string,
 	changePrice *money.Money,
+	coupon string,
 ) (*payment.Form, error) {
 	var form *payment.Form
 
 	err := srv.Txier(ctx, func(ctx context.Context) error {
 		var err error
-		form, err = srv.createChangePricePayment(ctx, user, id, gatewayName, changePrice)
+		form, err = srv.createChangePricePayment(ctx, user, id, gatewayName, changePrice, coupon)
 		if err != nil {
 			return err
 		}
@@ -177,7 +215,7 @@ func (srv *Service) createChangePricePayment(
 	id core.LotID,
 	gatewayName string,
 	changePrice *money.Money,
-
+	coupon string,
 ) (*payment.Form, error) {
 	invoice, err := srv.GetChangeInvoice(ctx, user, id)
 	if err != nil {
@@ -200,6 +238,13 @@ func (srv *Service) createChangePricePayment(
 	payment.SetChangePrice(changePrice)
 	if err := srv.Payment.Add(ctx, payment); err != nil {
 		return nil, errors.Wrap(err, "add payment to store")
+	}
+
+	if coupon != "" {
+		payment, err = srv.ApplyCoupon(ctx, user, coupon, payment)
+		if err != nil {
+			return nil, errors.Wrap(err, "apply coupon")
+		}
 	}
 
 	form, err := gateway.NewPayment(ctx, user, payment)

@@ -35,6 +35,164 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/coupons": {
+      "get": {
+        "description": "Получение не удаленных купонов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Coupons",
+        "operationId": "adminGetCoupons",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Лимит.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponListItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Coupon",
+        "operationId": "adminCreateCoupon",
+        "parameters": [
+          {
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputCoupon"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/CouponItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/coupons/{id}": {
+      "put": {
+        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Coupon",
+        "operationId": "adminUpdateCoupon",
+        "parameters": [
+          {
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputCoupon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление купона.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Coupon",
+        "operationId": "adminDeleteCoupon",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID купона.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/lot/statuses": {
       "get": {
         "description": "Получить статусы лотов и количество лотов по ним.\nВ случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.\n",
@@ -634,7 +792,7 @@ func init() {
         "operationId": "adminDeleteReview",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -860,7 +1018,7 @@ func init() {
         "operationId": "adminDeleteLotCanceledReason",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -1058,7 +1216,7 @@ func init() {
         "operationId": "adminDeleteTopic",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -1305,6 +1463,56 @@ func init() {
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/coupons/{code}": {
+      "get": {
+        "description": "Получить информацию о купоне.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_is_not_valid_for_payment` + "`" + ` - Купон не предназначен для этого типа платежа;\n  - ` + "`" + `coupon_expired` + "`" + ` - Срок годности купона истек;\n  - ` + "`" + `coupon_max_user_applying_limit` + "`" + ` - Лимит использования купона пользователем превышен;\n  - ` + "`" + `coupon_max_applying_limit` + "`" + ` - Лимит использования купона превышен;\n  - ` + "`" + `coupon_not_found` + "`" + ` - Купона не существует;\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Coupon",
+        "operationId": "getCoupon",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Код купона.",
+            "name": "code",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "change_price",
+              "application"
+            ],
+            "type": "string",
+            "description": "Для какого платежа.",
+            "name": "purpose",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponInfo"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -1761,6 +1969,12 @@ func init() {
             "name": "gateway",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1900,6 +2114,12 @@ func init() {
             "name": "gateway",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "query"
           },
           {
             "name": "price",
@@ -3392,6 +3612,110 @@ func init() {
         }
       }
     },
+    "CouponInfo": {
+      "type": "object",
+      "required": [
+        "discount"
+      ],
+      "properties": {
+        "discount": {
+          "description": "Скидка.",
+          "type": "number",
+          "x-order": 0
+        }
+      }
+    },
+    "CouponItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "code",
+        "discount",
+        "purposes",
+        "expire_at",
+        "created_at",
+        "max_applies_by_user_limit",
+        "max_applies_limit",
+        "applies_count"
+      ],
+      "properties": {
+        "applies_count": {
+          "description": "Количество применений.",
+          "type": "integer",
+          "x-order": 6
+        },
+        "code": {
+          "description": "Код купона.",
+          "type": "string",
+          "x-order": 1
+        },
+        "created_at": {
+          "description": "Дата создания купона.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "discount": {
+          "description": "Скидка (пример: 0.1 = 10%)\n",
+          "type": "number",
+          "x-order": 2
+        },
+        "expire_at": {
+          "description": "Дата истечения купона.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID купона.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "max_applies_by_user_limit": {
+          "description": "Сколько может применятся одним пользователем.",
+          "type": "integer",
+          "x-order": 7
+        },
+        "max_applies_limit": {
+          "description": "Количество применений всеми пользователями.",
+          "type": "integer",
+          "x-order": 8
+        },
+        "purposes": {
+          "description": "Для каких типов платежей применим.",
+          "type": "array",
+          "maxItems": 2,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application",
+              "change_price"
+            ]
+          },
+          "x-order": 3
+        }
+      }
+    },
+    "CouponListItem": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CouponItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Количество купонов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "DailyCoverage": {
       "type": "object",
       "required": [
@@ -3732,6 +4056,55 @@ func init() {
         "price": {
           "x-order": 0,
           "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "InputCoupon": {
+      "type": "object",
+      "required": [
+        "code",
+        "discount",
+        "purposes"
+      ],
+      "properties": {
+        "code": {
+          "description": "Код купона.",
+          "type": "string",
+          "x-order": 0
+        },
+        "discount": {
+          "description": "Скидка (пример: 0.1 = 10%)\n",
+          "type": "number",
+          "x-order": 1
+        },
+        "expire_at": {
+          "description": "Дата истечения купона.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "max_applies_by_user_limit": {
+          "description": "Сколько может применятся одним пользователем.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "max_applies_limit": {
+          "description": "Количество применений всеми пользователями.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "purposes": {
+          "description": "Для каких типов платежей применим.",
+          "type": "array",
+          "maxItems": 2,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application",
+              "change_price"
+            ]
+          },
+          "x-order": 2
         }
       }
     },
@@ -5347,6 +5720,164 @@ func init() {
   "host": "localhost:8000",
   "basePath": "/v1",
   "paths": {
+    "/admin/coupons": {
+      "get": {
+        "description": "Получение не удаленных купонов.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Coupons",
+        "operationId": "adminGetCoupons",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Лимит.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Офсет.",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponListItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Coupon",
+        "operationId": "adminCreateCoupon",
+        "parameters": [
+          {
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputCoupon"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/CouponItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/coupons/{id}": {
+      "put": {
+        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update Coupon",
+        "operationId": "adminUpdateCoupon",
+        "parameters": [
+          {
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputCoupon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponItem"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Удаление купона.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Coupon",
+        "operationId": "adminDeleteCoupon",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "description": "ID купона.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/lot/statuses": {
       "get": {
         "description": "Получить статусы лотов и количество лотов по ним.\nВ случае если передать user_id, в счетчиках будет кол-во лотов по статусу для конкретного юзера.\n",
@@ -5946,7 +6477,7 @@ func init() {
         "operationId": "adminDeleteReview",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -6172,7 +6703,7 @@ func init() {
         "operationId": "adminDeleteLotCanceledReason",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -6370,7 +6901,7 @@ func init() {
         "operationId": "adminDeleteTopic",
         "responses": {
           "204": {
-            "description": "No content"
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -6629,6 +7160,56 @@ func init() {
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/coupons/{code}": {
+      "get": {
+        "description": "Получить информацию о купоне.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_is_not_valid_for_payment` + "`" + ` - Купон не предназначен для этого типа платежа;\n  - ` + "`" + `coupon_expired` + "`" + ` - Срок годности купона истек;\n  - ` + "`" + `coupon_max_user_applying_limit` + "`" + ` - Лимит использования купона пользователем превышен;\n  - ` + "`" + `coupon_max_applying_limit` + "`" + ` - Лимит использования купона превышен;\n  - ` + "`" + `coupon_not_found` + "`" + ` - Купона не существует;\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Get Coupon",
+        "operationId": "getCoupon",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Код купона.",
+            "name": "code",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "change_price",
+              "application"
+            ],
+            "type": "string",
+            "description": "Для какого платежа.",
+            "name": "purpose",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/CouponInfo"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -7085,6 +7666,12 @@ func init() {
             "name": "gateway",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "query"
           }
         ],
         "responses": {
@@ -7224,6 +7811,12 @@ func init() {
             "name": "gateway",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Купон.",
+            "name": "coupon",
+            "in": "query"
           },
           {
             "name": "price",
@@ -8762,6 +9355,110 @@ func init() {
       },
       "x-order": 2
     },
+    "CouponInfo": {
+      "type": "object",
+      "required": [
+        "discount"
+      ],
+      "properties": {
+        "discount": {
+          "description": "Скидка.",
+          "type": "number",
+          "x-order": 0
+        }
+      }
+    },
+    "CouponItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "code",
+        "discount",
+        "purposes",
+        "expire_at",
+        "created_at",
+        "max_applies_by_user_limit",
+        "max_applies_limit",
+        "applies_count"
+      ],
+      "properties": {
+        "applies_count": {
+          "description": "Количество применений.",
+          "type": "integer",
+          "x-order": 6
+        },
+        "code": {
+          "description": "Код купона.",
+          "type": "string",
+          "x-order": 1
+        },
+        "created_at": {
+          "description": "Дата создания купона.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "discount": {
+          "description": "Скидка (пример: 0.1 = 10%)\n",
+          "type": "number",
+          "x-order": 2
+        },
+        "expire_at": {
+          "description": "Дата истечения купона.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "id": {
+          "description": "ID купона.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "max_applies_by_user_limit": {
+          "description": "Сколько может применятся одним пользователем.",
+          "type": "integer",
+          "x-order": 7
+        },
+        "max_applies_limit": {
+          "description": "Количество применений всеми пользователями.",
+          "type": "integer",
+          "x-order": 8
+        },
+        "purposes": {
+          "description": "Для каких типов платежей применим.",
+          "type": "array",
+          "maxItems": 2,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application",
+              "change_price"
+            ]
+          },
+          "x-order": 3
+        }
+      }
+    },
+    "CouponListItem": {
+      "type": "object",
+      "required": [
+        "total",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CouponItem"
+          },
+          "x-order": 1
+        },
+        "total": {
+          "description": "Количество купонов.",
+          "type": "integer",
+          "x-order": 0
+        }
+      }
+    },
     "DailyCoverage": {
       "type": "object",
       "required": [
@@ -9102,6 +9799,55 @@ func init() {
         "price": {
           "x-order": 0,
           "$ref": "#/definitions/Money"
+        }
+      }
+    },
+    "InputCoupon": {
+      "type": "object",
+      "required": [
+        "code",
+        "discount",
+        "purposes"
+      ],
+      "properties": {
+        "code": {
+          "description": "Код купона.",
+          "type": "string",
+          "x-order": 0
+        },
+        "discount": {
+          "description": "Скидка (пример: 0.1 = 10%)\n",
+          "type": "number",
+          "x-order": 1
+        },
+        "expire_at": {
+          "description": "Дата истечения купона.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "max_applies_by_user_limit": {
+          "description": "Сколько может применятся одним пользователем.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "max_applies_limit": {
+          "description": "Количество применений всеми пользователями.",
+          "type": "integer",
+          "x-order": 5
+        },
+        "purposes": {
+          "description": "Для каких типов платежей применим.",
+          "type": "array",
+          "maxItems": 2,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application",
+              "change_price"
+            ]
+          },
+          "x-order": 2
         }
       }
     },

@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../var/folders/s8/y6wl2zqx0l7cvcv1f_jz6v300000gn/T/swagger.yml304610992 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml213179566 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -67,6 +67,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation admin.AdminCancelLot has not yet been implemented")
 		})
 	}
+	if api.AdminAdminCreateCouponHandler == nil {
+		api.AdminAdminCreateCouponHandler = admin.AdminCreateCouponHandlerFunc(func(params admin.AdminCreateCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminCreateCoupon has not yet been implemented")
+		})
+	}
 	if api.AdminAdminCreateLotCanceledReasonHandler == nil {
 		api.AdminAdminCreateLotCanceledReasonHandler = admin.AdminCreateLotCanceledReasonHandlerFunc(func(params admin.AdminCreateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateLotCanceledReason has not yet been implemented")
@@ -87,6 +92,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 			return middleware.NotImplemented("operation admin.AdminDeclineLot has not yet been implemented")
 		})
 	}
+	if api.AdminAdminDeleteCouponHandler == nil {
+		api.AdminAdminDeleteCouponHandler = admin.AdminDeleteCouponHandlerFunc(func(params admin.AdminDeleteCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeleteCoupon has not yet been implemented")
+		})
+	}
 	if api.AdminAdminDeleteLotCanceledReasonHandler == nil {
 		api.AdminAdminDeleteLotCanceledReasonHandler = admin.AdminDeleteLotCanceledReasonHandlerFunc(func(params admin.AdminDeleteLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteLotCanceledReason has not yet been implemented")
@@ -105,6 +115,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminDeleteTopicHandler == nil {
 		api.AdminAdminDeleteTopicHandler = admin.AdminDeleteTopicHandlerFunc(func(params admin.AdminDeleteTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteTopic has not yet been implemented")
+		})
+	}
+	if api.AdminAdminGetCouponsHandler == nil {
+		api.AdminAdminGetCouponsHandler = admin.AdminGetCouponsHandlerFunc(func(params admin.AdminGetCouponsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetCoupons has not yet been implemented")
 		})
 	}
 	if api.AdminAdminGetLotHandler == nil {
@@ -150,6 +165,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminSendPostPreviewHandler == nil {
 		api.AdminAdminSendPostPreviewHandler = admin.AdminSendPostPreviewHandlerFunc(func(params admin.AdminSendPostPreviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminSendPostPreview has not yet been implemented")
+		})
+	}
+	if api.AdminAdminUpdateCouponHandler == nil {
+		api.AdminAdminUpdateCouponHandler = admin.AdminUpdateCouponHandlerFunc(func(params admin.AdminUpdateCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateCoupon has not yet been implemented")
 		})
 	}
 	if api.AdminAdminUpdateLotHandler == nil {
@@ -240,6 +260,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.PersonalAreaGetChangePriceInvoiceHandler == nil {
 		api.PersonalAreaGetChangePriceInvoiceHandler = personal_area.GetChangePriceInvoiceHandlerFunc(func(params personal_area.GetChangePriceInvoiceParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetChangePriceInvoice has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaGetCouponHandler == nil {
+		api.PersonalAreaGetCouponHandler = personal_area.GetCouponHandlerFunc(func(params personal_area.GetCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetCoupon has not yet been implemented")
 		})
 	}
 	if api.CatalogGetDailyCoverageHandler == nil {

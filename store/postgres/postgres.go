@@ -29,6 +29,8 @@ type Postgres struct {
 	LotFile           *LotFileStore
 	Landing           *LandingStore
 	Post              *PostStore
+	Coupon            *CouponStore
+	CouponApply       *CouponApplyStore
 }
 
 // NewPostgres create postgres based database with all stores.
@@ -44,6 +46,8 @@ func NewPostgres(db *sql.DB) *Postgres {
 		LotCanceledReason: &LotCanceledReasonStore{ContextExecutor: db},
 		LotFile:           &LotFileStore{ContextExecutor: db},
 		Post:              &PostStore{ContextExecutor: db},
+		Coupon:            &CouponStore{ContextExecutor: db},
+		CouponApply:       &CouponApplyStore{ContextExecutor: db},
 	}
 
 	pg.LotTopic = &LotTopicStore{db: db, txier: pg.Tx, executor: db}

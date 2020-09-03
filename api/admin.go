@@ -455,3 +455,68 @@ func (h *Handler) adminCancelLot(params adminops.AdminCancelLotParams, identity 
 	}
 	return adminops.NewAdminCancelLotOK()
 }
+
+func (h *Handler) adminCreateCoupon(params adminops.AdminCreateCouponParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	coupon, err := h.Admin.CreateCoupon(ctx, identity.GetUser(), &admin.CouponInput{
+		Code:                  swag.StringValue(params.Coupon.Code),
+		Discount:              swag.Float64Value(params.Coupon.Discount),
+		Purposes:              params.Coupon.Purposes,
+		ExpireAt:              null.TimeFrom(time.Unix(params.Coupon.ExpireAt, 0)),
+		MaxAppliesByUserLimit: null.IntFrom(int(params.Coupon.MaxAppliesByUserLimit)),
+		MaxAppliesLimit:       null.IntFrom(int(params.Coupon.MaxAppliesLimit)),
+	})
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminCreateCouponBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminCreateCouponInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminCreateCouponCreated().WithPayload(models.NewCouponItem(coupon))
+}
+
+func (h *Handler) adminUpdateCoupon(params adminops.AdminUpdateCouponParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	coupon, err := h.Admin.UpdateCoupon(ctx, identity.GetUser(), core.CouponID(params.ID), &admin.CouponInput{
+		Code:                  swag.StringValue(params.Coupon.Code),
+		Discount:              swag.Float64Value(params.Coupon.Discount),
+		Purposes:              params.Coupon.Purposes,
+		ExpireAt:              null.TimeFrom(time.Unix(params.Coupon.ExpireAt, 0)),
+		MaxAppliesByUserLimit: null.IntFrom(int(params.Coupon.MaxAppliesByUserLimit)),
+		MaxAppliesLimit:       null.IntFrom(int(params.Coupon.MaxAppliesLimit)),
+	})
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminUpdateCouponBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminUpdateCouponInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminUpdateCouponOK().WithPayload(models.NewCouponItem(coupon))
+}
+
+func (h *Handler) adminDeleteCoupon(params adminops.AdminDeleteCouponParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	if err := h.Admin.DeleteCoupon(ctx, identity.GetUser(), core.CouponID(params.ID)); err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminDeleteCouponBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminDeleteCouponInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminDeleteCouponNoContent()
+}
+
+func (h *Handler) adminGetCoupons(params adminops.AdminGetCouponsParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	coupons, err := h.Admin.GetCoupons(ctx, identity.GetUser(), int(swag.Int64Value(params.Limit)), int(swag.Int64Value(params.Offset)))
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminGetCouponsBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminGetCouponsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminGetCouponsOK().WithPayload(models.NewCouponListItem(coupons))
+}

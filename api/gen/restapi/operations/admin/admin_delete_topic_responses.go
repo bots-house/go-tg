@@ -16,7 +16,7 @@ import (
 // AdminDeleteTopicNoContentCode is the HTTP code returned for type AdminDeleteTopicNoContent
 const AdminDeleteTopicNoContentCode int = 204
 
-/*AdminDeleteTopicNoContent No content
+/*AdminDeleteTopicNoContent No Content
 
 swagger:response adminDeleteTopicNoContent
 */

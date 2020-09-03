@@ -19,6 +19,8 @@ type Service struct {
 	Notify            *notifications.Notifications
 	LotCanceledReason core.LotCanceledReasonStore
 	LotFile           core.LotFileStore
+	Coupon            core.CouponStore
+	CouponApply       core.CouponApplyStore
 	TelegramStat      stat.Telegram
 
 	Storage  storage.Storage

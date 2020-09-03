@@ -4,6 +4,8 @@
 package dal
 
 var TableNames = struct {
+	Coupon            string
+	CouponApply       string
 	Favorite          string
 	Landing           string
 	Lot               string
@@ -18,6 +20,8 @@ var TableNames = struct {
 	User              string
 	Views             string
 }{
+	Coupon:            "coupon",
+	CouponApply:       "coupon_apply",
 	Favorite:          "favorite",
 	Landing:           "landing",
 	Lot:               "lot",

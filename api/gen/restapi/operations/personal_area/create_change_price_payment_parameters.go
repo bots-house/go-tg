@@ -35,6 +35,10 @@ type CreateChangePricePaymentParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*Купон.
+	  In: query
+	*/
+	Coupon *string
 	/*
 	  Required: true
 	  In: query
@@ -62,6 +66,11 @@ func (o *CreateChangePricePaymentParams) BindRequest(r *http.Request, route *mid
 	o.HTTPRequest = r
 
 	qs := runtime.Values(r.URL.Query())
+
+	qCoupon, qhkCoupon, _ := qs.GetOK("coupon")
+	if err := o.bindCoupon(qCoupon, qhkCoupon, route.Formats); err != nil {
+		res = append(res, err)
+	}
 
 	qGateway, qhkGateway, _ := qs.GetOK("gateway")
 	if err := o.bindGateway(qGateway, qhkGateway, route.Formats); err != nil {
@@ -98,6 +107,24 @@ func (o *CreateChangePricePaymentParams) BindRequest(r *http.Request, route *mid
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindCoupon binds and validates parameter Coupon from query.
+func (o *CreateChangePricePaymentParams) bindCoupon(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.Coupon = &raw
+
 	return nil
 }
 

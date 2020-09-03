@@ -117,6 +117,8 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.PersonalAreaGetChangePriceInvoiceHandler = personalops.GetChangePriceInvoiceHandlerFunc(h.getChangePriceInvoice)
 	api.PersonalAreaCreateChangePricePaymentHandler = personalops.CreateChangePricePaymentHandlerFunc(h.createChangePricePayment)
 
+	api.PersonalAreaGetCouponHandler = personalops.GetCouponHandlerFunc(h.getCoupon)
+
 	// webhook
 	api.WebhookHandleGatewayNotificationHandler = webhookops.HandleGatewayNotificationHandlerFunc(h.handlerGatewayNotification)
 	api.WebhookHandleGatewayUnitpayNotificationHandler = webhookops.HandleGatewayUnitpayNotificationHandlerFunc(h.handleGatewayUnitpayNotification)
@@ -155,6 +157,11 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.AdminAdminUpdatePostHandler = adminops.AdminUpdatePostHandlerFunc(h.adminUpdatePost)
 	api.AdminAdminDeletePostHandler = adminops.AdminDeletePostHandlerFunc(h.adminDeletePost)
 	api.AdminAdminGetPostsHandler = adminops.AdminGetPostsHandlerFunc(h.adminGetPosts)
+
+	api.AdminAdminCreateCouponHandler = adminops.AdminCreateCouponHandlerFunc(h.adminCreateCoupon)
+	api.AdminAdminUpdateCouponHandler = adminops.AdminUpdateCouponHandlerFunc(h.adminUpdateCoupon)
+	api.AdminAdminDeleteCouponHandler = adminops.AdminDeleteCouponHandlerFunc(h.adminDeleteCoupon)
+	api.AdminAdminGetCouponsHandler = adminops.AdminGetCouponsHandlerFunc(h.adminGetCoupons)
 
 	// health
 	api.HealthGetHealthHandler = healthops.GetHealthHandlerFunc(h.getHealth)

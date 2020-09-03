@@ -16,7 +16,7 @@ import (
 // AdminDeleteReviewNoContentCode is the HTTP code returned for type AdminDeleteReviewNoContent
 const AdminDeleteReviewNoContentCode int = 204
 
-/*AdminDeleteReviewNoContent No content
+/*AdminDeleteReviewNoContent No Content
 
 swagger:response adminDeleteReviewNoContent
 */

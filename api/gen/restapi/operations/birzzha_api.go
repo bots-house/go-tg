@@ -56,6 +56,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminCancelLotHandler: admin.AdminCancelLotHandlerFunc(func(params admin.AdminCancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCancelLot has not yet been implemented")
 		}),
+		AdminAdminCreateCouponHandler: admin.AdminCreateCouponHandlerFunc(func(params admin.AdminCreateCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminCreateCoupon has not yet been implemented")
+		}),
 		AdminAdminCreateLotCanceledReasonHandler: admin.AdminCreateLotCanceledReasonHandlerFunc(func(params admin.AdminCreateLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminCreateLotCanceledReason has not yet been implemented")
 		}),
@@ -68,6 +71,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminDeclineLotHandler: admin.AdminDeclineLotHandlerFunc(func(params admin.AdminDeclineLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeclineLot has not yet been implemented")
 		}),
+		AdminAdminDeleteCouponHandler: admin.AdminDeleteCouponHandlerFunc(func(params admin.AdminDeleteCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminDeleteCoupon has not yet been implemented")
+		}),
 		AdminAdminDeleteLotCanceledReasonHandler: admin.AdminDeleteLotCanceledReasonHandlerFunc(func(params admin.AdminDeleteLotCanceledReasonParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteLotCanceledReason has not yet been implemented")
 		}),
@@ -79,6 +85,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		AdminAdminDeleteTopicHandler: admin.AdminDeleteTopicHandlerFunc(func(params admin.AdminDeleteTopicParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminDeleteTopic has not yet been implemented")
+		}),
+		AdminAdminGetCouponsHandler: admin.AdminGetCouponsHandlerFunc(func(params admin.AdminGetCouponsParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminGetCoupons has not yet been implemented")
 		}),
 		AdminAdminGetLotHandler: admin.AdminGetLotHandlerFunc(func(params admin.AdminGetLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetLot has not yet been implemented")
@@ -106,6 +115,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		AdminAdminSendPostPreviewHandler: admin.AdminSendPostPreviewHandlerFunc(func(params admin.AdminSendPostPreviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminSendPostPreview has not yet been implemented")
+		}),
+		AdminAdminUpdateCouponHandler: admin.AdminUpdateCouponHandlerFunc(func(params admin.AdminUpdateCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminUpdateCoupon has not yet been implemented")
 		}),
 		AdminAdminUpdateLotHandler: admin.AdminUpdateLotHandlerFunc(func(params admin.AdminUpdateLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminUpdateLot has not yet been implemented")
@@ -160,6 +172,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		}),
 		PersonalAreaGetChangePriceInvoiceHandler: personal_area.GetChangePriceInvoiceHandlerFunc(func(params personal_area.GetChangePriceInvoiceParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.GetChangePriceInvoice has not yet been implemented")
+		}),
+		PersonalAreaGetCouponHandler: personal_area.GetCouponHandlerFunc(func(params personal_area.GetCouponParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.GetCoupon has not yet been implemented")
 		}),
 		CatalogGetDailyCoverageHandler: catalog.GetDailyCoverageHandlerFunc(func(params catalog.GetDailyCoverageParams) middleware.Responder {
 			return middleware.NotImplemented("operation catalog.GetDailyCoverage has not yet been implemented")
@@ -290,6 +305,8 @@ type BirzzhaAPI struct {
 
 	// AdminAdminCancelLotHandler sets the operation handler for the admin cancel lot operation
 	AdminAdminCancelLotHandler admin.AdminCancelLotHandler
+	// AdminAdminCreateCouponHandler sets the operation handler for the admin create coupon operation
+	AdminAdminCreateCouponHandler admin.AdminCreateCouponHandler
 	// AdminAdminCreateLotCanceledReasonHandler sets the operation handler for the admin create lot canceled reason operation
 	AdminAdminCreateLotCanceledReasonHandler admin.AdminCreateLotCanceledReasonHandler
 	// AdminAdminCreatePostHandler sets the operation handler for the admin create post operation
@@ -298,6 +315,8 @@ type BirzzhaAPI struct {
 	AdminAdminCreateTopicHandler admin.AdminCreateTopicHandler
 	// AdminAdminDeclineLotHandler sets the operation handler for the admin decline lot operation
 	AdminAdminDeclineLotHandler admin.AdminDeclineLotHandler
+	// AdminAdminDeleteCouponHandler sets the operation handler for the admin delete coupon operation
+	AdminAdminDeleteCouponHandler admin.AdminDeleteCouponHandler
 	// AdminAdminDeleteLotCanceledReasonHandler sets the operation handler for the admin delete lot canceled reason operation
 	AdminAdminDeleteLotCanceledReasonHandler admin.AdminDeleteLotCanceledReasonHandler
 	// AdminAdminDeletePostHandler sets the operation handler for the admin delete post operation
@@ -306,6 +325,8 @@ type BirzzhaAPI struct {
 	AdminAdminDeleteReviewHandler admin.AdminDeleteReviewHandler
 	// AdminAdminDeleteTopicHandler sets the operation handler for the admin delete topic operation
 	AdminAdminDeleteTopicHandler admin.AdminDeleteTopicHandler
+	// AdminAdminGetCouponsHandler sets the operation handler for the admin get coupons operation
+	AdminAdminGetCouponsHandler admin.AdminGetCouponsHandler
 	// AdminAdminGetLotHandler sets the operation handler for the admin get lot operation
 	AdminAdminGetLotHandler admin.AdminGetLotHandler
 	// AdminAdminGetLotStatusesHandler sets the operation handler for the admin get lot statuses operation
@@ -324,6 +345,8 @@ type BirzzhaAPI struct {
 	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
 	// AdminAdminSendPostPreviewHandler sets the operation handler for the admin send post preview operation
 	AdminAdminSendPostPreviewHandler admin.AdminSendPostPreviewHandler
+	// AdminAdminUpdateCouponHandler sets the operation handler for the admin update coupon operation
+	AdminAdminUpdateCouponHandler admin.AdminUpdateCouponHandler
 	// AdminAdminUpdateLotHandler sets the operation handler for the admin update lot operation
 	AdminAdminUpdateLotHandler admin.AdminUpdateLotHandler
 	// AdminAdminUpdateLotCanceledReasonHandler sets the operation handler for the admin update lot canceled reason operation
@@ -360,6 +383,8 @@ type BirzzhaAPI struct {
 	BotGetBotInfoHandler bot.GetBotInfoHandler
 	// PersonalAreaGetChangePriceInvoiceHandler sets the operation handler for the get change price invoice operation
 	PersonalAreaGetChangePriceInvoiceHandler personal_area.GetChangePriceInvoiceHandler
+	// PersonalAreaGetCouponHandler sets the operation handler for the get coupon operation
+	PersonalAreaGetCouponHandler personal_area.GetCouponHandler
 	// CatalogGetDailyCoverageHandler sets the operation handler for the get daily coverage operation
 	CatalogGetDailyCoverageHandler catalog.GetDailyCoverageHandler
 	// PersonalAreaGetFavoriteLotsHandler sets the operation handler for the get favorite lots operation
@@ -486,6 +511,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminCancelLotHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCancelLotHandler")
 	}
+	if o.AdminAdminCreateCouponHandler == nil {
+		unregistered = append(unregistered, "admin.AdminCreateCouponHandler")
+	}
 	if o.AdminAdminCreateLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminCreateLotCanceledReasonHandler")
 	}
@@ -498,6 +526,9 @@ func (o *BirzzhaAPI) Validate() error {
 	if o.AdminAdminDeclineLotHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeclineLotHandler")
 	}
+	if o.AdminAdminDeleteCouponHandler == nil {
+		unregistered = append(unregistered, "admin.AdminDeleteCouponHandler")
+	}
 	if o.AdminAdminDeleteLotCanceledReasonHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteLotCanceledReasonHandler")
 	}
@@ -509,6 +540,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminDeleteTopicHandler == nil {
 		unregistered = append(unregistered, "admin.AdminDeleteTopicHandler")
+	}
+	if o.AdminAdminGetCouponsHandler == nil {
+		unregistered = append(unregistered, "admin.AdminGetCouponsHandler")
 	}
 	if o.AdminAdminGetLotHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetLotHandler")
@@ -536,6 +570,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminSendPostPreviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminSendPostPreviewHandler")
+	}
+	if o.AdminAdminUpdateCouponHandler == nil {
+		unregistered = append(unregistered, "admin.AdminUpdateCouponHandler")
 	}
 	if o.AdminAdminUpdateLotHandler == nil {
 		unregistered = append(unregistered, "admin.AdminUpdateLotHandler")
@@ -590,6 +627,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.PersonalAreaGetChangePriceInvoiceHandler == nil {
 		unregistered = append(unregistered, "personal_area.GetChangePriceInvoiceHandler")
+	}
+	if o.PersonalAreaGetCouponHandler == nil {
+		unregistered = append(unregistered, "personal_area.GetCouponHandler")
 	}
 	if o.CatalogGetDailyCoverageHandler == nil {
 		unregistered = append(unregistered, "catalog.GetDailyCoverageHandler")
@@ -773,6 +813,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/admin/coupons"] = admin.NewAdminCreateCoupon(o.context, o.AdminAdminCreateCouponHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/admin/settings/lot-canceled-reasons"] = admin.NewAdminCreateLotCanceledReason(o.context, o.AdminAdminCreateLotCanceledReasonHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -789,6 +833,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
+	o.handlers["DELETE"]["/admin/coupons/{id}"] = admin.NewAdminDeleteCoupon(o.context, o.AdminAdminDeleteCouponHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
 	o.handlers["DELETE"]["/admin/settings/lot-canceled-reason/{id}"] = admin.NewAdminDeleteLotCanceledReason(o.context, o.AdminAdminDeleteLotCanceledReasonHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
@@ -802,6 +850,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/admin/settings/topics/{id}"] = admin.NewAdminDeleteTopic(o.context, o.AdminAdminDeleteTopicHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/admin/coupons"] = admin.NewAdminGetCoupons(o.context, o.AdminAdminGetCouponsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -838,6 +890,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/admin/posting/preview"] = admin.NewAdminSendPostPreview(o.context, o.AdminAdminSendPostPreviewHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/admin/coupons/{id}"] = admin.NewAdminUpdateCoupon(o.context, o.AdminAdminUpdateCouponHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
@@ -910,6 +966,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/lots/{id}/change-price-invoice"] = personal_area.NewGetChangePriceInvoice(o.context, o.PersonalAreaGetChangePriceInvoiceHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/coupons/{code}"] = personal_area.NewGetCoupon(o.context, o.PersonalAreaGetCouponHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

@@ -72,7 +72,7 @@ func (h *Handler) createApplicationPayment(params personalops.CreateApplicationP
 
 	id := core.LotID(params.ID)
 
-	invoice, err := h.Personal.CreateApplicationPayment(ctx, identity.User, id, params.Gateway)
+	invoice, err := h.Personal.CreateApplicationPayment(ctx, identity.User, id, params.Gateway, swag.StringValue(params.Coupon))
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCreateApplicationPaymentBadRequest().WithPayload(models.NewError(err2))
@@ -242,7 +242,13 @@ func (h *Handler) createChangePricePayment(params personalops.CreateChangePriceP
 
 	id := core.LotID(params.ID)
 
-	invoice, err := h.Personal.CreateChangePricePayment(ctx, identity.User, id, params.Gateway, models.ToMoney(params.Price.Price))
+	invoice, err := h.Personal.CreateChangePricePayment(ctx,
+		identity.User,
+		id,
+		params.Gateway,
+		models.ToMoney(params.Price.Price),
+		swag.StringValue(params.Coupon),
+	)
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return personalops.NewCreateChangePricePaymentBadRequest().WithPayload(models.NewError(err2))
@@ -251,4 +257,20 @@ func (h *Handler) createChangePricePayment(params personalops.CreateChangePriceP
 	}
 
 	return personalops.NewCreateChangePricePaymentCreated().WithPayload(models.NewPaymentForm(invoice))
+}
+
+func (h *Handler) getCoupon(params personalops.GetCouponParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	coupon, err := h.Personal.GetCoupon(ctx, identity.GetUser(), &personal.CouponSpec{
+		Code:    params.Code,
+		Purpose: params.Purpose,
+	})
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewGetCouponBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewGetCouponInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return personalops.NewGetCouponOK().WithPayload(models.NewCouponInfo(coupon))
 }

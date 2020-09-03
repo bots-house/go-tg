@@ -16,7 +16,7 @@ import (
 // AdminDeleteLotCanceledReasonNoContentCode is the HTTP code returned for type AdminDeleteLotCanceledReasonNoContent
 const AdminDeleteLotCanceledReasonNoContentCode int = 204
 
-/*AdminDeleteLotCanceledReasonNoContent No content
+/*AdminDeleteLotCanceledReasonNoContent No Content
 
 swagger:response adminDeleteLotCanceledReasonNoContent
 */

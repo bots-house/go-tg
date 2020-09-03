@@ -18,6 +18,7 @@ import (
 type CreateChangePricePaymentURL struct {
 	ID int64
 
+	Coupon  *string
 	Gateway string
 
 	_basePath string
@@ -60,6 +61,14 @@ func (o *CreateChangePricePaymentURL) Build() (*url.URL, error) {
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
 
 	qs := make(url.Values)
+
+	var couponQ string
+	if o.Coupon != nil {
+		couponQ = *o.Coupon
+	}
+	if couponQ != "" {
+		qs.Set("coupon", couponQ)
+	}
 
 	gatewayQ := o.Gateway
 	if gatewayQ != "" {

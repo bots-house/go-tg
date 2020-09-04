@@ -3634,9 +3634,9 @@ func init() {
         "purposes",
         "expire_at",
         "created_at",
+        "applies_count",
         "max_applies_by_user_limit",
-        "max_applies_limit",
-        "applies_count"
+        "max_applies_limit"
       ],
       "properties": {
         "applies_count": {
@@ -9377,9 +9377,9 @@ func init() {
         "purposes",
         "expire_at",
         "created_at",
+        "applies_count",
         "max_applies_by_user_limit",
-        "max_applies_limit",
-        "applies_count"
+        "max_applies_limit"
       ],
       "properties": {
         "applies_count": {

@@ -463,9 +463,9 @@ func (h *Handler) adminCreateCoupon(params adminops.AdminCreateCouponParams, ide
 		Code:                  swag.StringValue(params.Coupon.Code),
 		Discount:              swag.Float64Value(params.Coupon.Discount),
 		Purposes:              params.Coupon.Purposes,
-		ExpireAt:              null.TimeFrom(time.Unix(params.Coupon.ExpireAt, 0)),
-		MaxAppliesByUserLimit: null.IntFrom(int(params.Coupon.MaxAppliesByUserLimit)),
-		MaxAppliesLimit:       null.IntFrom(int(params.Coupon.MaxAppliesLimit)),
+		ExpireAt:              null.NewTime(time.Unix(params.Coupon.ExpireAt, 0), params.Coupon.ExpireAt != 0),
+		MaxAppliesByUserLimit: null.NewInt(int(params.Coupon.MaxAppliesByUserLimit), params.Coupon.MaxAppliesByUserLimit != 0),
+		MaxAppliesLimit:       null.NewInt(int(params.Coupon.MaxAppliesLimit), params.Coupon.MaxAppliesLimit != 0),
 	})
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
@@ -483,9 +483,9 @@ func (h *Handler) adminUpdateCoupon(params adminops.AdminUpdateCouponParams, ide
 		Code:                  swag.StringValue(params.Coupon.Code),
 		Discount:              swag.Float64Value(params.Coupon.Discount),
 		Purposes:              params.Coupon.Purposes,
-		ExpireAt:              null.TimeFrom(time.Unix(params.Coupon.ExpireAt, 0)),
-		MaxAppliesByUserLimit: null.IntFrom(int(params.Coupon.MaxAppliesByUserLimit)),
-		MaxAppliesLimit:       null.IntFrom(int(params.Coupon.MaxAppliesLimit)),
+		ExpireAt:              null.NewTime(time.Unix(params.Coupon.ExpireAt, 0), params.Coupon.ExpireAt != 0),
+		MaxAppliesByUserLimit: null.NewInt(int(params.Coupon.MaxAppliesByUserLimit), params.Coupon.MaxAppliesByUserLimit != 0),
+		MaxAppliesLimit:       null.NewInt(int(params.Coupon.MaxAppliesLimit), params.Coupon.MaxAppliesLimit != 0),
 	})
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {

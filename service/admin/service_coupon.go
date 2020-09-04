@@ -121,14 +121,20 @@ func (srv *Service) UpdateCoupon(ctx context.Context, user *core.User, id core.C
 		return nil, ErrCouponDiscountMustBeSmaller
 	}
 
-	if err := srv.IsExistCoupon(ctx, in.Code); err != nil {
-		return nil, err
-	}
-
 	coupon, err := srv.Coupon.Query().IsDeleted(false).ID(id).One(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get coupon")
 	}
+
+	c, err := srv.Coupon.Query().IsDeleted(false).Code(in.Code).One(ctx)
+	if err != core.ErrCouponNotFound && err != nil {
+		return nil, errors.Wrap(err, "get coupon")
+	} else if err == nil {
+		if c.ID != coupon.ID {
+			return nil, ErrCouponWithThisCodeAlreadyExist
+		}
+	}
+
 	purposes := make([]core.PaymentPurpose, len(in.Purposes))
 	for i, purpose := range in.Purposes {
 		var err error

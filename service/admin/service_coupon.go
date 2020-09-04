@@ -38,6 +38,7 @@ type CouponListItem struct {
 var (
 	ErrCouponWithThisCodeAlreadyExist      = core.NewError("coupon_with_this_code_already_exist", "coupon with this code already exist")
 	ErrCouponDiscountMustBeGreaterThanZero = core.NewError("coupon_discount_must_be_greater_than_zero", "coupon discount must be greater than zero")
+	ErrCouponDiscountMustBeSmaller         = core.NewError("coupon_discount_must_be_smaller", "coupon discount must be smaller")
 )
 
 func (srv *Service) IsExistCoupon(ctx context.Context, code string) error {
@@ -57,6 +58,10 @@ func (srv *Service) CreateCoupon(ctx context.Context, user *core.User, in *Coupo
 
 	if in.Discount <= 0 {
 		return nil, ErrCouponDiscountMustBeGreaterThanZero
+	}
+
+	if in.Discount > 1 {
+		return nil, ErrCouponDiscountMustBeSmaller
 	}
 
 	if err := srv.IsExistCoupon(ctx, in.Code); err != nil {
@@ -110,6 +115,10 @@ func (srv *Service) UpdateCoupon(ctx context.Context, user *core.User, id core.C
 
 	if in.Discount <= 0 {
 		return nil, ErrCouponDiscountMustBeGreaterThanZero
+	}
+
+	if in.Discount > 1 {
+		return nil, ErrCouponDiscountMustBeSmaller
 	}
 
 	if err := srv.IsExistCoupon(ctx, in.Code); err != nil {

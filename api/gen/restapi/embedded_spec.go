@@ -79,7 +79,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  - ` + "`" + `coupon_discount_must_be_smaller` + "`" + ` - Скидка купона должна быть ниже;\n  \n",
         "tags": [
           "admin"
         ],
@@ -120,7 +120,7 @@ func init() {
     },
     "/admin/coupons/{id}": {
       "put": {
-        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  - ` + "`" + `coupon_discount_must_be_smaller` + "`" + ` - Скидка купона должна быть ниже;\n\n  \n",
         "tags": [
           "admin"
         ],
@@ -5764,7 +5764,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "description": "Создание купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  - ` + "`" + `coupon_discount_must_be_smaller` + "`" + ` - Скидка купона должна быть ниже;\n  \n",
         "tags": [
           "admin"
         ],
@@ -5805,7 +5805,7 @@ func init() {
     },
     "/admin/coupons/{id}": {
       "put": {
-        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  \n",
+        "description": "Обновление купона.\n\nВозможные ошибки:\n  - ` + "`" + `coupon_with_this_code_already_exist` + "`" + ` - Купон с таким кодом уже существует;\n  - ` + "`" + `coupon_discount_must_be_greater_than_zero` + "`" + ` - Скидка купона должна быть выше 0;\n  - ` + "`" + `coupon_discount_must_be_smaller` + "`" + ` - Скидка купона должна быть ниже;\n\n  \n",
         "tags": [
           "admin"
         ],

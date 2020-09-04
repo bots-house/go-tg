@@ -40,6 +40,8 @@ Update Coupon
 Возможные ошибки:
   - `coupon_with_this_code_already_exist` - Купон с таким кодом уже существует;
   - `coupon_discount_must_be_greater_than_zero` - Скидка купона должна быть выше 0;
+  - `coupon_discount_must_be_smaller` - Скидка купона должна быть ниже;
+
 
 
 

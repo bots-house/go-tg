@@ -31,6 +31,11 @@ func newLotMetrics(in core.LotMetrics) *models.LotMetrics {
 }
 
 func newLotExtraResource(in *core.LotExtraResource) *models.LotExtraResource {
+	// fix crash for invalid lot extra resource
+	if in == nil {
+		return nil
+	}
+
 	return &models.LotExtraResource{
 		URL:         swag.String(in.URL),
 		Title:       swag.String(in.Title),

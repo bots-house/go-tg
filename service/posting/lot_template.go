@@ -30,15 +30,15 @@ func (lpt *LotPostText) template() string {
 		<b>Канал:</b> <a href="{{ LotLink }}">{{ .Lot.Name }}</a> {{ $url:= .SiteWithPathListChannel }}
 		{{ if .Lot.ExtraResources }}<b>Дополнительные ресурсы:</b>{{ range $extra := .Lot.ExtraResources }} <a href="{{ $extra.URL }}">{{ $extra.Title }}</a>{{ end }}\n{{ end }}<b>Тематика:</b>{{ range .Topics }} <a href="{{ $url }}?topics={{ .ID }}&from=channel">#{{ .MinifiedName }} </a>{{ end }}
 		<b>Подписчиков:</b> {{ ApostrophyIntValue .Lot.Metrics.MembersCount }} ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
-		{{ if .Lot.Metrics.PricePerView }}<b>Просмотров на пост:</b> {{ ApostrophyFloat64Value .Lot.Metrics.PricePerView }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)\n{{ end }}<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }}₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}){{ end }}
+		{{ if .Lot.Metrics.DailyCoverage }}<b>Просмотров на пост:</b> {{ ApostrophyIntValue .Lot.Metrics.DailyCoverage }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)\n{{ end }}<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }}₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}){{ end }}
 
-		<b>Комментарий:</b> «{{ .Lot.ShortComment }}»
+		<b>Комментарий:</b> «{{ .Lot.ShortComment }}» (<a href="{{ .SiteWithPathListChannel }}/{{ .Lot.ID }}">подробней</a>)
 
 		<b>Продавец:</b>{{if .Owner.Telegram.Username.Valid }} @{{ .Owner.Telegram.Username.String }}{{else}} <a href="tg://user?{{ .Owner.EscapedQueryUserID }}"> {{ .Owner.FirstName }} {{ .Owner.LastName.String }}</a> {{end}}
 
 		<b>Цена:</b> {{ ApostrophyIntValue .Lot.Price.Current }}₽ {{ PriceLimit .Lot.Price.Current }}
 
-		100% безопасность при сделках в Telegram. Гарант от команды: <a href="https://t.me/zzapusk">Запуск</a> @{{ .Settings.CashierUsername }}	
+		100% безопасность при сделках в Telegram. Гарант от команды: <a href="https://t.me/zzapusk">Запуск</a> - @{{ .Settings.CashierUsername }}	
 	`
 }
 

@@ -222,9 +222,8 @@ func (srv *Service) AddLot(ctx context.Context, user *core.User, in *LotInput) (
 	}
 
 	srv.Notify.Send(&adminNewLotNotification{
-		User:      user,
-		Lot:       lot,
-		channelID: srv.AdminNotificationsChannelID,
+		User: user,
+		Lot:  lot,
 	})
 
 	olufs := NewOwnedLotUploadedFileSlice(files)
@@ -286,9 +285,8 @@ func (srv *Service) CancelLot(
 	}
 
 	srv.Notify.Send(&adminCanceledLotNotification{
-		Lot:       lot.Lot,
-		Reason:    reason,
-		channelID: srv.AdminNotificationsChannelID,
+		Lot:    lot.Lot,
+		Reason: reason,
 	})
 
 	return nil

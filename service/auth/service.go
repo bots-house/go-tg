@@ -74,9 +74,8 @@ func (srv *Service) newUserFromTelegramWidgetInfo(ctx context.Context, info *Tel
 		return nil, errors.Wrap(err, "add user to store")
 	}
 
-	srv.Notifications.Send(NewUserNotification{
-		User:      user,
-		channelID: srv.AdminNotificationsChannelID,
+	srv.Notifications.Send(newUserNotification{
+		User: user,
 	})
 
 	return user, nil
@@ -213,9 +212,8 @@ func (srv *Service) newUserFromTelegramUserInfo(ctx context.Context, info *Teleg
 		return nil, errors.Wrap(err, "add user to store")
 	}
 
-	srv.Notifications.Send(NewUserNotification{
-		User:      user,
-		channelID: srv.AdminNotificationsChannelID,
+	srv.Notifications.Send(newUserNotification{
+		User: user,
 	})
 
 	return user, nil

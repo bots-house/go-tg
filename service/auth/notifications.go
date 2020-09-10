@@ -4,23 +4,18 @@ import (
 	"github.com/bots-house/birzzha/core"
 )
 
-type NewUserNotification struct {
-	User      *core.User
-	channelID int64
+type newUserNotification struct {
+	User *core.User
 }
 
-func (n NewUserNotification) NotificationTemplate() string {
+func (n newUserNotification) NotificationTemplate() string {
 	return `
         👤 <b>Новый пользователь!</b>
 
-		<a href="{{ .User.TelegramLink }}">{{ .User.Name }}</a> {{ if .User.Telegram.Username.Valid }}@{{ .User.Telegram.Username.String }}{{ end }}
+		<a href="{{ .Self.User.TelegramLink }}">{{ .Self.User.Name }}</a> {{ if .Self.User.Telegram.Username.Valid }}@{{ .Self.User.Telegram.Username.String }}{{ end }}
 
-		<b>Способ регистрации:</b> <i>{{ if eq .User.JoinedFrom  "bot" }}бот{{ else }}cайт{{ end }}</i>.
+		<b>Способ регистрации:</b> <i>{{ if eq .Self.User.JoinedFrom  "bot" }}бот{{ else }}cайт{{ end }}</i>.
 
-		#user{{ .User.ID }}
+		#user{{ .Self.User.ID }}
 	`
-}
-
-func (n NewUserNotification) ChatID() int64 {
-	return n.channelID
 }

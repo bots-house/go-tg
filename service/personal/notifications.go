@@ -3,9 +3,8 @@ package personal
 import "github.com/bots-house/birzzha/core"
 
 type adminNewLotNotification struct {
-	User      *core.User
-	Lot       *core.Lot
-	channelID int64
+	User *core.User
+	Lot  *core.Lot
 }
 
 func (n adminNewLotNotification) NotificationTemplate() string {
@@ -20,10 +19,6 @@ func (n adminNewLotNotification) NotificationTemplate() string {
 
         #signup #user{{ .Self.User.ID }} #lot{{ .Self.Lot.ID }}
     `
-}
-
-func (n adminNewLotNotification) ChatID() int64 {
-	return n.channelID
 }
 
 type adminNewPaymentNotification struct {
@@ -61,9 +56,8 @@ func (n userNewPaymentNotification) NotificationTemplate() string {
 }
 
 type adminCanceledLotNotification struct {
-	Lot       *core.Lot
-	Reason    *core.LotCanceledReason
-	channelID int64
+	Lot    *core.Lot
+	Reason *core.LotCanceledReason
 }
 
 func (n adminCanceledLotNotification) NotificationTemplate() string {
@@ -76,8 +70,4 @@ func (n adminCanceledLotNotification) NotificationTemplate() string {
 
         #cancel #user{{ .Self.Lot.OwnerID }} #lot{{ .Self.Lot.ID }}
     `
-}
-
-func (n adminCanceledLotNotification) ChatID() int64 {
-	return n.channelID
 }

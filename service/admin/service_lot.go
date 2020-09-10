@@ -292,6 +292,12 @@ func (srv *Service) SendPostPreview(ctx context.Context, user *core.User, post s
 }
 
 func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.LotID, reason string) error {
+	return srv.Txier(ctx, func(ctx context.Context) error {
+		return srv.declineLot(ctx, user, id, reason)
+	})
+}
+
+func (srv *Service) declineLot(ctx context.Context, user *core.User, id core.LotID, reason string) error {
 	if err := srv.IsAdmin(user); err != nil {
 		return err
 	}
@@ -306,6 +312,25 @@ func (srv *Service) DeclineLot(ctx context.Context, user *core.User, id core.Lot
 
 	if err := srv.Lot.Update(ctx, lot); err != nil {
 		return errors.Wrap(err, "update lot")
+	}
+
+	payment, err := srv.Payment.Query().
+		LotID(lot.ID).
+		Status(core.PaymentStatusSuccess).
+		One(ctx)
+
+	if err != nil {
+		return errors.Wrap(err, "find related payment")
+	}
+
+	gateway := srv.Gateways.Get(payment.Gateway)
+
+	if gateway == nil {
+		return errors.New("gateway is disabled")
+	}
+
+	if err := gateway.Refund(ctx, payment.ExternalID.String); err != nil {
+		return errors.Wrap(err, "refund")
 	}
 
 	srv.Notify.SendUser(lot.OwnerID, userNotifyDeclineLot{

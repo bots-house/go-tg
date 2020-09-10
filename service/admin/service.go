@@ -5,6 +5,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/service/notifications"
+	"github.com/bots-house/birzzha/service/payment"
 	"github.com/bots-house/birzzha/service/posting"
 	"github.com/bots-house/birzzha/store"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
@@ -23,6 +24,8 @@ type Service struct {
 	Favorite          core.FavoriteStore
 	Post              core.PostStore
 	Coupon            core.CouponStore
+	Payment           core.PaymentStore
+	Gateways          *payment.GatewayRegistry
 	CouponApply       core.CouponApplyStore
 	BotLinkBuilder    *core.BotLinkBuilder
 	Posting           *posting.Service

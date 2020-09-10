@@ -331,6 +331,8 @@ func run(ctx context.Context, revision string) error {
 		SiteWithPathListChannel: cfg.getSiteFullPath(cfg.SitePathListLot),
 	}
 
+	gateways := newGatewayRegistry(ctx, cfg)
+
 	adminSrv := &admin.Service{
 		Review:            pg.Review,
 		Settings:          pg.Settings,
@@ -349,6 +351,8 @@ func run(ctx context.Context, revision string) error {
 			Client: http.DefaultClient,
 		},
 		Coupon:      pg.Coupon,
+		Payment:     pg.Payment,
+		Gateways:    gateways,
 		CouponApply: pg.CouponApply,
 		Posting:     postingSrv,
 		Post:        pg.Post,
@@ -372,8 +376,6 @@ func run(ctx context.Context, revision string) error {
 	if err := bot.SetWebhookIfNeed(ctx, cfg.BotWebhookDomain, cfg.BotWebhookPath); err != nil {
 		return errors.Wrap(err, "set bot webhook")
 	}
-
-	gateways := newGatewayRegistry(ctx, cfg)
 
 	personalSrv := &personal.Service{
 		Lot:                         pg.Lot,

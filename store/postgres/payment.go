@@ -166,6 +166,16 @@ func (psq *PaymentStoreQuery) PayerID(id core.UserID) core.PaymentStoreQuery {
 	return psq
 }
 
+func (psq *PaymentStoreQuery) LotID(id core.LotID) core.PaymentStoreQuery {
+	psq.mods = append(psq.mods, dal.PaymentWhere.LotID.EQ(int(id)))
+	return psq
+}
+
+func (psq *PaymentStoreQuery) Status(status core.PaymentStatus) core.PaymentStoreQuery {
+	psq.mods = append(psq.mods, dal.PaymentWhere.Status.EQ(status.String()))
+	return psq
+}
+
 func (psq *PaymentStoreQuery) One(ctx context.Context) (*core.Payment, error) {
 	executor := shared.GetExecutorOrDefault(ctx, psq.store.ContextExecutor)
 

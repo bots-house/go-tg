@@ -202,6 +202,8 @@ type PaymentStore interface {
 type PaymentStoreQuery interface {
 	ID(id PaymentID) PaymentStoreQuery
 	PayerID(id UserID) PaymentStoreQuery
+	LotID(id LotID) PaymentStoreQuery
+	Status(status PaymentStatus) PaymentStoreQuery
 
 	One(ctx context.Context) (*Payment, error)
 	All(ctx context.Context) ([]*Payment, error)

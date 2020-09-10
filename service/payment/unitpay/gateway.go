@@ -3,6 +3,7 @@ package unitpay
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/Rhymond/go-money"
+	"github.com/friendsofgo/errors"
 
 	"github.com/bots-house/birzzha/pkg/log"
 
@@ -20,6 +22,7 @@ import (
 
 const (
 	methodParam = "method"
+	apiURL      = "https://unitpay.money/api"
 )
 
 var (
@@ -29,6 +32,7 @@ var (
 type Gateway struct {
 	PublicKey string
 	SecretKey string
+	Doer      *http.Client
 }
 
 func (g *Gateway) Name() string {
@@ -176,7 +180,55 @@ func (g *Gateway) TestMode() bool {
 }
 
 func (g *Gateway) Refund(ctx context.Context, id string) error {
-	panic("implement me!")
+	u, err := url.Parse(apiURL)
+	if err != nil {
+		return errors.Wrap(err, "parse url")
+	}
+
+	vs := u.Query()
+	vs.Add("method", "refundPayment")
+	vs.Add("params[paymentId]", id)
+	vs.Add("params[secretKey]", g.SecretKey)
+
+	u.RawQuery = vs.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return errors.Wrap(err, "new request")
+	}
+
+	res, err := g.getDoer().Do(req)
+	if err != nil {
+		return errors.Wrap(err, "execute request")
+	}
+	defer res.Body.Close()
+
+	var response = struct {
+		Result struct {
+			Message string `json:"message"`
+		} `json:"result"`
+
+		Error struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}{}
+
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		return errors.Wrap(err, "decode response")
+	}
+
+	if response.Error.Message != "" {
+		return errors.New(response.Error.Message)
+	}
+
+	return nil
+}
+
+func (g *Gateway) getDoer() *http.Client {
+	if g.Doer != nil {
+		return g.Doer
+	}
+	return http.DefaultClient
 }
 
 func (g *Gateway) SetTestMode(enabled bool) {

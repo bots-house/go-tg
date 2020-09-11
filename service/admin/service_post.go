@@ -129,17 +129,20 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 			},
 		}
 		if in.LotLinkButton {
-			markup := tgbotapi.NewInlineKeyboardMarkup(
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.InlineKeyboardButton{
-						Text: "Подробнее",
-						LoginURL: &tgbotapi.LoginURL{
-							URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
+			if post.LotID != 0 {
+				markup := tgbotapi.NewInlineKeyboardMarkup(
+					tgbotapi.NewInlineKeyboardRow(
+						tgbotapi.InlineKeyboardButton{
+							Text: "Подробнее",
+							LoginURL: &tgbotapi.LoginURL{
+								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
+							},
 						},
-					},
-				),
-			)
-			msg.BaseEdit.ReplyMarkup = &markup
+					),
+				)
+				msg.BaseEdit.ReplyMarkup = &markup
+
+			}
 		}
 		_, err := srv.TgClient.EditMessageText(msg)
 		if err != nil {

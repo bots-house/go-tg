@@ -129,13 +129,13 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 			},
 		}
 		if in.LotLinkButton {
-			if post.LotID != 0 {
+			if in.LotID != 0 {
 				markup := tgbotapi.NewInlineKeyboardMarkup(
 					tgbotapi.NewInlineKeyboardRow(
 						tgbotapi.InlineKeyboardButton{
 							Text: "Подробнее",
 							LoginURL: &tgbotapi.LoginURL{
-								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
+								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", in.LotID)),
 							},
 						},
 					),

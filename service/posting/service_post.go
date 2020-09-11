@@ -115,7 +115,7 @@ func (srv *Service) SendPosts(ctx context.Context) error {
 			markup := tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.InlineKeyboardButton{
-						Text: "Подробней",
+						Text: "Подробнее",
 						LoginURL: &tgbotapi.LoginURL{
 							URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
 						},

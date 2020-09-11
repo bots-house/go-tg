@@ -102,22 +102,32 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	}
 
 	post.Title = in.Title
-	post.Text = in.Text
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
 	post.Buttons.LotLink = in.LotLinkButton
 
 	if post.MessageID.Valid {
-		msg := tgbotapi.EditMessageTextConfig{
+		if post.Text != in.Text {
+			post.Text = in.Text
+			_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{
+				BaseEdit: tgbotapi.BaseEdit{
+					ChatID:    settings.Channel.PrivateID,
+					MessageID: post.MessageID.Int,
+				},
+				Text:                  in.Text,
+				DisableWebPagePreview: in.DisableWebPagePreview,
+				ParseMode:             "HTML",
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "edit message")
+			}
+		}
+		msg := tgbotapi.EditMessageReplyMarkupConfig{
 			BaseEdit: tgbotapi.BaseEdit{
 				ChatID:    settings.Channel.PrivateID,
 				MessageID: post.MessageID.Int,
 			},
-			Text:                  in.Text,
-			DisableWebPagePreview: in.DisableWebPagePreview,
-			ParseMode:             "HTML",
 		}
-
 		if in.LotLinkButton {
 			markup := tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
@@ -129,12 +139,13 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 					},
 				),
 			)
-			msg.ReplyMarkup = &markup
+			msg.BaseEdit.ReplyMarkup = &markup
 		}
 		_, err := srv.TgClient.EditMessageText(msg)
 		if err != nil {
 			return nil, errors.Wrap(err, "edit message")
 		}
+
 	}
 	item := &PostItem{
 		Post: post,

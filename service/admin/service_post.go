@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bots-house/birzzha/core"
+	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/store"
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 	"github.com/pkg/errors"
@@ -117,53 +118,41 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	post.Title = in.Title
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
+	post.Text = in.Text
+	post.Buttons.LotLink = in.LotLinkButton
 
 	if post.MessageID.Valid {
-		if post.Text != in.Text {
-			post.Text = in.Text
-			msg := tgbotapi.EditMessageTextConfig{
-				BaseEdit: tgbotapi.BaseEdit{
-					ChatID:    settings.Channel.PrivateID,
-					MessageID: post.MessageID.Int,
-				},
-				Text:                  in.Text,
-				DisableWebPagePreview: in.DisableWebPagePreview,
-				ParseMode:             "HTML",
-			}
 
-			if post.Buttons.LotLink {
-				markup := srv.getLoginButton(in.LotID)
-				msg.BaseEdit.ReplyMarkup = &markup
-			}
-
-			_, err := srv.TgClient.EditMessageText(msg)
-			if err != nil {
-				return nil, errors.Wrap(err, "edit message")
-			}
+		_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{
+			BaseEdit: tgbotapi.BaseEdit{
+				ChatID:    settings.Channel.PrivateID,
+				MessageID: post.MessageID.Int,
+			},
+			Text:                  in.Text,
+			DisableWebPagePreview: in.DisableWebPagePreview,
+			ParseMode:             "HTML",
+		})
+		if err != nil && !tg.IsMessageIsNotModified(err.Error()) {
+			return nil, errors.Wrap(err, "edit message")
 		}
+
 		msg := tgbotapi.EditMessageReplyMarkupConfig{
 			BaseEdit: tgbotapi.BaseEdit{
 				ChatID:    settings.Channel.PrivateID,
 				MessageID: post.MessageID.Int,
 			},
 		}
-		if in.LotLinkButton {
-			if in.LotID != 0 {
-				markup := srv.getLoginButton(in.LotID)
-				msg.BaseEdit.ReplyMarkup = &markup
-
-			}
+		if in.LotLinkButton && in.LotID != 0 {
+			markup := srv.getLoginButton(in.LotID)
+			msg.BaseEdit.ReplyMarkup = &markup
 		}
 
-		if in.LotLinkButton != post.Buttons.LotLink {
-			_, err := srv.TgClient.EditMessageText(msg)
-			if err != nil {
-				return nil, errors.Wrap(err, "edit message")
-			}
+		_, err = srv.TgClient.EditMessageText(msg)
+		if err != nil && !tg.IsMessageIsNotModified(err.Error()) {
+			return nil, errors.Wrap(err, "edit message")
 		}
-		post.Buttons.LotLink = in.LotLinkButton
-
 	}
+
 	item := &PostItem{
 		Post: post,
 	}

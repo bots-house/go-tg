@@ -32,7 +32,7 @@ func (lpt *LotPostText) template() string {
 		<b>Подписчиков:</b> {{ ApostrophyIntValue .Lot.Metrics.MembersCount }} ({{ .Lot.Metrics.PricePerMember }}₽ / пдп)
 		{{ if .Lot.Metrics.DailyCoverage }}<b>Просмотров на пост:</b> {{ ApostrophyIntValue .Lot.Metrics.DailyCoverage }} ({{ .Lot.Metrics.PriceViewPerPostText }}₽ / просмотр)\n{{ end }}<b>Доход в месяц:</b> {{ ApostrophyIntValue .Lot.Metrics.MonthlyIncome }}₽ {{ if .Lot.Metrics.PaybackPeriod.Valid }}(окупаемость: {{ .Lot.Metrics.PaybackPeriod.Float64 }} {{ Month .Lot.Metrics.PaybackPeriod.Float64 }}){{ end }}
 
-		<b>Комментарий:</b> «{{ .Lot.ShortComment }}» (<a href="{{ .SiteWithPathListChannel }}/{{ .Lot.ID }}">подробнее</a>)
+		<b>Комментарий:</b> «{{ .Lot.ShortComment }}» (<a href="{{ .SiteWithPathListChannel }}/{{ .Lot.ID }}?from=channel_inline">подробнее</a>)
 
 		<b>Продавец:</b>{{if .Owner.Telegram.Username.Valid }} @{{ .Owner.Telegram.Username.String }}{{else}} <a href="tg://user?{{ .Owner.EscapedQueryUserID }}"> {{ .Owner.FirstName }} {{ .Owner.LastName.String }}</a> {{end}}
 

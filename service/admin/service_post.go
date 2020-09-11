@@ -96,7 +96,7 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	post.Text = in.Text
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
-	post.Buttons.LotLink = in.LotLinkButton
+	// post.Buttons.LotLink = in.LotLinkButton
 
 	if post.MessageID.Valid {
 		_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{

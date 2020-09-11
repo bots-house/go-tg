@@ -27,6 +27,10 @@ type PostItem struct {
 	// Required: true
 	Lot *PostLot `json:"lot"`
 
+	// Наличие кнопки под постом.
+	// Required: true
+	LotLinkButton *bool `json:"lot_link_button"`
+
 	// Текст поста.
 	// Required: true
 	Text *string `json:"text"`
@@ -62,6 +66,10 @@ func (m *PostItem) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLot(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLotLinkButton(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -117,6 +125,15 @@ func (m *PostItem) validateLot(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *PostItem) validateLotLinkButton(formats strfmt.Registry) error {
+
+	if err := validate.Required("lot_link_button", "body", m.LotLinkButton); err != nil {
+		return err
 	}
 
 	return nil

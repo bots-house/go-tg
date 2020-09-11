@@ -11,6 +11,10 @@ import (
 	tgbotapi "github.com/bots-house/telegram-bot-api"
 )
 
+type Config struct {
+	Site string
+}
+
 type Service struct {
 	Review            core.ReviewStore
 	User              core.UserStore
@@ -29,6 +33,7 @@ type Service struct {
 	CouponApply       core.CouponApplyStore
 	BotLinkBuilder    *core.BotLinkBuilder
 	Posting           *posting.Service
+	Config            Config
 
 	Notify *notifications.Notifications
 

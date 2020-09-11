@@ -5156,6 +5156,7 @@ func init() {
         "text",
         "title",
         "lot",
+        "lot_link_button",
         "status",
         "disable_web_page_preview",
         "scheduled_at",
@@ -5165,7 +5166,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 5
+          "x-order": 6
         },
         "id": {
           "description": "ID поста.",
@@ -5176,15 +5177,20 @@ func init() {
           "x-order": 1,
           "$ref": "#/definitions/PostLot"
         },
+        "lot_link_button": {
+          "description": "Наличие кнопки под постом.",
+          "type": "boolean",
+          "x-order": 2
+        },
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 7
+          "x-order": 8
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "status": {
           "description": "Статус поста.",
@@ -5193,17 +5199,17 @@ func init() {
             "scheduled",
             "published"
           ],
-          "x-order": 3
+          "x-order": 4
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 2
+          "x-order": 3
         },
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 4
+          "x-order": 5
         }
       }
     },
@@ -10925,6 +10931,7 @@ func init() {
         "text",
         "title",
         "lot",
+        "lot_link_button",
         "status",
         "disable_web_page_preview",
         "scheduled_at",
@@ -10934,7 +10941,7 @@ func init() {
         "disable_web_page_preview": {
           "description": "Отключить или выключить web page preview.",
           "type": "boolean",
-          "x-order": 5
+          "x-order": 6
         },
         "id": {
           "description": "ID поста.",
@@ -10945,15 +10952,20 @@ func init() {
           "x-order": 1,
           "$ref": "#/definitions/PostLot"
         },
+        "lot_link_button": {
+          "description": "Наличие кнопки под постом.",
+          "type": "boolean",
+          "x-order": 2
+        },
         "published_at": {
           "description": "Время публикации поста.",
           "type": "integer",
-          "x-order": 7
+          "x-order": 8
         },
         "scheduled_at": {
           "description": "Время планирования поста.",
           "type": "integer",
-          "x-order": 6
+          "x-order": 7
         },
         "status": {
           "description": "Статус поста.",
@@ -10962,17 +10974,17 @@ func init() {
             "scheduled",
             "published"
           ],
-          "x-order": 3
+          "x-order": 4
         },
         "text": {
           "description": "Текст поста.",
           "type": "string",
-          "x-order": 2
+          "x-order": 3
         },
         "title": {
           "description": "Название поста.",
           "type": "string",
-          "x-order": 4
+          "x-order": 5
         }
       }
     },

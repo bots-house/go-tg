@@ -358,6 +358,9 @@ func run(ctx context.Context, revision string) error {
 		Post:        pg.Post,
 		TgClient:    tgClient,
 		Notify:      notifs,
+		Config: admin.Config{
+			Site: cfg.Site,
+		},
 	}
 
 	landingSrv := &landing.Service{

@@ -30,6 +30,7 @@ func NewPostItem(s storage.Storage, in *admin.PostItem) *models.PostItem {
 		ScheduledAt:           timeToUnix(in.ScheduledAt),
 		PublishedAt:           nullTimeToUnix(in.PublishedAt),
 		Status:                swag.String(in.Status.String()),
+		LotLinkButton:         swag.Bool(in.Buttons.LotLink),
 	}
 
 	if in.Lot != nil {

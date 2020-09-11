@@ -3786,6 +3786,7 @@ definitions:
       - text
       - title
       - lot
+      - lot_link_button
       - status
       - disable_web_page_preview
       - scheduled_at
@@ -3796,6 +3797,9 @@ definitions:
         description: ID поста.
       lot:
         $ref: "#/definitions/PostLot"
+      lot_link_button:
+        type: boolean
+        description: Наличие кнопки под постом.
       text:
         type: string
         description: Текст поста.

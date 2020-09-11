@@ -398,6 +398,7 @@ func (h *Handler) adminUpdatePost(params adminops.AdminUpdatePostParams, identit
 		LotID:                 core.LotID(int(params.Post.LotID)),
 		Text:                  swag.StringValue(params.Post.Text),
 		DisableWebPagePreview: swag.BoolValue(params.Post.DisableWebPagePreview),
+		LotLinkButton:         params.Post.LotLinkButton,
 	}
 	if params.Post.ScheduledAt != 0 {
 		in.ScheduledAt = time.Unix(params.Post.ScheduledAt, 0)

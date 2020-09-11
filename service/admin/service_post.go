@@ -2,6 +2,8 @@ package admin
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bots-house/birzzha/core"
@@ -77,6 +79,13 @@ type PostItem struct {
 	Lot *PostItemLot
 }
 
+func joinSitePath(site, path string) string {
+	path = strings.TrimPrefix(path, "/")
+	site = strings.TrimSuffix(site, "/")
+
+	return site + "/" + path
+}
+
 func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.PostID, in *PostInput) (*PostItem, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
@@ -96,10 +105,10 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	post.Text = in.Text
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
-	// post.Buttons.LotLink = in.LotLinkButton
+	post.Buttons.LotLink = in.LotLinkButton
 
 	if post.MessageID.Valid {
-		_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{
+		msg := tgbotapi.EditMessageTextConfig{
 			BaseEdit: tgbotapi.BaseEdit{
 				ChatID:    settings.Channel.PrivateID,
 				MessageID: post.MessageID.Int,
@@ -107,7 +116,22 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 			Text:                  in.Text,
 			DisableWebPagePreview: in.DisableWebPagePreview,
 			ParseMode:             "HTML",
-		})
+		}
+
+		if in.LotLinkButton {
+			markup := tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.InlineKeyboardButton{
+						Text: "Подробнее",
+						LoginURL: &tgbotapi.LoginURL{
+							URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", post.LotID)),
+						},
+					},
+				),
+			)
+			msg.ReplyMarkup = &markup
+		}
+		_, err := srv.TgClient.EditMessageText(msg)
 		if err != nil {
 			return nil, errors.Wrap(err, "edit message")
 		}

@@ -86,6 +86,19 @@ func joinSitePath(site, path string) string {
 	return site + "/" + path
 }
 
+func (srv *Service) getLoginButton(id core.LotID) tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.InlineKeyboardButton{
+				Text: "Подробней",
+				LoginURL: &tgbotapi.LoginURL{
+					URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", id)),
+				},
+			},
+		),
+	)
+}
+
 func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.PostID, in *PostInput) (*PostItem, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
@@ -104,12 +117,11 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 	post.Title = in.Title
 	post.ScheduledAt = in.ScheduledAt
 	post.DisableWebPagePreview = in.DisableWebPagePreview
-	post.Buttons.LotLink = in.LotLinkButton
 
 	if post.MessageID.Valid {
 		if post.Text != in.Text {
 			post.Text = in.Text
-			_, err := srv.TgClient.EditMessageText(tgbotapi.EditMessageTextConfig{
+			msg := tgbotapi.EditMessageTextConfig{
 				BaseEdit: tgbotapi.BaseEdit{
 					ChatID:    settings.Channel.PrivateID,
 					MessageID: post.MessageID.Int,
@@ -117,7 +129,14 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 				Text:                  in.Text,
 				DisableWebPagePreview: in.DisableWebPagePreview,
 				ParseMode:             "HTML",
-			})
+			}
+
+			if post.Buttons.LotLink {
+				markup := srv.getLoginButton(in.LotID)
+				msg.BaseEdit.ReplyMarkup = &markup
+			}
+
+			_, err := srv.TgClient.EditMessageText(msg)
 			if err != nil {
 				return nil, errors.Wrap(err, "edit message")
 			}
@@ -130,24 +149,19 @@ func (srv *Service) UpdatePost(ctx context.Context, user *core.User, id core.Pos
 		}
 		if in.LotLinkButton {
 			if in.LotID != 0 {
-				markup := tgbotapi.NewInlineKeyboardMarkup(
-					tgbotapi.NewInlineKeyboardRow(
-						tgbotapi.InlineKeyboardButton{
-							Text: "Подробнее",
-							LoginURL: &tgbotapi.LoginURL{
-								URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", in.LotID)),
-							},
-						},
-					),
-				)
+				markup := srv.getLoginButton(in.LotID)
 				msg.BaseEdit.ReplyMarkup = &markup
 
 			}
 		}
-		_, err := srv.TgClient.EditMessageText(msg)
-		if err != nil {
-			return nil, errors.Wrap(err, "edit message")
+
+		if in.LotLinkButton != post.Buttons.LotLink {
+			_, err := srv.TgClient.EditMessageText(msg)
+			if err != nil {
+				return nil, errors.Wrap(err, "edit message")
+			}
 		}
+		post.Buttons.LotLink = in.LotLinkButton
 
 	}
 	item := &PostItem{

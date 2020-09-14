@@ -397,6 +397,9 @@ func run(ctx context.Context, revision string) error {
 		AdminNotificationsChannelID: cfg.AdminNotificationsChannelID,
 		Coupon:                      pg.Coupon,
 		CouponApply:                 pg.CouponApply,
+		Config: personal.Config{
+			SuccessPaymentURL: cfg.getSiteFullPath(cfg.SitePathPaymentSuccess),
+		},
 	}
 
 	viewsSrv := &views.Service{

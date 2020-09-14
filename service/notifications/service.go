@@ -3,6 +3,7 @@ package notifications
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -50,6 +51,9 @@ func New(client *tgbotapi.BotAPI, user core.UserStore, settings core.SettingsSto
 					v = v.In(loc)
 				}
 				return monday.Format(v, "02 Jan 15:04 MST", monday.LocaleRuRU)
+			},
+			"percent": func(v float64) string {
+				return fmt.Sprintf("%.2f%%", v*100)
 			},
 		},
 	}

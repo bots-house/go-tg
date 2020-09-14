@@ -10,6 +10,10 @@ import (
 	"github.com/bots-house/birzzha/store"
 )
 
+type Config struct {
+	SuccessPaymentURL string
+}
+
 type Service struct {
 	Lot               core.LotStore
 	LotFavorite       core.FavoriteStore
@@ -27,6 +31,7 @@ type Service struct {
 	Settings core.SettingsStore
 	Gateways *payment.GatewayRegistry
 	Parser   core.LotExtraResourceParser
+	Config   Config
 
 	AdminNotificationsChannelID int64
 }

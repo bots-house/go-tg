@@ -22,9 +22,9 @@ func (n adminNewLotNotification) NotificationTemplate() string {
 }
 
 type adminNewPaymentNotification struct {
-	Lot       *core.Lot
-	Payment   *core.Payment
-	channelID int64
+	Lot     *core.Lot
+	Payment *core.Payment
+	Coupon  *core.Coupon
 }
 
 func (n adminNewPaymentNotification) NotificationTemplate() string {
@@ -35,11 +35,12 @@ func (n adminNewPaymentNotification) NotificationTemplate() string {
 
         <b>Назначение</b>: {{ .Self.Payment.Purpose.String }}
         <b>Шлюз</b>: {{ .Self.Payment.Gateway }}
-        <b>Запрошено</b>: {{ .Self.Payment.Requested.Display }}
-        <b>Оплачено</b>: {{ .Self.Payment.Paid.Display }}
-        {{if .Self.Payment.Received }}<b>Зачислено</b>: {{ .Self.Payment.Received.Display }} {{ end }}
+        {{ if .Self.Payment.Requested }}<b>Запрошено</b>: {{ .Self.Payment.Requested.Display }}{{end }}
+        {{ if .Self.Payment.Paid }}<b>Оплачено</b>: {{ .Self.Payment.Paid.Display }}{{- end }}
+        {{ if .Self.Payment.Received }}<b>Зачислено</b>: {{ .Self.Payment.Received.Display }} {{- end }}
+        {{ if .Self.Coupon }}<b>Купон</b>: {{ .Self.Coupon.Code }} (-{{ .Self.Coupon.Discount | percent }}) {{end }}
 
-        #payment #user{{ .Self.Lot.OwnerID }} #lot{{ .Self.Lot.ID }}
+        #payment #user{{ .Self.Lot.OwnerID }} #lot{{ .Self.Lot.ID }} {{ if .Self.Coupon }}#coupon{{ .Self.Coupon.ID }}{{ end }}
     `
 }
 

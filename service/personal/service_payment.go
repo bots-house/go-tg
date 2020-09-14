@@ -2,6 +2,8 @@ package personal
 
 import (
 	"context"
+	"net/http"
+	"net/url"
 
 	"github.com/bots-house/birzzha/pkg/log"
 
@@ -119,24 +121,19 @@ func (srv *Service) CreateApplicationPayment(
 func (srv *Service) ApplyCoupon(
 	ctx context.Context,
 	user *core.User,
-	coupon string,
+	coupon *core.Coupon,
 	payment *core.Payment,
 ) (*core.Payment, error) {
-	c, err := srv.Coupon.Query().Code(coupon).IsDeleted(false).One(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "get coupon")
-	}
-
-	if err := srv.ValidateCoupon(ctx, user, c, payment.Purpose); err != nil {
+	if err := srv.ValidateCoupon(ctx, user, coupon, payment.Purpose); err != nil {
 		return nil, err
 	}
 
-	payment.Requested = money.New(int64((payment.Requested.AsMajorUnits()-payment.Requested.AsMajorUnits()*c.Discount)*100.0), payment.Requested.Currency().Code)
+	payment.Requested = money.New(int64((payment.Requested.AsMajorUnits()-payment.Requested.AsMajorUnits()*coupon.Discount)*100.0), payment.Requested.Currency().Code)
 	if err := srv.Payment.Update(ctx, payment); err != nil {
 		return nil, errors.Wrap(err, "update payment")
 	}
 
-	apply := core.NewCouponApply(c.ID, payment.ID)
+	apply := core.NewCouponApply(coupon.ID, payment.ID)
 	if err := srv.CouponApply.Add(ctx, apply); err != nil {
 		return nil, errors.Wrap(err, "create coupon apply")
 	}
@@ -161,7 +158,7 @@ func (srv *Service) createApplicationPayment(
 		return nil, ErrGatewayNotFound
 	}
 
-	payment := core.NewPayment(
+	pm := core.NewPayment(
 		core.PaymentPurposeApplication,
 		user.ID,
 		invoice.Lot.ID,
@@ -169,18 +166,40 @@ func (srv *Service) createApplicationPayment(
 		invoice.Price,
 	)
 
-	if err := srv.Payment.Add(ctx, payment); err != nil {
+	if err := srv.Payment.Add(ctx, pm); err != nil {
 		return nil, errors.Wrap(err, "add payment to store")
 	}
 
 	if coupon != "" {
-		payment, err = srv.ApplyCoupon(ctx, user, coupon, payment)
+		c, err := srv.Coupon.Query().Code(coupon).IsDeleted(false).One(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "get coupon")
+		}
+
+		pm, err = srv.ApplyCoupon(ctx, user, c, pm)
 		if err != nil {
 			return nil, errors.Wrap(err, "apply coupon")
 		}
+
+		if c.IsFullDiscounted() {
+			if err := srv.onPayment(ctx, pm); err != nil {
+				return nil, err
+			}
+
+			vs := url.Values{}
+
+			vs.Set("status", "success")
+
+			return &payment.Form{
+				ExternalID: "",
+				Method:     http.MethodGet,
+				Values:     vs,
+				Action:     srv.Config.SuccessPaymentURL,
+			}, nil
+		}
 	}
 
-	form, err := gateway.NewPayment(ctx, user, payment)
+	form, err := gateway.NewPayment(ctx, user, pm)
 	if err != nil {
 		return nil, errors.Wrap(err, "new payment")
 	}
@@ -227,27 +246,49 @@ func (srv *Service) createChangePricePayment(
 		return nil, ErrGatewayNotFound
 	}
 
-	payment := core.NewPayment(
+	pm := core.NewPayment(
 		core.PaymentPurposeChangePrice,
 		user.ID,
 		invoice.Lot.ID,
 		gatewayName,
 		invoice.Price,
 	)
-	payment.Metadata = make(map[string]string)
-	payment.SetChangePrice(changePrice)
-	if err := srv.Payment.Add(ctx, payment); err != nil {
+	pm.Metadata = make(map[string]string)
+	pm.SetChangePrice(changePrice)
+	if err := srv.Payment.Add(ctx, pm); err != nil {
 		return nil, errors.Wrap(err, "add payment to store")
 	}
 
 	if coupon != "" {
-		payment, err = srv.ApplyCoupon(ctx, user, coupon, payment)
+		c, err := srv.Coupon.Query().Code(coupon).IsDeleted(false).One(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "get coupon")
+		}
+
+		pm, err = srv.ApplyCoupon(ctx, user, c, pm)
 		if err != nil {
 			return nil, errors.Wrap(err, "apply coupon")
 		}
+
+		if c.IsFullDiscounted() {
+			if err := srv.onPayment(ctx, pm); err != nil {
+				return nil, err
+			}
+
+			vs := url.Values{}
+
+			vs.Set("status", "success")
+
+			return &payment.Form{
+				ExternalID: "",
+				Method:     http.MethodGet,
+				Values:     vs,
+				Action:     srv.Config.SuccessPaymentURL,
+			}, nil
+		}
 	}
 
-	form, err := gateway.NewPayment(ctx, user, payment)
+	form, err := gateway.NewPayment(ctx, user, pm)
 	if err != nil {
 		return nil, errors.Wrap(err, "new payment")
 	}
@@ -393,15 +434,25 @@ func (srv *Service) onPaymentApplication(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.Notify.Send(adminNewPaymentNotification{
-		Payment:   pm,
-		Lot:       lot,
-		channelID: srv.AdminNotificationsChannelID,
-	})
+	go func() {
+		ctx := context.Background()
 
-	srv.Notify.SendUser(pm.PayerID, userNewPaymentNotification{
-		Lot: lot,
-	})
+		srv.Notify.SendUser(pm.PayerID, userNewPaymentNotification{
+			Lot: lot,
+		})
+
+		coupon, err := srv.getCouponOfPayment(ctx, pm.ID)
+		if err != nil {
+			log.Error(ctx, "fetch coupon failed", "err", err)
+			return
+		}
+
+		srv.Notify.Send(adminNewPaymentNotification{
+			Payment: pm,
+			Lot:     lot,
+			Coupon:  coupon,
+		})
+	}()
 
 	return nil
 }
@@ -423,10 +474,40 @@ func (srv *Service) onPaymentChangePrice(ctx context.Context, pm *core.Payment) 
 		return errors.Wrap(err, "update lot")
 	}
 
-	srv.Notify.Send(adminNewPaymentNotification{
-		Payment:   pm,
-		Lot:       lot,
-		channelID: srv.AdminNotificationsChannelID,
-	})
+	go func() {
+		ctx := context.Background()
+
+		coupon, err := srv.getCouponOfPayment(ctx, pm.ID)
+		if err != nil {
+			log.Error(ctx, "fetch coupon failed", "err", err)
+			return
+		}
+
+		srv.Notify.Send(adminNewPaymentNotification{
+			Payment: pm,
+			Lot:     lot,
+			Coupon:  coupon,
+		})
+	}()
+
 	return nil
+}
+
+func (srv *Service) getCouponOfPayment(ctx context.Context, id core.PaymentID) (*core.Coupon, error) {
+	apply, err := srv.CouponApply.Query().PaymentID(id).One(ctx)
+
+	if err != nil {
+		if err == core.ErrCouponApplyNotFound {
+			return nil, nil
+		}
+
+		return nil, errors.Wrap(err, "query apply")
+	}
+
+	coupon, err := srv.Coupon.Query().ID(apply.CouponID).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "query coupon")
+	}
+
+	return coupon, nil
 }

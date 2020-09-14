@@ -45,6 +45,10 @@ func (c Coupon) IsExpired() bool {
 	return false
 }
 
+func (c Coupon) IsFullDiscounted() bool {
+	return c.Discount == 1
+}
+
 func (c Coupon) IsConsistPurpose(purpose PaymentPurpose) bool {
 	for _, p := range c.PaymentPurposes {
 		if purpose == p {

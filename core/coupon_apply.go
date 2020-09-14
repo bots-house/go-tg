@@ -30,6 +30,8 @@ type CouponApplyStoreQuery interface {
 	Payments(purpose PaymentPurpose) CouponApplyStoreQuery
 	CouponID(ids ...CouponID) CouponApplyStoreQuery
 	UserID(id UserID) CouponApplyStoreQuery
+	PaymentID(id PaymentID) CouponApplyStoreQuery
+
 	Success() CouponApplyStoreQuery
 	One(ctx context.Context) (*CouponApply, error)
 	Count(ctx context.Context) (int, error)

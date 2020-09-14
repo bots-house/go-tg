@@ -75,6 +75,13 @@ func (casq *CouponApplyStoreQuery) UserID(id core.UserID) core.CouponApplyStoreQ
 	return casq
 }
 
+func (casq *CouponApplyStoreQuery) PaymentID(id core.PaymentID) core.CouponApplyStoreQuery {
+	casq.mods = append(casq.mods,
+		dal.CouponApplyWhere.PaymentID.EQ(int(id)),
+	)
+	return casq
+}
+
 func (casq *CouponApplyStoreQuery) Success() core.CouponApplyStoreQuery {
 	casq.mods = append(casq.mods,
 		qm.Where("payment.status = ?", dal.PaymentStatusSuccess),

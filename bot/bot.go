@@ -107,12 +107,14 @@ func isForward(msg *tgbotapi.Message) bool {
 
 func (bot *Bot) onUpdate(ctx context.Context, update *tgbotapi.Update) error {
 
-	if msg := update.Message; msg != nil {
-		if msg.Command() == "start" {
+	if msg := update.Message; msg != nil && msg.Chat.IsPrivate() {
+		switch {
+		case msg.Command() == "start":
 			return bot.onStart(ctx, msg)
-		}
-		if isForward(msg) {
+		case isForward(msg):
 			return bot.onForward(ctx, msg)
+		default:
+			return bot.onStart(ctx, msg)
 		}
 	}
 

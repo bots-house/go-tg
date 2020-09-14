@@ -91,7 +91,7 @@ func (srv *Service) getLoginButton(id core.LotID) tgbotapi.InlineKeyboardMarkup 
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.InlineKeyboardButton{
-				Text: "Подробней",
+				Text: "Подробнее",
 				LoginURL: &tgbotapi.LoginURL{
 					URL: joinSitePath(srv.Config.Site, fmt.Sprintf("lots/%d?from=channel", id)),
 				},

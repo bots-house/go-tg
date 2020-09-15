@@ -171,6 +171,10 @@ func (pm *Payment) GetChangePrice() (int, error) {
 	return int(v), nil
 }
 
+func (pm Payment) CanRefund() bool {
+	return pm.ExternalID.Valid
+}
+
 func NewPayment(
 	purpose PaymentPurpose,
 	payer UserID,

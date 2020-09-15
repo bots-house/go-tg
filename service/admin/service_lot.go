@@ -329,8 +329,10 @@ func (srv *Service) declineLot(ctx context.Context, user *core.User, id core.Lot
 		return errors.New("gateway is disabled")
 	}
 
-	if err := gateway.Refund(ctx, payment.ExternalID.String); err != nil {
-		return errors.Wrap(err, "refund")
+	if payment.CanRefund() {
+		if err := gateway.Refund(ctx, payment.ExternalID.String); err != nil {
+			return errors.Wrap(err, "refund")
+		}
 	}
 
 	srv.Notify.SendUser(lot.OwnerID, userNotifyDeclineLot{

@@ -364,6 +364,7 @@ func (srv *Service) UpdateLot(ctx context.Context, user *core.User, id core.LotI
 		lot.Metrics.MonthlyIncome = in.Income
 		lot.ExtraResources = in.Extra
 		lot.TopicIDs = in.Topics
+		lot.Metrics.Refresh(in.Price)
 
 		if err := srv.Lot.Update(ctx, lot); err != nil {
 			return errors.Wrap(err, "update lot")

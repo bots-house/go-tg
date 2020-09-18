@@ -470,6 +470,7 @@ func (srv *Service) onPaymentChangePrice(ctx context.Context, pm *core.Payment) 
 	}
 
 	lot.Price.Current = price
+	lot.Metrics.Refresh(price)
 	if err := srv.Lot.Update(ctx, lot); err != nil {
 		return errors.Wrap(err, "update lot")
 	}

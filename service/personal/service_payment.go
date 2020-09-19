@@ -182,6 +182,12 @@ func (srv *Service) createApplicationPayment(
 		}
 
 		if c.IsFullDiscounted() {
+
+			pm.Status = core.PaymentStatusSuccess
+			if err := srv.Payment.Update(ctx, pm); err != nil {
+				return nil, errors.Wrap(err, "update lot")
+			}
+
 			if err := srv.onPayment(ctx, pm); err != nil {
 				return nil, err
 			}

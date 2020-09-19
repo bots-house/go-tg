@@ -277,6 +277,7 @@ func (srv *Service) createChangePricePayment(
 		}
 
 		if c.IsFullDiscounted() {
+			pm.Status = core.PaymentStatusSuccess
 			if err := srv.onPayment(ctx, pm); err != nil {
 				return nil, err
 			}

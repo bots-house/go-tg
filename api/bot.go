@@ -24,7 +24,7 @@ func (h *Handler) handleBotUpdate(params botops.HandleUpdateParams) middleware.R
 
 	if err := h.Bot.HandleUpdate(ctx, update); err != nil {
 		log.Error(ctx, "handle update failed", "update_id", update.UpdateID, "err", err)
-		return botops.NewHandleUpdateInternalServerError()
+		return botops.NewHandleUpdateOK()
 	}
 
 	return botops.NewHandleUpdateOK()

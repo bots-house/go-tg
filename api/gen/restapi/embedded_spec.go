@@ -459,6 +459,52 @@ func init() {
         }
       ]
     },
+    "/admin/lots/{id}/refresh": {
+      "post": {
+        "description": "Обновить данные лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Refresh Lot Details",
+        "operationId": "adminRefreshLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "Ссылка или юзернейм канала.",
+          "name": "identity",
+          "in": "query",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/admin/lots/{id}/text": {
       "get": {
         "description": "Получить отрендеренный текст поста.",
@@ -6147,6 +6193,52 @@ func init() {
           "description": "Причина.",
           "name": "reason",
           "in": "query"
+        }
+      ]
+    },
+    "/admin/lots/{id}/refresh": {
+      "post": {
+        "description": "Обновить данные лота.",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Refresh Lot Details",
+        "operationId": "adminRefreshLot",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminFullLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "Ссылка или юзернейм канала.",
+          "name": "identity",
+          "in": "query",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
         }
       ]
     },

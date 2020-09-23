@@ -2,12 +2,12 @@ package tg
 
 import "regexp"
 
-type queryType int
+type QueryType int
 
 const (
-	queryTypeUnknown queryType = iota
-	queryTypeJoinLink
-	queryTypeUsername
+	QueryTypeUnknown QueryType = iota
+	QueryTypeJoinLink
+	QueryTypeUsername
 )
 
 var (
@@ -18,12 +18,12 @@ var (
 	regexpJoinLink = regexp.MustCompile(`\/joinchat\/([\da-zA-Z_-]+)$`)
 )
 
-func ParseResolveQuery(query string) (qt queryType, value string) {
+func ParseResolveQuery(query string) (qt QueryType, value string) {
 	if matches := regexpJoinLink.FindStringSubmatch(query); len(matches) > 0 {
-		return queryTypeJoinLink, matches[1]
+		return QueryTypeJoinLink, matches[1]
 	} else if matches := regexpUsername.FindStringSubmatch(query); len(matches) > 0 {
-		return queryTypeUsername, matches[1]
+		return QueryTypeUsername, matches[1]
 	} else {
-		return queryTypeUnknown, ""
+		return QueryTypeUnknown, ""
 	}
 }

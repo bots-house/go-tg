@@ -41,6 +41,7 @@ type Service struct {
 
 	Storage        storage.Storage
 	AvatarResolver tg.AvatarResolver
+	Resolver       tg.Resolver
 	TgClient       *tgbotapi.BotAPI
 }
 

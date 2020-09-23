@@ -1497,6 +1497,39 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   
+  /admin/lots/{id}/refresh:
+    parameters:
+      - in: query
+        name: identity
+        required: true
+        description: Ссылка или юзернейм канала.
+        type: string
+      - in: path
+        name: id
+        required: true
+        description: ID лота.
+        type: integer
+    
+    post:
+      summary: Refresh Lot Details
+      description: Обновить данные лота.
+      operationId: adminRefreshLot
+      tags: [admin]
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminFullLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
+  
   /admin/posts:
     post:
       summary: Create Post

@@ -6,6 +6,7 @@ import (
 
 	"github.com/bots-house/birzzha/core"
 
+	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/store"
 	"github.com/pkg/errors"
@@ -435,6 +436,79 @@ func (srv *Service) GetLot(ctx context.Context, user *core.User, id core.LotID) 
 		Files:          NewLotUploadedFileSlice(files),
 		CanceledReason: canceledReason,
 	}, nil
+}
+
+var (
+	ErrEntityMustBeChannel = core.NewError("entity_must_be_channel", "entity must be channel")
+)
+
+func (srv *Service) RefreshLot(ctx context.Context, user *core.User, id core.LotID, input string) (*FullLot, error) {
+	if err := srv.IsAdmin(user); err != nil {
+		return nil, err
+	}
+
+	lot, err := srv.Lot.Query().ID(id).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot")
+	}
+
+	usr, err := srv.User.Query().ID(lot.OwnerID).One(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user")
+	}
+
+	canceledReason, err := srv.LotCanceledReason.Query().ID(lot.CanceledReasonID).One(ctx)
+	if err != core.ErrLotCanceledReasonNotFound && err != nil {
+		return nil, errors.Wrap(err, "get canceled reason")
+	}
+
+	files, err := srv.LotFile.Query().LotID(lot.ID).All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot files")
+	}
+
+	result, err := srv.Resolver.Resolve(ctx, input)
+	if err != nil {
+		return nil, errors.Wrap(err, "resolve tg entity")
+	}
+
+	info := result.Channel
+
+	if info == nil {
+		return nil, ErrEntityMustBeChannel
+	}
+
+	qt, _ := tg.ParseResolveQuery(input)
+	if qt == tg.QueryTypeJoinLink {
+		lot.JoinLink = null.StringFrom(input)
+	}
+
+	lot.ExternalID = info.ID
+	lot.Metrics.MembersCount = info.MembersCount
+	lot.Username = null.StringFrom(info.Username)
+	lot.Bio = null.StringFrom(info.Description)
+	lot.Name = info.Name
+	if info.Avatar != "" {
+		avatar, err := srv.Storage.AddByURL(ctx, storage.LotDir, info.Avatar)
+		if err != nil {
+			return nil, errors.Wrap(err, "add by url")
+		}
+		lot.Avatar = null.StringFrom(avatar)
+	}
+	lot.Metrics.Refresh(lot.Price.Current)
+
+	if err := srv.Lot.Update(ctx, lot); err != nil {
+		return nil, errors.Wrap(err, "update lot")
+	}
+
+	return &FullLot{
+		Lot:            lot,
+		User:           usr,
+		Views:          lot.Views.Total(),
+		Files:          NewLotUploadedFileSlice(files),
+		CanceledReason: canceledReason,
+	}, nil
+
 }
 
 var ErrLotCantBeCanceled = core.NewError("lot_cant_be_canceled", "lot can't be canceled on current status")

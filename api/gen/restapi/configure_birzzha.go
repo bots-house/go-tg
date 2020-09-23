@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml545429930 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml079597412 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -160,6 +160,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.AdminAdminGetUsersHandler == nil {
 		api.AdminAdminGetUsersHandler = admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
+		})
+	}
+	if api.AdminAdminRefreshLotHandler == nil {
+		api.AdminAdminRefreshLotHandler = admin.AdminRefreshLotHandlerFunc(func(params admin.AdminRefreshLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminRefreshLot has not yet been implemented")
 		})
 	}
 	if api.AdminAdminSendPostPreviewHandler == nil {

@@ -24,7 +24,7 @@ func NewResolverCache(resolver Resolver, exp time.Duration) *ResolverCache {
 	}
 }
 
-func (r *ResolverCache) get(typ queryType, val string) (*ResolveResult, bool) {
+func (r *ResolverCache) get(typ QueryType, val string) (*ResolveResult, bool) {
 	result, ok := r.cache.Get(strconv.Itoa(int(typ)) + val)
 	if ok {
 		return result.(*ResolveResult), true
@@ -43,7 +43,7 @@ func (r *ResolverCache) getByID(id int64) (*ResolveResult, bool) {
 	return nil, false
 }
 
-func (r *ResolverCache) save(typ queryType, val string, result *ResolveResult) {
+func (r *ResolverCache) save(typ QueryType, val string, result *ResolveResult) {
 	r.cache.SetDefault(strconv.Itoa(int(typ))+val, result)
 
 	if c := result.Channel; c != nil {

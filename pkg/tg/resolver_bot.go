@@ -41,9 +41,9 @@ var (
 func (r *BotResolver) Resolve(ctx context.Context, query string) (*ResolveResult, error) {
 	qt, val := ParseResolveQuery(query)
 	switch qt {
-	case queryTypeJoinLink:
+	case QueryTypeJoinLink:
 		return r.resolveJoinLink(ctx, val)
-	case queryTypeUsername:
+	case QueryTypeUsername:
 		return r.resolveUsername(ctx, val)
 	default:
 		return nil, ErrInvalidQuery

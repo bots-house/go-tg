@@ -113,6 +113,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		AdminAdminGetUsersHandler: admin.AdminGetUsersHandlerFunc(func(params admin.AdminGetUsersParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminGetUsers has not yet been implemented")
 		}),
+		AdminAdminRefreshLotHandler: admin.AdminRefreshLotHandlerFunc(func(params admin.AdminRefreshLotParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation admin.AdminRefreshLot has not yet been implemented")
+		}),
 		AdminAdminSendPostPreviewHandler: admin.AdminSendPostPreviewHandlerFunc(func(params admin.AdminSendPostPreviewParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation admin.AdminSendPostPreview has not yet been implemented")
 		}),
@@ -343,6 +346,8 @@ type BirzzhaAPI struct {
 	AdminAdminGetSettingsHandler admin.AdminGetSettingsHandler
 	// AdminAdminGetUsersHandler sets the operation handler for the admin get users operation
 	AdminAdminGetUsersHandler admin.AdminGetUsersHandler
+	// AdminAdminRefreshLotHandler sets the operation handler for the admin refresh lot operation
+	AdminAdminRefreshLotHandler admin.AdminRefreshLotHandler
 	// AdminAdminSendPostPreviewHandler sets the operation handler for the admin send post preview operation
 	AdminAdminSendPostPreviewHandler admin.AdminSendPostPreviewHandler
 	// AdminAdminUpdateCouponHandler sets the operation handler for the admin update coupon operation
@@ -567,6 +572,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.AdminAdminGetUsersHandler == nil {
 		unregistered = append(unregistered, "admin.AdminGetUsersHandler")
+	}
+	if o.AdminAdminRefreshLotHandler == nil {
+		unregistered = append(unregistered, "admin.AdminRefreshLotHandler")
 	}
 	if o.AdminAdminSendPostPreviewHandler == nil {
 		unregistered = append(unregistered, "admin.AdminSendPostPreviewHandler")
@@ -886,6 +894,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/users"] = admin.NewAdminGetUsers(o.context, o.AdminAdminGetUsersHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/admin/lots/{id}/refresh"] = admin.NewAdminRefreshLot(o.context, o.AdminAdminRefreshLotHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

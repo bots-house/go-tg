@@ -521,3 +521,16 @@ func (h *Handler) adminGetCoupons(params adminops.AdminGetCouponsParams, identit
 	}
 	return adminops.NewAdminGetCouponsOK().WithPayload(models.NewCouponListItem(coupons))
 }
+
+func (h *Handler) adminRefreshLot(params adminops.AdminRefreshLotParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	result, err := h.Admin.RefreshLot(ctx, identity.GetUser(), core.LotID(params.ID), params.Identity)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return adminops.NewAdminRefreshLotBadRequest().WithPayload(models.NewError(err2))
+		}
+		return adminops.NewAdminRefreshLotInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return adminops.NewAdminRefreshLotOK().WithPayload(models.NewAdminFullLot(h.Storage, result))
+}

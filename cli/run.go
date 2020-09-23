@@ -350,6 +350,7 @@ func run(ctx context.Context, revision string) error {
 		AvatarResolver: tg.AvatarResolver{
 			Client: http.DefaultClient,
 		},
+		Resolver:    resolver,
 		Coupon:      pg.Coupon,
 		Payment:     pg.Payment,
 		Gateways:    gateways,

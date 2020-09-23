@@ -494,7 +494,10 @@ func (srv *Service) RefreshLot(ctx context.Context, user *core.User, id core.Lot
 			return nil, errors.Wrap(err, "add by url")
 		}
 		lot.Avatar = null.StringFrom(avatar)
+	} else {
+		lot.Avatar = null.String{}
 	}
+
 	lot.Metrics.Refresh(lot.Price.Current)
 
 	if err := srv.Lot.Update(ctx, lot); err != nil {

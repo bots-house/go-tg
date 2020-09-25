@@ -33,7 +33,7 @@ type Stats struct {
 
 type Landing struct {
 	Garant           *core.Garant
-	Channel          Channel
+	Channel          *Channel
 	ApplicationPrice *money.Money
 	Stats            Stats
 	Reviews          *ReviewList
@@ -54,20 +54,13 @@ func (srv *Service) GetLanding(ctx context.Context) (*Landing, error) {
 		return nil, errors.Wrap(err, "get reviews")
 	}
 
-	result, err := srv.Resolver.ResolveByID(ctx, settings.Channel.PrivateID)
-	if err != nil {
-		return nil, errors.Wrap(err, "resolve by id")
-	}
-
-	if result.Channel == nil {
-		return nil, ErrChannelNotFound
-	}
+	result, _ := srv.Resolver.ResolveByID(ctx, settings.Channel.PrivateID)
 
 	landing, err := srv.Landing.Get(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get landing")
 	}
-	return &Landing{
+	lndg := &Landing{
 		Stats: Stats{
 			UniqueVisitorsPerMonth: landing.UniqueUsersPerMonth(),
 			AvgLotChannelReach:     landing.AvgChannelReach(),
@@ -83,12 +76,16 @@ func (srv *Service) GetLanding(ctx context.Context) (*Landing, error) {
 		},
 		ApplicationPrice: settings.Prices.Application,
 		Reviews:          reviews,
-		Channel: Channel{
+	}
+
+	if result != nil && result.Channel != nil {
+		lndg.Channel = &Channel{
 			Title:        result.Channel.Name,
 			MembersCount: result.Channel.MembersCount,
 			JoinLink:     settings.Channel.PrivateLink,
 			Avatar:       result.Channel.Avatar,
 			Username:     settings.Channel.PublicUsername,
-		},
-	}, nil
+		}
+	}
+	return lndg, nil
 }

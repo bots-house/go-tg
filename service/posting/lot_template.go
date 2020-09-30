@@ -95,6 +95,10 @@ func priceInterval(price int) string {
 		return "#До50К"
 	case price <= 100000:
 		return "#До100К"
+	case price <= 200000:
+		return "#До200К"
+	case price <= 300000:
+		return "#До300К"
 	case price <= 500000:
 		return "#До500К"
 	case price <= 1000000:

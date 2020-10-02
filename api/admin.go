@@ -8,6 +8,7 @@ import (
 	"github.com/bots-house/birzzha/api/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/admin"
+	"github.com/bots-house/birzzha/store"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
@@ -435,7 +436,44 @@ func (h *Handler) adminDeletePost(params adminops.AdminDeletePostParams, identit
 func (h *Handler) adminGetPosts(params adminops.AdminGetPostsParams, identity *authz.Identity) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
-	result, err := h.Admin.GetPosts(ctx, identity.GetUser(), int(swag.Int64Value(params.Limit)), int(swag.Int64Value(params.Offset)))
+	query := &admin.PostsQuery{
+		Offset: int(swag.Int64Value(params.Offset)),
+		Limit:  int(swag.Int64Value(params.Limit)),
+	}
+
+	if params.SortBy != nil {
+		sortBy, err := core.ParsePostField(swag.StringValue(params.SortBy))
+		if err != nil {
+			if err2, ok := errors.Cause(err).(*core.Error); ok {
+				return adminops.NewAdminGetPostsBadRequest().WithPayload(models.NewError(err2))
+			}
+			return adminops.NewAdminGetPostsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+		}
+		query.SortBy = sortBy
+	}
+
+	if params.SortByType != nil {
+		v := swag.StringValue(params.SortByType)
+		switch v {
+		case ascQueryParam:
+			query.SortByType = store.SortTypeAsc
+		case descQueryParam:
+			query.SortByType = store.SortTypeDesc
+		}
+	}
+
+	if params.Status != nil {
+		status, err := core.ParsePostStatus(swag.StringValue(params.Status))
+		if err != nil {
+			if err2, ok := errors.Cause(err).(*core.Error); ok {
+				return adminops.NewAdminGetPostsBadRequest().WithPayload(models.NewError(err2))
+			}
+			return adminops.NewAdminGetPostsInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+		}
+		query.Status = status
+	}
+
+	result, err := h.Admin.GetPosts(ctx, identity.GetUser(), query)
 	if err != nil {
 		if err2, ok := errors.Cause(err).(*core.Error); ok {
 			return adminops.NewAdminGetPostsBadRequest().WithPayload(models.NewError(err2))

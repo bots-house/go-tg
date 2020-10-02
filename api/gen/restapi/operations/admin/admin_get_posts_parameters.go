@@ -13,13 +13,25 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // NewAdminGetPostsParams creates a new AdminGetPostsParams object
-// no default values defined in spec.
+// with the default values initialized.
 func NewAdminGetPostsParams() AdminGetPostsParams {
 
-	return AdminGetPostsParams{}
+	var (
+		// initialize parameters with default values
+
+		sortByDefault     = string("scheduled_at")
+		sortByTypeDefault = string("desc")
+	)
+
+	return AdminGetPostsParams{
+		SortBy: &sortByDefault,
+
+		SortByType: &sortByTypeDefault,
+	}
 }
 
 // AdminGetPostsParams contains all the bound params for the admin get posts operation
@@ -39,6 +51,20 @@ type AdminGetPostsParams struct {
 	  In: query
 	*/
 	Offset *int64
+	/*
+	  In: query
+	  Default: "scheduled_at"
+	*/
+	SortBy *string
+	/*сортировать от меньшего к большему (`asc`), или от большего к меньшему (`desc`)
+	  In: query
+	  Default: "desc"
+	*/
+	SortByType *string
+	/*Статус поста.
+	  In: query
+	*/
+	Status *string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -59,6 +85,21 @@ func (o *AdminGetPostsParams) BindRequest(r *http.Request, route *middleware.Mat
 
 	qOffset, qhkOffset, _ := qs.GetOK("offset")
 	if err := o.bindOffset(qOffset, qhkOffset, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qSortBy, qhkSortBy, _ := qs.GetOK("sort_by")
+	if err := o.bindSortBy(qSortBy, qhkSortBy, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qSortByType, qhkSortByType, _ := qs.GetOK("sort_by_type")
+	if err := o.bindSortByType(qSortByType, qhkSortByType, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qStatus, qhkStatus, _ := qs.GetOK("status")
+	if err := o.bindStatus(qStatus, qhkStatus, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -108,6 +149,104 @@ func (o *AdminGetPostsParams) bindOffset(rawData []string, hasKey bool, formats 
 		return errors.InvalidType("offset", "query", "int64", raw)
 	}
 	o.Offset = &value
+
+	return nil
+}
+
+// bindSortBy binds and validates parameter SortBy from query.
+func (o *AdminGetPostsParams) bindSortBy(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewAdminGetPostsParams()
+		return nil
+	}
+
+	o.SortBy = &raw
+
+	if err := o.validateSortBy(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateSortBy carries on validations for parameter SortBy
+func (o *AdminGetPostsParams) validateSortBy(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("sort_by", "query", *o.SortBy, []interface{}{"scheduled_at"}, true); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindSortByType binds and validates parameter SortByType from query.
+func (o *AdminGetPostsParams) bindSortByType(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewAdminGetPostsParams()
+		return nil
+	}
+
+	o.SortByType = &raw
+
+	if err := o.validateSortByType(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateSortByType carries on validations for parameter SortByType
+func (o *AdminGetPostsParams) validateSortByType(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("sort_by_type", "query", *o.SortByType, []interface{}{"asc", "desc"}, true); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindStatus binds and validates parameter Status from query.
+func (o *AdminGetPostsParams) bindStatus(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.Status = &raw
+
+	if err := o.validateStatus(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateStatus carries on validations for parameter Status
+func (o *AdminGetPostsParams) validateStatus(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("status", "query", *o.Status, []interface{}{"scheduled", "published", "failed"}, true); err != nil {
+		return err
+	}
 
 	return nil
 }

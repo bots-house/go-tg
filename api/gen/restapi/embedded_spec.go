@@ -601,6 +601,37 @@ func init() {
             "description": "Офсет.",
             "name": "offset",
             "in": "query"
+          },
+          {
+            "enum": [
+              "scheduled_at"
+            ],
+            "type": "string",
+            "default": "scheduled_at",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "default": "desc",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
+            "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "scheduled",
+              "published",
+              "failed"
+            ],
+            "type": "string",
+            "description": "Статус поста.",
+            "name": "status",
+            "in": "query"
           }
         ],
         "responses": {
@@ -6337,6 +6368,37 @@ func init() {
             "type": "integer",
             "description": "Офсет.",
             "name": "offset",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "scheduled_at"
+            ],
+            "type": "string",
+            "default": "scheduled_at",
+            "name": "sort_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "default": "desc",
+            "description": "сортировать от меньшего к большему (` + "`" + `asc` + "`" + `), или от большего к меньшему (` + "`" + `desc` + "`" + `)",
+            "name": "sort_by_type",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "scheduled",
+              "published",
+              "failed"
+            ],
+            "type": "string",
+            "description": "Статус поста.",
+            "name": "status",
             "in": "query"
           }
         ],

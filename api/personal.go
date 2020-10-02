@@ -185,9 +185,9 @@ func (h *Handler) getFavoriteLots(params personalops.GetFavoriteLotsParams, iden
 	if params.SortByType != nil {
 		v := swag.StringValue(params.SortByType)
 		switch v {
-		case "asc":
+		case ascQueryParam:
 			query.SortByType = store.SortTypeAsc
-		case "desc":
+		case descQueryParam:
 			query.SortByType = store.SortTypeDesc
 		}
 	}

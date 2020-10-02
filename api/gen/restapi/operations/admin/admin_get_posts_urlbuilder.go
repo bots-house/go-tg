@@ -15,8 +15,11 @@ import (
 
 // AdminGetPostsURL generates an URL for the admin get posts operation
 type AdminGetPostsURL struct {
-	Limit  *int64
-	Offset *int64
+	Limit      *int64
+	Offset     *int64
+	SortBy     *string
+	SortByType *string
+	Status     *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -66,6 +69,30 @@ func (o *AdminGetPostsURL) Build() (*url.URL, error) {
 	}
 	if offsetQ != "" {
 		qs.Set("offset", offsetQ)
+	}
+
+	var sortByQ string
+	if o.SortBy != nil {
+		sortByQ = *o.SortBy
+	}
+	if sortByQ != "" {
+		qs.Set("sort_by", sortByQ)
+	}
+
+	var sortByTypeQ string
+	if o.SortByType != nil {
+		sortByTypeQ = *o.SortByType
+	}
+	if sortByTypeQ != "" {
+		qs.Set("sort_by_type", sortByTypeQ)
+	}
+
+	var statusQ string
+	if o.Status != nil {
+		statusQ = *o.Status
+	}
+	if statusQ != "" {
+		qs.Set("status", statusQ)
 	}
 
 	_result.RawQuery = qs.Encode()

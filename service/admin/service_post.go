@@ -215,6 +215,14 @@ type FullPost struct {
 	Total int
 }
 
+type PostsQuery struct {
+	SortBy     core.PostField
+	SortByType store.SortType
+	Status     core.PostStatus
+	Offset     int
+	Limit      int
+}
+
 func (srv *Service) newPostItem(post *core.Post, lot *core.Lot) *PostItem {
 	item := &PostItem{
 		Post: post,
@@ -238,15 +246,32 @@ func (srv *Service) newPostItemSlice(posts core.PostSlice, lots core.LotSlice) [
 	return items
 }
 
-func (srv *Service) GetPosts(ctx context.Context, user *core.User, limit int, offset int) (*FullPost, error) {
+func (srv *Service) postsQuery(status core.PostStatus) core.PostStoreQuery {
+	query := srv.Post.Query()
+
+	if status != 0 {
+		query = query.Statuses(status)
+	}
+
+	return query
+}
+
+func (srv *Service) GetPosts(ctx context.Context, user *core.User, in *PostsQuery) (*FullPost, error) {
 	if err := srv.IsAdmin(user); err != nil {
 		return nil, err
 	}
 
-	posts, err := srv.Post.Query().
-		Limit(limit).
-		Offset(offset).
-		SortBy(core.PostFieldScheduledAt, store.SortTypeAsc).
+	query := srv.postsQuery(in.Status)
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get posts count")
+	}
+
+	posts, err := query.
+		Limit(in.Limit).
+		Offset(in.Offset).
+		SortBy(in.SortBy, in.SortByType).
 		All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get posts")
@@ -259,6 +284,6 @@ func (srv *Service) GetPosts(ctx context.Context, user *core.User, limit int, of
 
 	return &FullPost{
 		Items: srv.newPostItemSlice(posts, lots),
-		Total: len(posts),
+		Total: count,
 	}, nil
 }

@@ -84,9 +84,9 @@ func (h *Handler) getLots(params catalogops.GetLotsParams, identity *authz.Ident
 	if params.SortByType != nil {
 		v := *params.SortByType
 		switch v {
-		case "asc":
+		case ascQueryParam:
 			query.SortByType = store.SortTypeAsc
-		case "desc":
+		case descQueryParam:
 			query.SortByType = store.SortTypeDesc
 		}
 	}

@@ -182,6 +182,17 @@ func (psq *PostStoreQuery) SortBy(field core.PostField, typ store.SortType) core
 	return psq
 }
 
+func (psq *PostStoreQuery) Statuses(statuses ...core.PostStatus) core.PostStoreQuery {
+	vs := make([]string, len(statuses))
+
+	for i, status := range statuses {
+		vs[i] = status.String()
+	}
+
+	psq.mods = append(psq.mods, dal.PostWhere.Status.IN(vs))
+	return psq
+}
+
 func (psq *PostStoreQuery) Offset(v int) core.PostStoreQuery {
 	psq.mods = append(psq.mods, qm.Offset(v))
 	return psq
@@ -213,4 +224,12 @@ func (psq *PostStoreQuery) All(ctx context.Context) (core.PostSlice, error) {
 	}
 
 	return psq.store.fromRowSlice(rows)
+}
+
+func (psq *PostStoreQuery) Count(ctx context.Context) (int, error) {
+	executor := shared.GetExecutorOrDefault(ctx, psq.store.ContextExecutor)
+
+	count, err := dal.Posts(psq.mods...).Count(ctx, executor)
+
+	return int(count), err
 }

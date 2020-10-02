@@ -185,6 +185,8 @@ type PostStoreQuery interface {
 	Limit(limit int) PostStoreQuery
 	Offset(offset int) PostStoreQuery
 	SortBy(field PostField, typ store.SortType) PostStoreQuery
+	Statuses(statuses ...PostStatus) PostStoreQuery
 	One(ctx context.Context) (*Post, error)
 	All(ctx context.Context) (PostSlice, error)
+	Count(ctx context.Context) (int, error)
 }

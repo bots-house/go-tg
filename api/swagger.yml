@@ -1570,6 +1570,30 @@ paths:
           type: integer
           description: Офсет.
           required: False
+        - in: query
+          name: sort_by
+          type: string
+          enum:
+            - scheduled_at
+          default: scheduled_at
+          required: false
+        - in: query
+          name: sort_by_type
+          type: string
+          enum:
+            - asc
+            - desc
+          default: desc
+          required: false
+          description: сортировать от меньшего к большему (`asc`), или от большего к меньшему (`desc`)
+        - in: query
+          name: status
+          type: string
+          description: Статус поста.
+          enum:
+            - scheduled
+            - published
+            - failed
 
       summary: Get Posts
       description: Получить список постов.

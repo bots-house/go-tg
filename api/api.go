@@ -54,6 +54,11 @@ type Handler struct {
 	Health       *health.Service
 }
 
+const (
+	ascQueryParam  = "asc"
+	descQueryParam = "desc"
+)
+
 func (h Handler) newAPI() *operations.BirzzhaAPI {
 	spec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 	if err != nil {

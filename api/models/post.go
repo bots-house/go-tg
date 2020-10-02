@@ -50,7 +50,7 @@ func NewPostItem(s storage.Storage, in *admin.PostItem) *models.PostItem {
 }
 
 func NewFullPost(s storage.Storage, in *admin.FullPost) *models.PostListItem {
-	items := make([]*models.PostItem, in.Total)
+	items := make([]*models.PostItem, len(in.Items))
 	for i, item := range in.Items {
 		items[i] = NewPostItem(s, item)
 	}

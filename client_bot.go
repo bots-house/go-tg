@@ -118,3 +118,37 @@ func (client *Client) GetWebhookInfo(ctx context.Context) (*WebhookInfo, error) 
 
 	return result, nil
 }
+
+type SetWebhookOptions struct {
+	// HTTPS url to send updates to. Use an empty string to remove webhook integration.
+	URL string
+
+	// Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100.
+	// Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
+	MaxConnections int
+
+	// A list of the update types you want your bot to receive.
+	// For example, specify []string{"message", "edited_channel_post", "callback_query"}
+	// to only receive updates of these types.
+	// See Update for a complete list of available update types.
+	// Specify an empty list to receive all updates regardless of type (default).
+	// If not specified, the previous setting will be used.
+	// Please note that this parameter doesn't affect updates created before the call to the getUpdates,
+	// so unwanted updates may be received for a short period of time.
+	AllowedUpdates []string
+}
+
+// SetWebhook specify a url and receive incoming updates via an outgoing webhook.
+func (client *Client) SetWebhook(ctx context.Context, opts *SetWebhookOptions) error {
+	r := NewRequest("setWebhook")
+
+	if opts != nil {
+		r.SetOptString("url", opts.URL)
+		r.SetOptInt("max_connections", opts.MaxConnections)
+		if err := r.SetJSON("allowed_updates", opts.AllowedUpdates); err != nil {
+			return errors.Wrap(err, "marshal AllowedUpdates")
+		}
+	}
+
+	return client.invokeExceptedTrue(ctx, r)
+}

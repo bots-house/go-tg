@@ -50,6 +50,27 @@ func TestClient_GetMe(t *testing.T) {
 	}
 }
 
+func TestClient_SetWebhook(t *testing.T) {
+	skipIfNeed(t)
+	ctx := context.Background()
+
+	opts := &SetWebhookOptions{
+		MaxConnections: 40,
+		URL:            "https://bots.house",
+	}
+
+	err := testClient.SetWebhook(ctx, opts)
+
+	if assert.NoError(t, err) {
+		info, err := testClient.GetWebhookInfo(ctx)
+		if assert.NoError(t, err) {
+			assert.Equal(t, info.URL, opts.URL)
+			assert.Equal(t, info.MaxConnections, opts.MaxConnections)
+			assert.Equal(t, opts.AllowedUpdates, info.AllowedUpdates)
+		}
+	}
+}
+
 func TestClient_SetAndGetMyCommands(t *testing.T) {
 	skipIfNeed(t)
 

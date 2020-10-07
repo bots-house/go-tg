@@ -152,3 +152,16 @@ func (client *Client) SetWebhook(ctx context.Context, opts *SetWebhookOptions) e
 
 	return client.invokeExceptedTrue(ctx, r)
 }
+
+func (client *Client) GetChat(ctx context.Context, peer Peer) (*Chat, error) {
+	r := NewRequest("getChat")
+	result := &Chat{}
+
+	r.SetPeer("chat_id", peer)
+
+	if err := client.Invoke(ctx, r, result); err != nil {
+		return nil, errors.Wrap(err, "invloke")
+	}
+
+	return result, nil
+}

@@ -3,7 +3,6 @@ package tg
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -1167,7 +1166,7 @@ type File struct {
 }
 
 func (f File) URL() string {
-	return fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", f.client.token, f.FilePath)
+	return f.client.getFileURL(f.FilePath)
 }
 
 func (f File) NewReader(ctx context.Context) (io.ReadCloser, error) {

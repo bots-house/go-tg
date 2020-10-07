@@ -110,6 +110,12 @@ func (r *Request) SetOptInt(k string, v int) {
 	}
 }
 
+func (r *Request) SetOptInt64(k string, v int64) {
+	if v != 0 {
+		r.args[k] = strconv.FormatInt(v, 10)
+	}
+}
+
 func (r *Request) SetOptDuration(k string, v time.Duration) {
 	if v != 0 {
 		r.args[k] = strconv.Itoa(int(v.Seconds()))

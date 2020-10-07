@@ -152,3 +152,26 @@ func (client *Client) SetWebhook(ctx context.Context, opts *SetWebhookOptions) e
 
 	return client.invokeExceptedTrue(ctx, r)
 }
+
+type ChatOptions struct {
+	ChatID   ChatID
+	Username string
+}
+
+func (client *Client) GetChat(ctx context.Context, opts *ChatOptions) (*Chat, error) {
+	r := NewRequest("getChat")
+	result := &Chat{}
+
+	if opts != nil {
+		if opts.ChatID != 0 {
+			r.SetOptInt64("chat_id", int64(opts.ChatID))
+		} else {
+			r.SetOptString("chat_id", opts.Username)
+		}
+	}
+	if err := client.Invoke(ctx, r, result); err != nil {
+		return nil, errors.Wrap(err, "invloke")
+	}
+
+	return result, nil
+}

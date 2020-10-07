@@ -166,18 +166,14 @@ func (client *Client) GetChat(ctx context.Context, peer Peer) (*Chat, error) {
 	return result, nil
 }
 
-type FileOptions struct {
-	FileID FileID
-}
-
-func (client *Client) GetFile(ctx context.Context, opts *FileOptions) (*File, error) {
+func (client *Client) GetFile(ctx context.Context, id FileID) (*File, error) {
 	r := NewRequest("getFile")
 
 	result := &File{
 		client: client,
 	}
 
-	r.SetString("file_id", string(opts.FileID))
+	r.SetString("file_id", string(id))
 
 	if err := client.Invoke(ctx, r, result); err != nil {
 		return nil, errors.Wrap(err, "invoke")

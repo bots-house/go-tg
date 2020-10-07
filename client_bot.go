@@ -160,8 +160,23 @@ func (client *Client) GetChat(ctx context.Context, peer Peer) (*Chat, error) {
 	r.SetPeer("chat_id", peer)
 
 	if err := client.Invoke(ctx, r, result); err != nil {
-		return nil, errors.Wrap(err, "invloke")
+		return nil, errors.Wrap(err, "invoke")
 	}
 
+	return result, nil
+}
+
+func (client *Client) GetFile(ctx context.Context, id FileID) (*File, error) {
+	r := NewRequest("getFile")
+
+	result := &File{
+		client: client,
+	}
+
+	r.SetString("file_id", string(id))
+
+	if err := client.Invoke(ctx, r, result); err != nil {
+		return nil, errors.Wrap(err, "invoke")
+	}
 	return result, nil
 }

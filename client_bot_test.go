@@ -76,13 +76,9 @@ func TestClient_GetChat(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts := &ChatOptions{
-		ChatID: testChannelID,
-	}
-
-	chat, err := testClient.GetChat(ctx, opts)
+	chat, err := testClient.GetChat(ctx, testChannelID)
 	if assert.NoError(t, err) {
-		assert.Equal(t, opts.ChatID, chat.ID)
+		assert.Equal(t, testChannelID, chat.ID)
 	}
 }
 

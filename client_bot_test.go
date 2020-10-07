@@ -71,6 +71,17 @@ func TestClient_SetWebhook(t *testing.T) {
 	}
 }
 
+func TestClient_GetChat(t *testing.T) {
+	skipIfNeed(t)
+
+	ctx := context.Background()
+
+	chat, err := testClient.GetChat(ctx, testChannelID)
+	if assert.NoError(t, err) {
+		assert.Equal(t, testChannelID, chat.ID)
+	}
+}
+
 func TestClient_SetAndGetMyCommands(t *testing.T) {
 	skipIfNeed(t)
 

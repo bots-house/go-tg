@@ -44,6 +44,9 @@ func TestClient_GetMe(t *testing.T) {
 		assert.True(t, user.IsBot)
 		assert.NotZero(t, user.FirstName)
 		assert.NotZero(t, user.Username)
+		assert.True(t, user.SupportsInlineQueries)
+		assert.True(t, user.CanReadAllGroupMessages)
+		assert.True(t, user.CanJoinGroups)
 	}
 }
 

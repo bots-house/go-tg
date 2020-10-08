@@ -1020,12 +1020,8 @@ func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) InlineKeyboardRow {
 }
 
 func NewInlineKeyboardMarkup(rows ...InlineKeyboardRow) InlineKeyboardMarkup {
-	keyboard := make([]InlineKeyboardRow, 0, len(rows))
-
-	keyboard = append(keyboard, rows...)
-
 	return InlineKeyboardMarkup{
-		InlineKeyboard: keyboard,
+		InlineKeyboard: rows,
 	}
 }
 

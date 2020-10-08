@@ -1009,28 +1009,15 @@ type InlineKeyboardMarkup struct {
 	InlineKeyboard []InlineKeyboardRow `json:"inline_keyboard"`
 }
 
+type InlineKeyboardRow []InlineKeyboardButton
+
 func NewInlineKeyboardMarkup(rows ...InlineKeyboardRow) InlineKeyboardMarkup {
-	keyboard := make([]InlineKeyboardRow, len(rows))
+	keyboard := make([]InlineKeyboardRow, 0, len(rows))
 
 	keyboard = append(keyboard, rows...)
 
 	return InlineKeyboardMarkup{
 		InlineKeyboard: keyboard,
-	}
-}
-
-type InlineKeyboardRow struct {
-	// Array of buttons, each represented by an InlineKeyboardButton object.
-	InlineKeyboardButtons []InlineKeyboardButton `json:"inline_keyboard_buttons"`
-}
-
-func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) InlineKeyboardRow {
-	row := make([]InlineKeyboardButton, len(buttons))
-
-	row = append(row, buttons...)
-
-	return InlineKeyboardRow{
-		InlineKeyboardButtons: row,
 	}
 }
 

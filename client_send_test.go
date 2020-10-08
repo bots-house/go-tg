@@ -13,18 +13,22 @@ func TestClient_SendText(t *testing.T) {
 
 	text := "This is *test* of [bots-house/go-tg](https://github.com/bots-house/go-tg)"
 
-	kb := [][]InlineKeyboardButton{
-		{
-			{Text: "🔥", URL: "https://github.com/bots-house/go-tg"},
-		},
-	}
+	row := make(InlineKeyboardRow, 0, 1)
+	row = append(row, NewInlineKeyboardButtonURL(
+		"🔥",
+		"https://github.com/bots-house/go-tg",
+	))
+
+	kb := NewInlineKeyboardMarkup(
+		row,
+	)
 
 	msg, err := testClient.SendText(ctx, testChannelID, text, &TextOpts{
 		ParseMode:             "markdown",
 		DisableWebPagePreview: true,
 		DisableNotification:   true,
 		ReplyToMessageID:      MessageID(1),
-		ReplyMarkup:           InlineKeyboardMarkup{kb},
+		ReplyMarkup:           kb,
 	})
 
 	if assert.NoError(t, err) && assert.NotNil(t, msg) {
@@ -42,18 +46,21 @@ func TestClient_SendPhoto(t *testing.T) {
 
 	caption := "The [Go](https://golang.org) _gopher_ is an iconic mascot and one of the most distinctive features of the Go project."
 
-	kb := [][]InlineKeyboardButton{
-		{
-			{Text: "🔥", URL: "https://github.com/bots-house/go-tg"},
-		},
-	}
+	row := make(InlineKeyboardRow, 0, 1)
+	row = append(row, NewInlineKeyboardButtonURL(
+		"🔥",
+		"https://github.com/bots-house/go-tg",
+	))
 
+	kb := NewInlineKeyboardMarkup(
+		row,
+	)
 	msg, err := testClient.SendPhoto(ctx, testChannelID, photo, &PhotoOpts{
 		Caption:             caption,
 		ParseMode:           "markdown",
 		DisableNotification: true,
 		ReplyToMessageID:    MessageID(1),
-		ReplyMarkup:         InlineKeyboardMarkup{kb},
+		ReplyMarkup:         kb,
 	})
 
 	if assert.NoError(t, err) && assert.NotNil(t, msg) {

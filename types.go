@@ -1006,16 +1006,31 @@ type ReplyKeyboardRemove struct {
 // InlineKeyboardMarkup object represents an inline keyboard that appears right next to the message it belongs to.
 type InlineKeyboardMarkup struct {
 	// Array of button rows, each represented by an Array of InlineKeyboardButton objects
-	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+	InlineKeyboard []InlineKeyboardRow `json:"inline_keyboard"`
 }
 
-func NewInlineKeyboardMarkup(rows ...[]InlineKeyboardButton) InlineKeyboardMarkup {
-	var keyboard [][]InlineKeyboardButton
+func NewInlineKeyboardMarkup(rows ...InlineKeyboardRow) InlineKeyboardMarkup {
+	keyboard := make([]InlineKeyboardRow, len(rows))
 
 	keyboard = append(keyboard, rows...)
 
 	return InlineKeyboardMarkup{
 		InlineKeyboard: keyboard,
+	}
+}
+
+type InlineKeyboardRow struct {
+	// Array of buttons, each represented by an InlineKeyboardButton object.
+	InlineKeyboardButtons []InlineKeyboardButton `json:"inline_keyboard_buttons"`
+}
+
+func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) InlineKeyboardRow {
+	row := make([]InlineKeyboardButton, len(buttons))
+
+	row = append(row, buttons...)
+
+	return InlineKeyboardRow{
+		InlineKeyboardButtons: row,
 	}
 }
 
@@ -1104,12 +1119,6 @@ func NewInlineKeyboardButtonURL(text string, url string) InlineKeyboardButton {
 		Text: text,
 		URL:  url,
 	}
-}
-
-func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) []InlineKeyboardButton {
-	var row []InlineKeyboardButton
-	row = append(row, buttons...)
-	return row
 }
 
 // Optional. Description of the game that will be launched when the user presses the button.

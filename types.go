@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -334,10 +335,6 @@ type MessageEntity struct {
 	Language string `json:"language,omitempty"`
 }
 
-func (me MessageEntity) IsCommand() bool {
-	return me.Type == "bot_command"
-}
-
 // MessageID unique message identifier inside this chat
 type MessageID int
 
@@ -504,26 +501,19 @@ type Message struct {
 }
 
 func (msg *Message) IsCommand() bool {
-	if msg.Entities == nil || len(msg.Entities) == 0 {
-		return false
-	}
-
-	entity := msg.Entities[0]
-	return entity.Offset == 0 && entity.IsCommand()
+	return strings.HasPrefix(msg.Text, "/")
 }
 
-func (msg *Message) CommandArguments() string {
+func (msg *Message) CommandArgs() string {
 	if !msg.IsCommand() {
 		return ""
 	}
 
-	entity := msg.Entities[0]
-
-	if len(msg.Text) == entity.Length {
-		return ""
+	result := strings.SplitN(msg.Text, " ", 2)
+	if len(result) > 1 {
+		return result[1]
 	}
-
-	return msg.Text[entity.Length+1:]
+	return ""
 }
 
 func (msg *Message) ensureClientBind() {

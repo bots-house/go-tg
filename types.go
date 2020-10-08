@@ -3,7 +3,11 @@ package tg
 import (
 	"context"
 	"encoding/json"
+	"io"
+	"net/http"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // FileID it's ID of uploaded file.
@@ -1142,4 +1146,38 @@ type WebhookInfo struct {
 
 	// Optional. A list of update types the bot is subscribed to. Defaults to all update types.
 	AllowedUpdates []string `json:"allowed_updates,omitempty"`
+}
+
+type File struct {
+	// Identifier for this file, which can be used to download or reuse the file.
+	FileID FileID `json:"file_id"`
+
+	// Unique identifier for this file, which is supposed to be the same over time and for different bots.
+	// Can't be used to download or reuse the file.
+	FileUniqueID string `json:"file_unique_id"`
+
+	// Optional. File size, if known.
+	FileSize int `json:"file_size,omitempty"`
+
+	// Optional. File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
+	FilePath string `json:"file_path,omitempty"`
+
+	client *Client
+}
+
+func (f File) URL() string {
+	return f.client.getFileURL(f.FilePath)
+}
+
+func (f File) NewReader(ctx context.Context) (io.ReadCloser, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, f.URL(), nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "build request")
+	}
+
+	res, err := f.client.doer.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "execute request")
+	}
+	return res.Body, nil
 }

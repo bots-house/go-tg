@@ -68,6 +68,10 @@ func (client *Client) getCallURL(r *Request) string {
 	return fmt.Sprintf("https://api.telegram.org/bot%s/%s", r.token, r.method)
 }
 
+func (client *Client) getFileURL(path string) string {
+	return fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", client.token, path)
+}
+
 // doMultipart execute request using multipart encoding and streaming upload.
 func (client *Client) doMultipart(ctx context.Context, r *Request) (*Response, error) {
 	ctx, cancel := context.WithCancel(ctx)

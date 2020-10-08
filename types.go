@@ -334,6 +334,10 @@ type MessageEntity struct {
 	Language string `json:"language,omitempty"`
 }
 
+func (me MessageEntity) IsCommand() bool {
+	return me.Type == "bot_command"
+}
+
 // MessageID unique message identifier inside this chat
 type MessageID int
 
@@ -497,6 +501,29 @@ type Message struct {
 	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 
 	client *Client
+}
+
+func (msg *Message) IsCommand() bool {
+	if msg.Entities == nil || len(msg.Entities) == 0 {
+		return false
+	}
+
+	entity := msg.Entities[0]
+	return entity.Offset == 0 && entity.IsCommand()
+}
+
+func (msg *Message) CommandArguments() string {
+	if !msg.IsCommand() {
+		return ""
+	}
+
+	entity := msg.Entities[0]
+
+	if len(msg.Text) == entity.Length {
+		return ""
+	}
+
+	return msg.Text[entity.Length+1:]
 }
 
 func (msg *Message) ensureClientBind() {

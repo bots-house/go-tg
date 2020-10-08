@@ -1012,11 +1012,7 @@ type InlineKeyboardMarkup struct {
 type InlineKeyboardRow []InlineKeyboardButton
 
 func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) InlineKeyboardRow {
-	row := make([]InlineKeyboardButton, len(buttons))
-	for i, button := range buttons {
-		row[i] = button
-	}
-	return row
+	return buttons
 }
 
 func NewInlineKeyboardMarkup(rows ...InlineKeyboardRow) InlineKeyboardMarkup {

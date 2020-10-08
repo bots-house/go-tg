@@ -1009,6 +1009,16 @@ type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }
 
+func NewInlineKeyboardMarkup(rows ...[]InlineKeyboardButton) InlineKeyboardMarkup {
+	var keyboard [][]InlineKeyboardButton
+
+	keyboard = append(keyboard, rows...)
+
+	return InlineKeyboardMarkup{
+		InlineKeyboard: keyboard,
+	}
+}
+
 func (markup InlineKeyboardMarkup) isReplyMarkup() {}
 
 // LoginURL object represents a parameter of the inline keyboard button
@@ -1080,6 +1090,26 @@ type InlineKeyboardButton struct {
 	// Optional. Specify True, to send a Pay button.
 	// NOTE: This type of button must always be the first button in the first row.
 	Pay bool `json:"pay,omitempty"`
+}
+
+func NewInlineKeyboardButtonLoginURL(text string, login *LoginURL) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text:     text,
+		LoginURL: login,
+	}
+}
+
+func NewInlineKeyboardButtonURL(text string, url string) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text: text,
+		URL:  url,
+	}
+}
+
+func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) []InlineKeyboardButton {
+	var row []InlineKeyboardButton
+	row = append(row, buttons...)
+	return row
 }
 
 // Optional. Description of the game that will be launched when the user presses the button.

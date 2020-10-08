@@ -13,14 +13,13 @@ func TestClient_SendText(t *testing.T) {
 
 	text := "This is *test* of [bots-house/go-tg](https://github.com/bots-house/go-tg)"
 
-	row := make(InlineKeyboardRow, 0, 1)
-	row = append(row, NewInlineKeyboardButtonURL(
-		"🔥",
-		"https://github.com/bots-house/go-tg",
-	))
-
 	kb := NewInlineKeyboardMarkup(
-		row,
+		NewInlineKeyboardRow(
+			NewInlineKeyboardButtonURL(
+				"🔥",
+				"https://github.com/bots-house/go-tg",
+			),
+		),
 	)
 
 	msg, err := testClient.SendText(ctx, testChannelID, text, &TextOpts{
@@ -46,14 +45,13 @@ func TestClient_SendPhoto(t *testing.T) {
 
 	caption := "The [Go](https://golang.org) _gopher_ is an iconic mascot and one of the most distinctive features of the Go project."
 
-	row := make(InlineKeyboardRow, 0, 1)
-	row = append(row, NewInlineKeyboardButtonURL(
-		"🔥",
-		"https://github.com/bots-house/go-tg",
-	))
-
 	kb := NewInlineKeyboardMarkup(
-		row,
+		NewInlineKeyboardRow(
+			NewInlineKeyboardButtonURL(
+				"🔥",
+				"https://github.com/bots-house/go-tg",
+			),
+		),
 	)
 	msg, err := testClient.SendPhoto(ctx, testChannelID, photo, &PhotoOpts{
 		Caption:             caption,

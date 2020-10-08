@@ -1006,7 +1006,19 @@ type ReplyKeyboardRemove struct {
 // InlineKeyboardMarkup object represents an inline keyboard that appears right next to the message it belongs to.
 type InlineKeyboardMarkup struct {
 	// Array of button rows, each represented by an Array of InlineKeyboardButton objects
-	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+	InlineKeyboard []InlineKeyboardRow `json:"inline_keyboard"`
+}
+
+type InlineKeyboardRow []InlineKeyboardButton
+
+func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) InlineKeyboardRow {
+	return buttons
+}
+
+func NewInlineKeyboardMarkup(rows ...InlineKeyboardRow) InlineKeyboardMarkup {
+	return InlineKeyboardMarkup{
+		InlineKeyboard: rows,
+	}
 }
 
 func (markup InlineKeyboardMarkup) isReplyMarkup() {}
@@ -1080,6 +1092,20 @@ type InlineKeyboardButton struct {
 	// Optional. Specify True, to send a Pay button.
 	// NOTE: This type of button must always be the first button in the first row.
 	Pay bool `json:"pay,omitempty"`
+}
+
+func NewInlineKeyboardButtonLoginURL(text string, login *LoginURL) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text:     text,
+		LoginURL: login,
+	}
+}
+
+func NewInlineKeyboardButtonURL(text string, url string) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text: text,
+		URL:  url,
+	}
 }
 
 // Optional. Description of the game that will be launched when the user presses the button.

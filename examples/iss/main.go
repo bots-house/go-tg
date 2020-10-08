@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/mr-linch/go-tg"
+	"github.com/bots-house/go-tg"
 )
 
 var (

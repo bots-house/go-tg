@@ -27,8 +27,8 @@
 
 | Package | Path                          | Description                                                                       |
 | :------ | :---------------------------- | :-------------------------------------------------------------------------------- |
-| `tg`    | github.com/mr-linch/go-tg     | Contains `Client` with methods and types used for sending and receiving messages. |
-| `tgr`   | github.com/mr-linch/go-tg/tgr | Contains `Bot` and routing related types                                          |
+| `tg`    | github.com/bots-house/go-tg     | Contains `Client` with methods and types used for sending and receiving messages. |
+| `tgr`   | github.com/bots-house/go-tg/tgr | Contains `Bot` and routing related types                                          |
 
 ## Client
 

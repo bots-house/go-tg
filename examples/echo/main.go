@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/mr-linch/go-tg"
+	"github.com/bots-house/go-tg"
 )
 
 var (

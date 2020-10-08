@@ -11,11 +11,11 @@ import (
 func TestClient_SendText(t *testing.T) {
 	ctx := context.Background()
 
-	text := "This is *test* of [mr-linch/go-tg](https://github.com/mr-linch/go-tg)"
+	text := "This is *test* of [bots-house/go-tg](https://github.com/bots-house/go-tg)"
 
 	kb := [][]InlineKeyboardButton{
 		{
-			{Text: "🔥", URL: "https://github.com/mr-linch/go-tg"},
+			{Text: "🔥", URL: "https://github.com/bots-house/go-tg"},
 		},
 	}
 
@@ -44,7 +44,7 @@ func TestClient_SendPhoto(t *testing.T) {
 
 	kb := [][]InlineKeyboardButton{
 		{
-			{Text: "🔥", URL: "https://github.com/mr-linch/go-tg"},
+			{Text: "🔥", URL: "https://github.com/bots-house/go-tg"},
 		},
 	}
 

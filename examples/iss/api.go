@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/mr-linch/go-tg"
+	"github.com/bots-house/go-tg"
 )
 
 const issLocationURL = "http://api.open-notify.org/iss-now.json"

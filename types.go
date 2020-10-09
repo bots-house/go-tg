@@ -314,6 +314,10 @@ type Chat struct {
 	CanSetStickerSet bool `json:"can_set_sticker_set,omitempty"`
 }
 
+func (c Chat) IsPrivate() bool {
+	return c.Type == "private"
+}
+
 // MessageEntity object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 type MessageEntity struct {
 	// Type of the entity.

@@ -95,3 +95,26 @@ func TestMessage_CommandArgs(t *testing.T) {
 		assert.Equal(t, tt.Result, args)
 	}
 }
+
+func TestChat_IsPrivate(t *testing.T) {
+	for _, tt := range []struct {
+		Chat   Chat
+		Result bool
+	}{
+		{
+			Chat{
+				Type: "private",
+			},
+			true,
+		},
+		{
+			Chat{
+				Type: "public",
+			},
+			false,
+		},
+	} {
+		r := tt.Chat.IsPrivate()
+		assert.Equal(t, tt.Result, r)
+	}
+}

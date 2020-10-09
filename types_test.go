@@ -37,3 +37,61 @@ func TestUserBot_MarshalJSON(t *testing.T) {
 		}, botUser)
 	}
 }
+
+func TestMessage_IsCommand(t *testing.T) {
+	for _, tt := range []struct {
+		Msg    Message
+		Result bool
+	}{
+		{
+			Message{
+				Text: "/start",
+			},
+			true,
+		},
+		{
+			Message{
+				Text: "/command fsdklfdgd",
+			},
+			true,
+		},
+		{
+			Message{
+				Text: "fsdfsdfsd",
+			},
+			false,
+		},
+	} {
+		r := tt.Msg.IsCommand()
+		assert.Equal(t, tt.Result, r)
+	}
+}
+
+func TestMessage_CommandArgs(t *testing.T) {
+	for _, tt := range []struct {
+		Msg    Message
+		Result string
+	}{
+		{
+			Message{
+				Text: "/start",
+			},
+			"",
+		},
+		{
+			Message{
+				Text: "/start arg1 arg2",
+			},
+			"arg1 arg2",
+		},
+		{
+			Message{
+				Text: "fasdfsdfsd",
+			},
+			"",
+		},
+	} {
+		args := tt.Msg.CommandArgs()
+		assert.Equal(t, tt.Result, args)
+	}
+}

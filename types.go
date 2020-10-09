@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -497,6 +498,22 @@ type Message struct {
 	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 
 	client *Client
+}
+
+func (msg *Message) IsCommand() bool {
+	return strings.HasPrefix(msg.Text, "/")
+}
+
+func (msg *Message) CommandArgs() string {
+	if !msg.IsCommand() {
+		return ""
+	}
+
+	result := strings.SplitN(msg.Text, " ", 2)
+	if len(result) > 1 {
+		return result[1]
+	}
+	return ""
 }
 
 func (msg *Message) ensureClientBind() {

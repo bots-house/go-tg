@@ -314,6 +314,7 @@ type Chat struct {
 	CanSetStickerSet bool `json:"can_set_sticker_set,omitempty"`
 }
 
+// IsPrivate returns if the Chat is a private conversation.
 func (c Chat) IsPrivate() bool {
 	return c.Type == "private"
 }

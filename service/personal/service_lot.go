@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/bots-house/birzzha/pkg/storage"
+	"github.com/bots-house/birzzha/pkg/tg"
 
 	"github.com/bots-house/birzzha/pkg/log"
 	"github.com/bots-house/birzzha/pkg/stat"
@@ -404,4 +405,55 @@ func (srv *Service) GetFavoriteLots(
 		Total: favoritesCount,
 		Items: finalLots,
 	}, nil
+}
+
+var (
+	ErrChannelIDMustBeSameAsPreviousOne = core.NewError("channel_id_must_be_same_as_previous_one", "channel id must me the same as the previous one")
+	ErrEntityMustBeChannel              = core.NewError("entity_must_be_channel", "entity must be channel")
+)
+
+func (srv *Service) ChangeLotIdentity(ctx context.Context, user *core.User, id core.LotID, value string) (*OwnedLot, error) {
+	ownedLot, err := srv.getOwnedLot(ctx, user, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lot")
+	}
+
+	lot := ownedLot.Lot
+
+	result, err := srv.Resolver.Resolve(ctx, value)
+	if err != nil {
+		return nil, errors.Wrap(err, "resolve tg entity")
+	}
+
+	info := result.Channel
+
+	if info == nil {
+		return nil, ErrEntityMustBeChannel
+	}
+
+	if info.ID != lot.ExternalID {
+		return nil, ErrChannelIDMustBeSameAsPreviousOne
+	}
+
+	qt, _ := tg.ParseResolveQuery(value)
+	if qt == tg.QueryTypeJoinLink {
+		lot.JoinLink = null.StringFrom(value)
+	} else {
+		lot.JoinLink = null.String{}
+	}
+
+	lot.Metrics.MembersCount = info.MembersCount
+	lot.Username = null.NewString(info.Username, info.Username != "")
+	lot.Bio = null.NewString(info.Description, info.Description != "")
+	lot.Name = info.Name
+
+	lot.Metrics.Refresh(lot.Price.Current)
+
+	if err := srv.Lot.Update(ctx, lot); err != nil {
+		return nil, errors.Wrap(err, "update lot")
+	}
+
+	ownedLot.Lot = lot
+
+	return ownedLot, nil
 }

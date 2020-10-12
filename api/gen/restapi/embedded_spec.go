@@ -2761,6 +2761,52 @@ func init() {
         }
       ]
     },
+    "/user/lots/{id}/identity": {
+      "put": {
+        "description": "Обновить ссылку на канал.\n\nВозможные ошибки:\n  - ` + "`" + `channel_id_must_be_same_as_previous_one` + "`" + ` - id канала должен оставаться прежним.\n  - ` + "`" + `entity_must_be_channel` + "`" + ` - Ресурс который доступен по новой ссылке должен быть каналом.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Change Lot Identity",
+        "operationId": "changeLotIdentity",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "Ссылка или юзернейм канала.",
+          "name": "value",
+          "in": "query",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "description": "ID лота.",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/webhooks/gateways/{name}": {
       "get": {
         "security": [],
@@ -8543,6 +8589,52 @@ func init() {
         {
           "type": "integer",
           "description": "ID лота",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/user/lots/{id}/identity": {
+      "put": {
+        "description": "Обновить ссылку на канал.\n\nВозможные ошибки:\n  - ` + "`" + `channel_id_must_be_same_as_previous_one` + "`" + ` - id канала должен оставаться прежним.\n  - ` + "`" + `entity_must_be_channel` + "`" + ` - Ресурс который доступен по новой ссылке должен быть каналом.\n",
+        "tags": [
+          "personal-area"
+        ],
+        "summary": "Change Lot Identity",
+        "operationId": "changeLotIdentity",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OwnedLot"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "Ссылка или юзернейм канала.",
+          "name": "value",
+          "in": "query",
+          "required": true
+        },
+        {
+          "type": "integer",
+          "description": "ID лота.",
           "name": "id",
           "in": "path",
           "required": true

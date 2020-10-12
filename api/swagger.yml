@@ -519,6 +519,46 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/Error"
+  
+  /user/lots/{id}/identity:
+    parameters:
+      - in: query
+        name: value
+        required: true
+        description: Ссылка или юзернейм канала.
+        type: string
+      - in: path
+        name: id
+        required: true
+        description: ID лота.
+        type: integer
+    
+    put:
+      summary: Change Lot Identity
+      description: Обновить ссылку на канал.
+      operationId: changeLotIdentity
+      tags: ["personal-area"]
+      description: |
+        Обновить ссылку на канал.
+
+        Возможные ошибки:
+          - `channel_id_must_be_same_as_previous_one` - id канала должен оставаться прежним.
+          - `entity_must_be_channel` - Ресурс который доступен по новой ссылке должен быть каналом.
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OwnedLot"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/Error"
+  
   /lots:
     get:
       summary: Get Lots

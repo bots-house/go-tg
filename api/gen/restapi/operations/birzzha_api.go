@@ -152,6 +152,9 @@ func NewBirzzhaAPI(spec *loads.Document) *BirzzhaAPI {
 		PersonalAreaCancelLotHandler: personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
 		}),
+		PersonalAreaChangeLotIdentityHandler: personal_area.ChangeLotIdentityHandlerFunc(func(params personal_area.ChangeLotIdentityParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.ChangeLotIdentity has not yet been implemented")
+		}),
 		PersonalAreaChangeLotPriceHandler: personal_area.ChangeLotPriceHandlerFunc(func(params personal_area.ChangeLotPriceParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.ChangeLotPrice has not yet been implemented")
 		}),
@@ -372,6 +375,8 @@ type BirzzhaAPI struct {
 	AdminAdminUpdateTopicHandler admin.AdminUpdateTopicHandler
 	// PersonalAreaCancelLotHandler sets the operation handler for the cancel lot operation
 	PersonalAreaCancelLotHandler personal_area.CancelLotHandler
+	// PersonalAreaChangeLotIdentityHandler sets the operation handler for the change lot identity operation
+	PersonalAreaChangeLotIdentityHandler personal_area.ChangeLotIdentityHandler
 	// PersonalAreaChangeLotPriceHandler sets the operation handler for the change lot price operation
 	PersonalAreaChangeLotPriceHandler personal_area.ChangeLotPriceHandler
 	// PersonalAreaCreateApplicationPaymentHandler sets the operation handler for the create application payment operation
@@ -611,6 +616,9 @@ func (o *BirzzhaAPI) Validate() error {
 	}
 	if o.PersonalAreaCancelLotHandler == nil {
 		unregistered = append(unregistered, "personal_area.CancelLotHandler")
+	}
+	if o.PersonalAreaChangeLotIdentityHandler == nil {
+		unregistered = append(unregistered, "personal_area.ChangeLotIdentityHandler")
 	}
 	if o.PersonalAreaChangeLotPriceHandler == nil {
 		unregistered = append(unregistered, "personal_area.ChangeLotPriceHandler")
@@ -946,6 +954,10 @@ func (o *BirzzhaAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/user/lots/{id}/cancel"] = personal_area.NewCancelLot(o.context, o.PersonalAreaCancelLotHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/user/lots/{id}/identity"] = personal_area.NewChangeLotIdentity(o.context, o.PersonalAreaChangeLotIdentityHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

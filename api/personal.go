@@ -274,3 +274,16 @@ func (h *Handler) getCoupon(params personalops.GetCouponParams, identity *authz.
 	}
 	return personalops.NewGetCouponOK().WithPayload(models.NewCouponInfo(coupon))
 }
+
+func (h *Handler) changeLotIdentity(params personalops.ChangeLotIdentityParams, identity *authz.Identity) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
+	lot, err := h.Personal.ChangeLotIdentity(ctx, identity.GetUser(), core.LotID(params.ID), params.Value)
+	if err != nil {
+		if err2, ok := errors.Cause(err).(*core.Error); ok {
+			return personalops.NewChangeLotIdentityBadRequest().WithPayload(models.NewError(err2))
+		}
+		return personalops.NewChangeLotIdentityInternalServerError().WithPayload(models.NewInternalServerError(ctx, err))
+	}
+	return personalops.NewChangeLotIdentityOK().WithPayload(models.NewOwnedLot(h.Storage, lot))
+}

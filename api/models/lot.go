@@ -257,7 +257,7 @@ func newAdminLotUploadedFileSlice(s storage.Storage, in core.LotFileSlice) []*mo
 func newAdminLot(s storage.Storage, in *admin.LotItem) *models.AdminLot {
 	adminLot := &models.AdminLot{
 		ID:             swag.Int64(int64(in.ID)),
-		ExternalID:     swag.Int64(int64(in.ExternalID)),
+		ExternalID:     swag.Int64(in.ExternalID),
 		Name:           swag.String(in.Name),
 		Status:         swag.String(in.Status.String()),
 		Price:          newLotPrice(in.Price),

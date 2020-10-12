@@ -485,8 +485,8 @@ func (srv *Service) RefreshLot(ctx context.Context, user *core.User, id core.Lot
 
 	lot.ExternalID = info.ID
 	lot.Metrics.MembersCount = info.MembersCount
-	lot.Username = null.StringFrom(info.Username)
-	lot.Bio = null.StringFrom(info.Description)
+	lot.Username = null.NewString(info.Username, info.Username != "")
+	lot.Bio = null.NewString(info.Description, info.Description != "")
 	lot.Name = info.Name
 	if info.Avatar != "" {
 		avatar, err := srv.Storage.AddByURL(ctx, storage.LotDir, info.Avatar)

@@ -121,7 +121,7 @@ func (h Handler) setupHandlers(api *operations.BirzzhaAPI) {
 	api.PersonalAreaChangeLotPriceHandler = personalops.ChangeLotPriceHandlerFunc(h.changeLotPrice)
 	api.PersonalAreaGetChangePriceInvoiceHandler = personalops.GetChangePriceInvoiceHandlerFunc(h.getChangePriceInvoice)
 	api.PersonalAreaCreateChangePricePaymentHandler = personalops.CreateChangePricePaymentHandlerFunc(h.createChangePricePayment)
-
+	api.PersonalAreaChangeLotIdentityHandler = personalops.ChangeLotIdentityHandlerFunc(h.changeLotIdentity)
 	api.PersonalAreaGetCouponHandler = personalops.GetCouponHandlerFunc(h.getCoupon)
 
 	// webhook

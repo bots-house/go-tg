@@ -22,7 +22,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/restapi/operations/webhook"
 )
 
-//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml727013215 --principal authz.Identity --exclude-main
+//go:generate swagger generate server --target ../../gen --name Birzzha --spec ../../../../../../../tmp/swagger.yml203098487 --principal authz.Identity --exclude-main
 
 func configureFlags(api *operations.BirzzhaAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -225,6 +225,11 @@ func configureAPI(api *operations.BirzzhaAPI) http.Handler {
 	if api.PersonalAreaCancelLotHandler == nil {
 		api.PersonalAreaCancelLotHandler = personal_area.CancelLotHandlerFunc(func(params personal_area.CancelLotParams, principal *authz.Identity) middleware.Responder {
 			return middleware.NotImplemented("operation personal_area.CancelLot has not yet been implemented")
+		})
+	}
+	if api.PersonalAreaChangeLotIdentityHandler == nil {
+		api.PersonalAreaChangeLotIdentityHandler = personal_area.ChangeLotIdentityHandlerFunc(func(params personal_area.ChangeLotIdentityParams, principal *authz.Identity) middleware.Responder {
+			return middleware.NotImplemented("operation personal_area.ChangeLotIdentity has not yet been implemented")
 		})
 	}
 	if api.PersonalAreaChangeLotPriceHandler == nil {

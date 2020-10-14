@@ -14,6 +14,7 @@ var (
 	testToken     = os.Getenv("GO_TG_BOT_TOKEN")
 	testChannelID ChatID
 	testClient    = NewClient(testToken)
+	testUserID    UserID
 )
 
 func init() {
@@ -25,6 +26,16 @@ func init() {
 		}
 		testChannelID = ChatID(parsed)
 	}
+
+	testUserIDString := os.Getenv("GO_TG_USER_ID")
+	if testUserIDString != "" {
+		parsed, err := strconv.ParseInt(testUserIDString, 10, 64)
+		if err != nil {
+			panic(fmt.Sprintf("test user id is provided but not number (%s)", testUserIDString))
+		}
+		testUserID = UserID(parsed)
+	}
+
 }
 
 func skipIfNeed(t *testing.T) {
@@ -102,5 +113,17 @@ func TestClient_SetAndGetMyCommands(t *testing.T) {
 			assert.Equal(t, commands, actual)
 		}
 	}
+}
 
+func TestClient_GetUserProfilePhotos(t *testing.T) {
+	skipIfNeed(t)
+
+	ctx := context.Background()
+
+	opts := &GetUserProfilePhotosOptions{
+		UserID: testUserID,
+	}
+
+	_, err := testClient.GetUserProfilePhotos(ctx, opts)
+	assert.NoError(t, err)
 }

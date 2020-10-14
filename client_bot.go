@@ -180,3 +180,34 @@ func (client *Client) GetFile(ctx context.Context, id FileID) (*File, error) {
 	}
 	return result, nil
 }
+
+type GetUserProfilePhotosOptions struct {
+	// Unique identifier of the target user.
+	UserID UserID
+
+	// Optional. Sequential number of the first photo to be returned. By default, all photos are returned.
+	Offset *int
+
+	// Optional. Limits the number of photos to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+	Limit *int
+}
+
+func (client *Client) GetUserProfilePhotos(ctx context.Context, opts *GetUserProfilePhotosOptions) (*UserProfilePhotos, error) {
+	r := NewRequest("getUserProfilePhotos")
+
+	result := &UserProfilePhotos{}
+
+	r.SetOptInt("user_id", int(opts.UserID))
+	if opts.Offset != nil {
+		r.SetOptInt("offset", *opts.Offset)
+	}
+
+	if opts.Limit != nil {
+		r.SetOptInt("limit", *opts.Limit)
+	}
+
+	if err := client.Invoke(ctx, r, result); err != nil {
+		return nil, errors.Wrap(err, "invoke")
+	}
+	return result, nil
+}

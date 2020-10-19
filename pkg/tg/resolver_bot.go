@@ -126,8 +126,14 @@ func (r *BotResolver) ResolveByID(ctx context.Context, id int64) (*ResolveResult
 func (r *BotResolver) getChat(config tgbotapi.ChatConfig) (*tgbotapi.Chat, error) {
 	chat, err := r.Client.GetChat(config)
 	if err != nil {
-		if err2, ok := err.(*tgbotapi.Error); ok && strings.Contains(err2.Message, "Bad Request: chat not found") {
-			return nil, ErrEntityNotFound
+		err2, ok := err.(*tgbotapi.Error)
+		if ok {
+			switch {
+			case strings.Contains(err2.Message, "Bad Request: chat not found"):
+				return nil, ErrEntityNotFound
+			case strings.Contains(err2.Message, "Forbidden: bot is not a member of the channel chat"):
+				return nil, ErrEntityNotFoundOrBotIsNotAdmin
+			}
 		}
 		return nil, errors.Wrap(err, "get chat")
 	}
@@ -179,9 +185,6 @@ func (r *BotResolver) resolveJoinLink(_ context.Context, joinLink string) (*Reso
 	switch err {
 	case nil:
 		return r.getResolveResultByChat(chat)
-	case ErrEntityNotFound:
-		//return more generic for this case error
-		return nil, ErrEntityNotFoundOrBotIsNotAdmin
 	default:
 		return nil, err
 	}

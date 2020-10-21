@@ -346,6 +346,22 @@ type LotsCountByUser struct {
 
 type LotsCountByUserSlice []*LotsCountByUser
 
+type PublishedLotsCountByTopic struct {
+	TopicID TopicID
+	Lots    int
+}
+
+type PublishedLotsCountByTopicSlice []*PublishedLotsCountByTopic
+
+func (plcbts PublishedLotsCountByTopicSlice) Find(id TopicID) *PublishedLotsCountByTopic {
+	for _, v := range plcbts {
+		if v.TopicID == id {
+			return v
+		}
+	}
+	return nil
+}
+
 func (oils LotsCountByUserSlice) Find(id UserID) *LotsCountByUser {
 	for _, v := range oils {
 		if v.OwnerID == id {
@@ -446,6 +462,9 @@ type LotStore interface {
 
 	// Find similar lots count.
 	SimilarLotsCount(ctx context.Context, id LotID) (int, error)
+
+	// Find published lots count by topics.
+	PublishedLotsCountByTopics(ctx context.Context) (PublishedLotsCountByTopicSlice, error)
 
 	// Complex query for lots
 	Query() LotStoreQuery

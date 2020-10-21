@@ -26,24 +26,34 @@ type Service struct {
 	Txier    store.Txier
 }
 
-type Topics struct {
-	Lots   int
-	Topics core.TopicSlice
+type TopicItem struct {
+	*core.Topic
+	Lots int
 }
 
-func (srv *Service) GetTopics(ctx context.Context) (*Topics, error) {
-	lots, err := srv.Lot.Query().Statuses(core.LotStatusPublished).Count(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "get lots count")
-	}
-
+func (srv *Service) GetTopics(ctx context.Context) ([]*TopicItem, error) {
 	topics, err := srv.Topic.Query().All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "get topics")
 	}
 
-	return &Topics{
-		Lots:   lots,
-		Topics: topics,
-	}, nil
+	result, err := srv.Lot.PublishedLotsCountByTopics(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lots count")
+	}
+
+	out := make([]*TopicItem, len(topics))
+	for i, topic := range topics {
+		item := &TopicItem{
+			Topic: topic,
+			Lots:  0,
+		}
+		r := result.Find(topic.ID)
+		if r != nil {
+			item.Lots = r.Lots
+		}
+		out[i] = item
+	}
+
+	return out, nil
 }

@@ -2523,7 +2523,10 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topics"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TopicItem"
+              }
             }
           },
           "500": {
@@ -5659,24 +5662,40 @@ func init() {
         }
       }
     },
-    "Topics": {
+    "TopicItem": {
+      "type": "object",
       "required": [
-        "lots",
-        "topics"
+        "id",
+        "name",
+        "slug",
+        "created_at",
+        "lots"
       ],
       "properties": {
-        "lots": {
-          "description": "Количество опубликованных лотов.",
+        "created_at": {
+          "description": "Дата создания.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
           "type": "integer",
           "x-order": 0
         },
-        "topics": {
-          "description": "Список категорий.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Topic"
-          },
+        "lots": {
+          "description": "Количество опубликованных лотов по данной категории.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
           "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный).",
+          "type": "string",
+          "x-order": 2
         }
       }
     },
@@ -8371,7 +8390,10 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Topics"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TopicItem"
+              }
             }
           },
           "500": {
@@ -11665,24 +11687,40 @@ func init() {
         }
       }
     },
-    "Topics": {
+    "TopicItem": {
+      "type": "object",
       "required": [
-        "lots",
-        "topics"
+        "id",
+        "name",
+        "slug",
+        "created_at",
+        "lots"
       ],
       "properties": {
-        "lots": {
-          "description": "Количество опубликованных лотов.",
+        "created_at": {
+          "description": "Дата создания.",
+          "type": "integer",
+          "x-order": 3
+        },
+        "id": {
+          "description": "Уникальный ID категории.",
           "type": "integer",
           "x-order": 0
         },
-        "topics": {
-          "description": "Список категорий.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Topic"
-          },
+        "lots": {
+          "description": "Количество опубликованных лотов по данной категории.",
+          "type": "integer",
+          "x-order": 4
+        },
+        "name": {
+          "description": "Название категории на русском.",
+          "type": "string",
           "x-order": 1
+        },
+        "slug": {
+          "description": "Slug (уникальный).",
+          "type": "string",
+          "x-order": 2
         }
       }
     },

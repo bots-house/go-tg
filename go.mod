@@ -13,6 +13,7 @@ require (
 	github.com/bots-house/telegram-bot-api v1.0.1-0.20200817125648-1a1ae0c36665
 	github.com/bots-house/tg-me v0.0.0-20200720165229-50d9043b65ab
 	github.com/cristalhq/jwt v1.2.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
 	github.com/friendsofgo/errors v0.9.2
 	github.com/getsentry/sentry-go v0.7.0

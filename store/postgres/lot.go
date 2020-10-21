@@ -336,6 +336,39 @@ func (store *LotStore) CountByUser(ctx context.Context, ids ...core.UserID) (cor
 	return ownerIDLots, nil
 }
 
+func (store *LotStore) PublishedLotsCountByTopics(ctx context.Context) (core.PublishedLotsCountByTopicSlice, error) {
+	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
+
+	rows, err := executor.QueryContext(ctx, `
+		select lot_topic.topic_id, count(lot.id) from lot
+			inner join lot_topic on lot.id = lot_topic.lot_id
+		where status = 'published' group by lot_topic.topic_id;
+	`)
+	if err != nil {
+		return nil, errors.Wrap(err, "query rows")
+	}
+
+	defer rows.Close()
+
+	var result core.PublishedLotsCountByTopicSlice
+
+	for rows.Next() {
+		item := &core.PublishedLotsCountByTopic{}
+		if err := rows.Scan(
+			&item.TopicID,
+			&item.Lots,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan")
+		}
+
+		result = append(result, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows err")
+	}
+	return result, nil
+}
+
 func (store *LotStore) LotsCountByStatus(ctx context.Context, filter *core.LotsCountByStatusFilter) (core.LotsCountByStatusSlice, error) {
 	executor := shared.GetExecutorOrDefault(ctx, store.ContextExecutor)
 

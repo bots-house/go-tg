@@ -136,7 +136,7 @@ func (h *Handler) getTopics(params catalogops.GetTopicsParams) middleware.Respon
 		return catalogops.NewGetTopicsInternalServerError()
 	}
 
-	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopics(topics))
+	return catalogops.NewGetTopicsOK().WithPayload(models.NewTopicItemSlice(topics))
 }
 
 func (h *Handler) getAnonymousID(r *http.Request) string {

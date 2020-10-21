@@ -8,12 +8,13 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-func NewTopic(topic *core.Topic) *models.Topic {
-	return &models.Topic{
+func NewTopicItem(topic *catalog.TopicItem) *models.TopicItem {
+	return &models.TopicItem{
 		ID:        swag.Int64(int64(topic.ID)),
 		Name:      swag.String(topic.Name),
 		Slug:      swag.String(topic.Slug),
 		CreatedAt: swag.Int64(topic.CreatedAt.Unix()),
+		Lots:      swag.Int64(int64(topic.Lots)),
 	}
 }
 
@@ -26,20 +27,13 @@ func NewTopicIDSlice(ids []core.TopicID) []int64 {
 	return result
 }
 
-func NewTopicSlice(topics core.TopicSlice) []*models.Topic {
-	result := make([]*models.Topic, len(topics))
+func NewTopicItemSlice(topics []*catalog.TopicItem) []*models.TopicItem {
+	result := make([]*models.TopicItem, len(topics))
 	for i, topic := range topics {
-		result[i] = NewTopic(topic)
+		result[i] = NewTopicItem(topic)
 	}
 
 	return result
-}
-
-func NewTopics(topics *catalog.Topics) *models.Topics {
-	return &models.Topics{
-		Topics: NewTopicSlice(topics.Topics),
-		Lots:   swag.Int64(int64(topics.Lots)),
-	}
 }
 
 func NewAdminFullTopic(topic *admin.FullTopic) *models.AdminTopic {

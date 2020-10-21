@@ -227,9 +227,7 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/Topic"
+              $ref: "#/definitions/Topics"
         500:
           description: Internal Server Error
 
@@ -4127,3 +4125,17 @@ definitions:
         items:
           $ref: "#/definitions/CouponItem"
           
+  
+  Topics:
+    required:
+      - lots
+      - topics
+    properties:
+      lots:
+        type: integer
+        description: Количество опубликованных лотов.
+      topics:
+        description: Список категорий.
+        type: array
+        items:
+          $ref: "#/definitions/Topic"

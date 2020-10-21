@@ -2523,10 +2523,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Topic"
-              }
+              "$ref": "#/definitions/Topics"
             }
           },
           "500": {
@@ -5662,6 +5659,27 @@ func init() {
         }
       }
     },
+    "Topics": {
+      "required": [
+        "lots",
+        "topics"
+      ],
+      "properties": {
+        "lots": {
+          "description": "Количество опубликованных лотов.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "topics": {
+          "description": "Список категорий.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 1
+        }
+      }
+    },
     "UnitPayErrorResp": {
       "type": "object",
       "required": [
@@ -8353,10 +8371,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Topic"
-              }
+              "$ref": "#/definitions/Topics"
             }
           },
           "500": {
@@ -11647,6 +11662,27 @@ func init() {
           "description": "Slug (уникальный)",
           "type": "string",
           "x-order": 2
+        }
+      }
+    },
+    "Topics": {
+      "required": [
+        "lots",
+        "topics"
+      ],
+      "properties": {
+        "lots": {
+          "description": "Количество опубликованных лотов.",
+          "type": "integer",
+          "x-order": 0
+        },
+        "topics": {
+          "description": "Список категорий.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "x-order": 1
         }
       }
     },

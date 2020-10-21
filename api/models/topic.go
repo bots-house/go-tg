@@ -4,6 +4,7 @@ import (
 	"github.com/bots-house/birzzha/api/gen/models"
 	"github.com/bots-house/birzzha/core"
 	"github.com/bots-house/birzzha/service/admin"
+	"github.com/bots-house/birzzha/service/catalog"
 	"github.com/go-openapi/swag"
 )
 
@@ -32,6 +33,13 @@ func NewTopicSlice(topics core.TopicSlice) []*models.Topic {
 	}
 
 	return result
+}
+
+func NewTopics(topics *catalog.Topics) *models.Topics {
+	return &models.Topics{
+		Topics: NewTopicSlice(topics.Topics),
+		Lots:   swag.Int64(int64(topics.Lots)),
+	}
 }
 
 func NewAdminFullTopic(topic *admin.FullTopic) *models.AdminTopic {

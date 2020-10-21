@@ -8,6 +8,7 @@ import (
 	"github.com/bots-house/birzzha/pkg/storage"
 	"github.com/bots-house/birzzha/pkg/tg"
 	"github.com/bots-house/birzzha/store"
+	"github.com/pkg/errors"
 )
 
 type Service struct {
@@ -25,6 +26,24 @@ type Service struct {
 	Txier    store.Txier
 }
 
-func (srv *Service) GetTopics(ctx context.Context) (core.TopicSlice, error) {
-	return srv.Topic.Query().All(ctx)
+type Topics struct {
+	Lots   int
+	Topics core.TopicSlice
+}
+
+func (srv *Service) GetTopics(ctx context.Context) (*Topics, error) {
+	lots, err := srv.Lot.Query().Statuses(core.LotStatusPublished).Count(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get lots count")
+	}
+
+	topics, err := srv.Topic.Query().All(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "get topics")
+	}
+
+	return &Topics{
+		Lots:   lots,
+		Topics: topics,
+	}, nil
 }

@@ -107,7 +107,7 @@ func TestInputMediaMarshal(t *testing.T) {
 		},
 	}
 
-	v, err := json.Marshal(data)
+	v, _ := json.Marshal(data)
 	t.Log(string(v))
 }
 

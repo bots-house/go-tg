@@ -45,12 +45,12 @@ func (r *Request) SetToken(token string) {
 }
 
 // SetString sets request string argument.
-func (r *Request) SetString(k string, v string) {
+func (r *Request) SetString(k, v string) {
 	r.args[k] = v
 }
 
 // SetOptString sets request string argument, if value is not zero.
-func (r *Request) SetOptString(k string, v string) {
+func (r *Request) SetOptString(k, v string) {
 	if v != "" {
 		r.args[k] = v
 	}

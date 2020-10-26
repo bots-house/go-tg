@@ -45,7 +45,7 @@ func (client *Client) EditLiveLocation(
 func (client *Client) EditMessageText(
 	ctx context.Context,
 	chat Peer,
-	msg MessageID,
+	msg,
 	inline MessageID,
 	text string,
 	opts *TextOpts,
@@ -76,7 +76,7 @@ func (client *Client) EditMessageText(
 func (client *Client) EditMessageReplyMarkup(
 	ctx context.Context,
 	chat Peer,
-	msg MessageID,
+	msg,
 	inline MessageID,
 	replyMarkup ReplyMarkup,
 ) (*Message, error) {

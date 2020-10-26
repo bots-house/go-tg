@@ -1140,6 +1140,13 @@ func NewInlineKeyboardButtonURL(text string, url string) InlineKeyboardButton {
 	}
 }
 
+func NewInlineKeyboardButtonCallbackData(text string, cd string) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text:         text,
+		CallbackData: cd,
+	}
+}
+
 // Optional. Description of the game that will be launched when the user presses the button.
 type CallbackGame struct{}
 

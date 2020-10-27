@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func assertArgsEqual(t *testing.T, r *Request, args map[string]string) bool {
-	return assert.Equal(t, args, r.args)
+func assertArgsEqual(t *testing.T, r *Request, args map[string]string) {
+	assert.Equal(t, args, r.args)
 }
 
 func TestNewRequest(t *testing.T) {

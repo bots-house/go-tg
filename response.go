@@ -47,6 +47,6 @@ type Response struct {
 	Parameters *ResponseParameters `json:"parameters"`
 }
 
-func (response Response) UnmarshalResult(dst interface{}) error {
+func (response *Response) UnmarshalResult(dst interface{}) error {
 	return json.Unmarshal(response.Result, dst)
 }

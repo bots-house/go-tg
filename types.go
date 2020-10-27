@@ -325,7 +325,7 @@ type Chat struct {
 }
 
 // IsPrivate returns if the Chat is a private conversation.
-func (c Chat) IsPrivate() bool {
+func (c *Chat) IsPrivate() bool {
 	return c.Type == "private"
 }
 
@@ -683,7 +683,7 @@ type Animation struct {
 	MIMEType string `json:"mime_type,omitempty"`
 
 	// Optional. File size
-	FileSize int `json:"file_size,omitmepty"`
+	FileSize int `json:"file_size,omitempty"`
 }
 
 // Game object represents a game.
@@ -1133,14 +1133,14 @@ func NewInlineKeyboardButtonLoginURL(text string, login *LoginURL) InlineKeyboar
 	}
 }
 
-func NewInlineKeyboardButtonURL(text string, url string) InlineKeyboardButton {
+func NewInlineKeyboardButtonURL(text, url string) InlineKeyboardButton {
 	return InlineKeyboardButton{
 		Text: text,
 		URL:  url,
 	}
 }
 
-func NewInlineKeyboardButtonCallbackData(text string, cd string) InlineKeyboardButton {
+func NewInlineKeyboardButtonCallbackData(text, cd string) InlineKeyboardButton {
 	return InlineKeyboardButton{
 		Text:         text,
 		CallbackData: cd,

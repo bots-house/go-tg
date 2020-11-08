@@ -103,7 +103,7 @@ func TestBotResolver_Resolve(t *testing.T) {
 
 		//THEN
 		assert.Nil(t, result)
-		assert.EqualError(t, err, ErrEntityNotFoundOrBotIsNotAdmin.Error())
+		assert.EqualError(t, err, ErrEntityNotFound.Error())
 	})
 
 }

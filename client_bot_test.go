@@ -127,3 +127,12 @@ func TestClient_GetUserProfilePhotos(t *testing.T) {
 	_, err := testClient.GetUserProfilePhotos(ctx, opts)
 	assert.NoError(t, err)
 }
+
+func TestClient_GetChatMembersCount(t *testing.T) {
+	skipIfNeed(t)
+
+	ctx := context.Background()
+
+	_, err := testClient.GetChatMembersCount(ctx, testChannelID)
+	assert.NoError(t, err)
+}

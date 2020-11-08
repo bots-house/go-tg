@@ -211,3 +211,16 @@ func (client *Client) GetUserProfilePhotos(ctx context.Context, opts *GetUserPro
 	}
 	return result, nil
 }
+
+func (client *Client) GetChatMembersCount(ctx context.Context, peer Peer) (int, error) {
+	r := NewRequest("getChatMembersCount")
+
+	var count int
+
+	r.SetPeer("chat_id", peer)
+
+	if err := client.Invoke(ctx, r, &count); err != nil {
+		return 0, errors.Wrap(err, "invoke")
+	}
+	return count, nil
+}

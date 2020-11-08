@@ -329,6 +329,21 @@ func (c *Chat) IsPrivate() bool {
 	return c.Type == "private"
 }
 
+// IsGroup returns if the Chat is a group.
+func (c Chat) IsGroup() bool {
+	return c.Type == "group"
+}
+
+// IsSuperGroup returns if the Chat is a supergroup.
+func (c Chat) IsSuperGroup() bool {
+	return c.Type == "supergroup"
+}
+
+// IsChannel returns if the Chat is a channel.
+func (c Chat) IsChannel() bool {
+	return c.Type == "channel"
+}
+
 // MessageEntity object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 type MessageEntity struct {
 	// Type of the entity.

@@ -27,7 +27,7 @@ func init() {
 		testChannelID = ChatID(parsed)
 	}
 
-	testUserIDString := os.Getenv("GO_TG_USER_ID")
+	testUserIDString := os.Getenv("GO_TG_TEST_USER_ID")
 	if testUserIDString != "" {
 		parsed, err := strconv.ParseInt(testUserIDString, 10, 64)
 		if err != nil {
@@ -134,5 +134,14 @@ func TestClient_GetChatMembersCount(t *testing.T) {
 	ctx := context.Background()
 
 	_, err := testClient.GetChatMembersCount(ctx, testChannelID)
+	assert.NoError(t, err)
+}
+
+func TestClient_GetChatMember(t *testing.T) {
+	skipIfNeed(t)
+
+	ctx := context.Background()
+
+	_, err := testClient.GetChatMember(ctx, testChannelID, testUserID)
 	assert.NoError(t, err)
 }

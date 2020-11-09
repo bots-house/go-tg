@@ -224,3 +224,17 @@ func (client *Client) GetChatMembersCount(ctx context.Context, peer Peer) (int, 
 	}
 	return count, nil
 }
+
+func (client *Client) GetChatMember(ctx context.Context, chat Peer, user Peer) (*ChatMember, error) {
+	r := NewRequest("getChatMember")
+
+	member := &ChatMember{}
+
+	r.SetPeer("chat_id", chat)
+	r.SetPeer("user_id", user)
+
+	if err := client.Invoke(ctx, r, member); err != nil {
+		return nil, errors.Wrap(err, "invoke")
+	}
+	return member, nil
+}

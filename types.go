@@ -1005,7 +1005,7 @@ type KeyboardButtonPollType struct {
 // ReplyKeyboardMarkup object represents a custom keyboard with reply options.
 type ReplyKeyboardMarkup struct {
 	// Array of button rows, each represented by an Array of KeyboardButton objects
-	Keyboard [][]KeyboardButton `json:"keyboard"`
+	Keyboard []KeyboardRow `json:"keyboard"`
 
 	// Optional. Requests clients to resize the keyboard vertically for optimal fit
 	// (e.g., make the keyboard smaller if there are just two rows of buttons).
@@ -1027,6 +1027,18 @@ type ReplyKeyboardMarkup struct {
 	// bot replies to the request with a keyboard to select the new language.
 	// Other users in the group don’t see the keyboard.
 	Selective bool `json:"selective,omitempty"`
+}
+
+type KeyboardRow []KeyboardButton
+
+func NewKeyboardRow(buttons ...KeyboardButton) KeyboardRow {
+	return buttons
+}
+
+func NewReplyKeyboardMarkup(rows ...KeyboardRow) ReplyKeyboardMarkup {
+	return ReplyKeyboardMarkup{
+		Keyboard: rows,
+	}
 }
 
 // ReplyKeyboardRemove Upon receiving a message with this object,

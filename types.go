@@ -1029,6 +1029,8 @@ type ReplyKeyboardMarkup struct {
 	Selective bool `json:"selective,omitempty"`
 }
 
+func (markup ReplyKeyboardMarkup) isReplyMarkup() {}
+
 type KeyboardRow []KeyboardButton
 
 func NewKeyboardRow(buttons ...KeyboardButton) KeyboardRow {

@@ -454,78 +454,6 @@ type inputMedia struct {
 	Type string `json:"type"`
 	*InputMediaVideo
 	*InputMediaPhoto
-	*InputMediaAudio
-	*InputMediaDocument
-	*InputMediaAnimation
-}
-
-// InputMediaAudio a photo to be sent.
-type InputMediaAudio struct {
-	// File to send
-	Media *InputFile
-
-	// Optional. Caption of the audio to be sent, 0-1024 characters after entities parsing
-	Caption string `json:"caption,omitempty"`
-
-	// Optional. Mode for parsing entities in the audio caption.
-	ParseMode string `json:"parse_mode,omitempty"`
-
-	// Optional. Duration if the audio in seconds.
-	Duration Duration
-
-	// Optional. Performer.
-	Performer string
-
-	// Optional. Title.
-	Title string
-
-	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
-	// for the file is supported server-side.
-	// The thumbnail should be in JPEG format and less than 200 kB in size.
-	// A thumbnail‘s width and height should not exceed 320.
-	// Ignored if the file is not uploaded using multipart/form-data.
-	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
-	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-	Thumb *InputFile `json:"thumb"`
-}
-
-func (ima InputMediaAudio) isInputMedia() {}
-
-func (ima InputMediaAudio) MarshalJSON() ([]byte, error) {
-	return json.Marshal(inputMedia{
-		Type:            "audio",
-		InputMediaAudio: &ima,
-	})
-}
-
-// InputMediaDocument a document to be sent.
-type InputMediaDocument struct {
-	// File to send
-	Media *InputFile
-
-	// Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
-	Caption string `json:"caption,omitempty"`
-
-	// Optional. Mode for parsing entities in the document caption.
-	ParseMode string `json:"parse_mode,omitempty"`
-
-	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
-	// for the file is supported server-side.
-	// The thumbnail should be in JPEG format and less than 200 kB in size.
-	// A thumbnail‘s width and height should not exceed 320.
-	// Ignored if the file is not uploaded using multipart/form-data.
-	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
-	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-	Thumb *InputFile `json:"thumb"`
-}
-
-func (imd InputMediaDocument) isInputMedia() {}
-
-func (imd InputMediaDocument) MarshalJSON() ([]byte, error) {
-	return json.Marshal(inputMedia{
-		Type:               "document",
-		InputMediaDocument: &imd,
-	})
 }
 
 // InputMediaPhoto a photo to be sent.
@@ -593,50 +521,6 @@ func (imv InputMediaVideo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(im)
 }
 
-// InputMediaAnimation a animation to be sent.
-type InputMediaAnimation struct {
-	// File to send.
-	Media *InputFile `json:"media"`
-
-	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
-	// for the file is supported server-side.
-	// The thumbnail should be in JPEG format and less than 200 kB in size.
-	// A thumbnail‘s width and height should not exceed 320.
-	// Ignored if the file is not uploaded using multipart/form-data.
-	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
-	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-	Thumb *InputFile `json:"thumb"`
-
-	// Optional. Caption of the animation to be sent, 0-1024 characters after entities parsing
-	Caption string `json:"caption,omitempty"`
-
-	// Optional. Mode for parsing entities in the animation caption.
-	ParseMode string `json:"parse_mode,omitempty"`
-
-	// Optional. animation width
-	Width int `json:"width,omitempty"`
-
-	// Optional. animation height
-	Height int `json:"height,omitempty"`
-
-	// Optional. animation duration
-	Duration Duration `json:"duration,omitempty"`
-
-	// Optional. Pass True, if the uploaded animation is suitable for streaming
-	SupportsStreaming bool `json:"supports_streaming,omitempty"`
-}
-
-func (ima InputMediaAnimation) isInputMedia() {}
-
-func (ima InputMediaAnimation) MarshalJSON() ([]byte, error) {
-	im := inputMedia{
-		Type:                "animation",
-		InputMediaAnimation: &ima,
-	}
-
-	return json.Marshal(im)
-}
-
 type MediaGroupOpts struct {
 	// Sends the messages silently. Users will receive a notification with no sound.
 	DisableNotification bool
@@ -670,6 +554,7 @@ func (client *Client) SendMediaGroup(
 			}
 		case InputMediaPhoto:
 			addInputMedia(v.Media)
+		default:
 			panic("unexpected type when sendMediaGroup")
 		}
 	}

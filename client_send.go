@@ -670,25 +670,6 @@ func (client *Client) SendMediaGroup(
 			}
 		case InputMediaPhoto:
 			addInputMedia(v.Media)
-		case InputMediaAudio:
-			addInputMedia(v.Media)
-
-			if v.Thumb != nil {
-				addInputMedia(v.Thumb)
-			}
-		case InputMediaAnimation:
-			addInputMedia(v.Media)
-
-			if v.Thumb != nil {
-				addInputMedia(v.Thumb)
-			}
-		case InputMediaDocument:
-			addInputMedia(v.Media)
-
-			if v.Thumb != nil {
-				addInputMedia(v.Thumb)
-			}
-		default:
 			panic("unexpected type when sendMediaGroup")
 		}
 	}

@@ -554,3 +554,32 @@ func (client *Client) SendMediaGroup(
 
 	return result, nil
 }
+
+type ForwardOpts struct {
+	DisableNotification bool `json:"disable_notification,omitempty"`
+}
+
+func (client *Client) ForwardMessage(
+	ctx context.Context,
+	to Peer,
+	from Peer,
+	msg MessageID,
+	opts *ForwardOpts,
+) (*Message, error) {
+	r := NewRequest("forwardMessage")
+
+	r.SetPeer("chat_id", to)
+	r.SetPeer("from_chat_id", from)
+	r.SetInt("message_id", int(msg))
+
+	if opts != nil {
+		r.SetOptBool("disable_notification", opts.DisableNotification)
+	}
+
+	result := &Message{}
+
+	if err := client.Invoke(ctx, r, result); err != nil {
+		return nil, errors.Wrap(err, "invoke")
+	}
+	return result, nil
+}

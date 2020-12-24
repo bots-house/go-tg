@@ -2,7 +2,7 @@ package tg
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -447,19 +447,13 @@ func (client *Client) SendLocation(
 
 type InputMedia interface {
 	isInputMedia()
-	json.Marshaler
-}
-
-type inputMedia struct {
-	Type string `json:"type"`
-	*InputMediaVideo
-	*InputMediaPhoto
 }
 
 // InputMediaPhoto a photo to be sent.
 type InputMediaPhoto struct {
+	Type string `json:"type,omitempty"`
 	// File to send
-	Media *InputFile `json:"media"`
+	Media *InputFile `json:"media,omitempty"`
 
 	// Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
 	Caption string `json:"caption,omitempty"`
@@ -470,17 +464,11 @@ type InputMediaPhoto struct {
 
 func (imp InputMediaPhoto) isInputMedia() {}
 
-func (imp InputMediaPhoto) MarshalJSON() ([]byte, error) {
-	return json.Marshal(inputMedia{
-		Type:            "photo",
-		InputMediaPhoto: &imp,
-	})
-}
-
 // InputMediaVideo a video to be sent.
 type InputMediaVideo struct {
+	Type string `json:"type,omitempty"`
 	// File to send.
-	Media *InputFile `json:"media"`
+	Media *InputFile `json:"media,omitempty"`
 
 	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
 	// for the file is supported server-side.
@@ -489,7 +477,7 @@ type InputMediaVideo struct {
 	// Ignored if the file is not uploaded using multipart/form-data.
 	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
 	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-	Thumb *InputFile `json:"thumb"`
+	Thumb *InputFile `json:"thumb,omitempty"`
 
 	// Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
 	Caption string `json:"caption,omitempty"`
@@ -511,15 +499,6 @@ type InputMediaVideo struct {
 }
 
 func (imv InputMediaVideo) isInputMedia() {}
-
-func (imv InputMediaVideo) MarshalJSON() ([]byte, error) {
-	im := inputMedia{
-		Type:            "video",
-		InputMediaVideo: &imv,
-	}
-
-	return json.Marshal(im)
-}
 
 type MediaGroupOpts struct {
 	// Sends the messages silently. Users will receive a notification with no sound.
@@ -562,6 +541,8 @@ func (client *Client) SendMediaGroup(
 	if err := r.SetJSON("media", group); err != nil {
 		return nil, errors.Wrap(err, "marshal media")
 	}
+
+	fmt.Println(r)
 
 	if opts != nil {
 		r.SetOptBool("disable_notification", opts.DisableNotification)

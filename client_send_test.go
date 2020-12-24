@@ -86,11 +86,13 @@ func TestInputMediaMarshal(t *testing.T) {
 
 	data := []InputMedia{
 		InputMediaPhoto{
+			Type:      "photo",
 			Media:     photo1,
 			Caption:   "this is **gopher**",
 			ParseMode: "markdown",
 		},
 		InputMediaVideo{
+			Type:              "video",
 			Media:             video1,
 			Thumb:             video1Thumb,
 			Caption:           "this robot video, but it was **gopher**!?",
@@ -101,6 +103,7 @@ func TestInputMediaMarshal(t *testing.T) {
 			SupportsStreaming: true,
 		},
 		InputMediaPhoto{
+			Type:      "photo",
 			Media:     photo2,
 			Caption:   "mm, this is **gopher** again, really?",
 			ParseMode: "markdown",

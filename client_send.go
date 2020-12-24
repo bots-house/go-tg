@@ -2,7 +2,6 @@ package tg
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -542,8 +541,6 @@ func (client *Client) SendMediaGroup(
 		return nil, errors.Wrap(err, "marshal media")
 	}
 
-	fmt.Println(r)
-
 	if opts != nil {
 		r.SetOptBool("disable_notification", opts.DisableNotification)
 		r.SetOptInt("reply_to_message_id", int(opts.ReplyToMessageID))
@@ -551,7 +548,7 @@ func (client *Client) SendMediaGroup(
 
 	result := make([]*Message, len(group))
 
-	if err := client.Invoke(ctx, r, result); err != nil {
+	if err := client.Invoke(ctx, r, &result); err != nil {
 		return nil, errors.Wrap(err, "invoke")
 	}
 

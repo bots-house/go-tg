@@ -131,6 +131,12 @@ func (client *Client) EditMessageMedia(
 		}
 	case InputMediaPhoto:
 		addInputMedia(v.Media)
+	case InputMediaAudio:
+		addInputMedia(v.Media)
+	case InputMediaDocument:
+		addInputMedia(v.Media)
+	case InputMediaAnimation:
+		addInputMedia(v.Media)
 	default:
 		panic("unexpected type when sendMediaGroup")
 	}

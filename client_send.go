@@ -499,6 +499,99 @@ type InputMediaVideo struct {
 
 func (imv InputMediaVideo) isInputMedia() {}
 
+// InputMediaDocument a document to be sent.
+type InputMediaDocument struct {
+	Type string
+
+	// File to send.
+	Media *InputFile
+
+	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
+	// for the file is supported server-side.
+	// The thumbnail should be in JPEG format and less than 200 kB in size.
+	// A thumbnail‘s width and height should not exceed 320.
+	// Ignored if the file is not uploaded using multipart/form-data.
+	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
+	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+	Thumb *InputFile `json:"thumb,omitempty"`
+
+	// Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
+	Caption string `json:"caption,omitempty"`
+
+	// Optional. Mode for parsing entities in the video caption.
+	ParseMode string `json:"parse_mode,omitempty"`
+}
+
+func (imd InputMediaDocument) isInputMedia() {}
+
+// InputMediaAudio an audio to be sent.
+type InputMediaAudio struct {
+	Type string
+
+	// File to send.
+	Media *InputFile
+
+	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
+	// for the file is supported server-side.
+	// The thumbnail should be in JPEG format and less than 200 kB in size.
+	// A thumbnail‘s width and height should not exceed 320.
+	// Ignored if the file is not uploaded using multipart/form-data.
+	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
+	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+	Thumb *InputFile `json:"thumb,omitempty"`
+
+	// Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
+	Caption string `json:"caption,omitempty"`
+
+	// Optional. Mode for parsing entities in the video caption.
+	ParseMode string `json:"parse_mode,omitempty"`
+
+	// Optional. Duration of the audio in seconds
+	Duration Duration
+
+	// Optional. Performer of the audio
+	Performer int
+
+	// Optional. Title of the audio
+	Title string
+}
+
+func (ima InputMediaAudio) isInputMedia() {}
+
+// InputMediaAnimation an animation to be sent.
+type InputMediaAnimation struct {
+	Type string
+
+	// File to send.
+	Media *InputFile
+
+	// Optional. Thumbnail of the file sent. Can be ignored if thumbnail generation
+	// for the file is supported server-side.
+	// The thumbnail should be in JPEG format and less than 200 kB in size.
+	// A thumbnail‘s width and height should not exceed 320.
+	// Ignored if the file is not uploaded using multipart/form-data.
+	// Thumbnails can’t be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>”
+	// if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+	Thumb *InputFile `json:"thumb,omitempty"`
+
+	// Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
+	Caption string `json:"caption,omitempty"`
+
+	// Optional. Mode for parsing entities in the video caption.
+	ParseMode string `json:"parse_mode,omitempty"`
+
+	// Optional. Video width
+	Width int `json:"width,omitempty"`
+
+	// Optional. Video height
+	Height int `json:"height,omitempty"`
+
+	// Optional. Video duration
+	Duration Duration `json:"duration,omitempty"`
+}
+
+func (ima InputMediaAnimation) isInputMedia() {}
+
 type MediaGroupOpts struct {
 	// Sends the messages silently. Users will receive a notification with no sound.
 	DisableNotification bool

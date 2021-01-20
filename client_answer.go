@@ -22,12 +22,12 @@ type AnswerCallbackQueryOpts struct {
 
 func (client *Client) AnswerCallbackQuery(
 	ctx context.Context,
-	callbackQueryID string,
+	callbackQueryID CallbackQueryID,
 	opts *AnswerCallbackQueryOpts,
 ) (bool, error) {
 	r := NewRequest("answerCallbackQuery")
 
-	r.SetString("callback_query_id", callbackQueryID)
+	r.SetString("callback_query_id", string(callbackQueryID))
 
 	if opts != nil {
 		r.SetOptString("text", opts.Text)

@@ -15,7 +15,7 @@ import (
 type FileID string
 
 // UserID it's unique user ID in Telegram.
-type UserID int
+type UserID int64
 
 // Peer implements Peer interface.
 func (id UserID) Peer() string {
